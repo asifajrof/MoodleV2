@@ -101,10 +101,150 @@ $extra_class_validation$ language plpgsql;
 create trigger extra_class_validation before insert or update on extra_class
      for each row execute function extra_class_check();
 
-create trigger evaluation_validation before insert or update on evaluation
-     for each row execute function extra_class_check();
+create or replace function evaluation_check() returns trigger as $evaluation_validation$
+declare
+begin
+    if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    return new;
+end;
+$evaluation_validation$ language plpgsql;
 
+create trigger evaluation_validation before insert or update on evaluation
+     for each row execute function evaluation_check();
+
+create or replace function extra_teacher_check() returns trigger as $extra_teacher_validation$
+declare
+    sec_no integer;
+begin
+    if (new.extra_class_id is null or new.instructor_id is null) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    select section_no into sec_no from extra_class
+    where extra_class_id=new.extra_class_id;
+    if (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    return new;
+end;
+$extra_teacher_validation$ language plpgsql;
+
+create trigger extra_teacher_validation before insert or update on extra_class_teacher
+     for each row execute function extra_teacher_check();
+
+create or replace function request_event_check() returns trigger as $request_event_validation$
+declare
+begin
+    if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    return new;
+end;
+$request_event_validation$ language plpgsql;
+
+create trigger request_event_validation before insert or update on request_event
+     for each row execute function request_event_check();
+
+create or replace function notification_event_check() returns trigger as $notification_event_validation$
+declare
+begin
+    if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    return new;
+end;
+$notification_event_validation$ language plpgsql;
+
+create trigger notification_event_validation before insert or update on notification_event
+     for each row execute function notification_event_check();
+
+create or replace function submission_check() returns trigger as $submission_validation$
+declare
+    sec_no_event integer;
+    sec_no_enrol integer;
+    course_id_event integer;
+    course_id_enrol integer;
+begin
+    if (new.event_id is null or new.enrol_id is null) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    select section_no into sec_no_event from evaluation
+    where evaluation_id=new.event_id;
+    select section_id into sec_no_enrol from enrolment
+    where enrol_id=new.enrol_id;
+    if (sec_no_enrol is null or sec_no_event is null) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    select course_id into course_id_event from section
+    where section_no=sec_no_event;
+    select course_id into course_id_enrol from section
+    where section_no=sec_no_enrol;
+    if (course_id_enrol is null or course_id_event is null) then
+        raise exception 'Invalid data insertion or update';
+    elsif(course_id_event!=course_id_enrol) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+
+    return new;
+end;
+$submission_validation$ language plpgsql;
+
+create trigger submission_validation before insert or update on submission
+     for each row execute function submission_check();
+
+create or replace function grading_check() returns trigger as $grading_validation$
+declare
+    enrol integer;
+    sec_no integer;
+    course_sub integer;
+    course_ins integer;
+begin
+    if (new.sub_id is null or new.instructor_id is null) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    -- submission id to enrol id
+    select enrol_id into enrol from submission
+    where sub_id=new.sub_id;
+    if (enrol is null) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    -- enrolment to section
+    select section_id into sec_no from enrolment
+    where enrol_id=enrol;
+    if (sec_no is null) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    --section to course
+    select course_id into course_sub from section
+    where section_no=sec_no;
+    --instructor to course
+    select course_id into course_ins from instructor
+    where instructor_id=new.instructor_id;
+    if (course_ins is null or course_sub is null) then
+        raise exception 'Invalid data insertion or update';
+    elsif (course_ins!=course_sub) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    return new;
+end;
+$grading_validation$ language plpgsql;
+
+create trigger grading_validation before insert or update on grading
+     for each row execute function grading_check();
+
+-- drop trigger grading_validation on grading;
+-- drop function grading_check();
+-- drop trigger submission_validation on submission;
+-- drop function submission_check();
+--drop trigger notification_event_validation on notification_event;
+-- drop function notification_event_check();
+--drop trigger request_event_validation on request_event;
+-- drop function request_event_check();
+-- drop trigger extra_teacher_validation on extra_class_teacher;
+-- drop function extra_teacher_check();
 --drop trigger evaluation_validation on evaluation;
+-- drop function evaluation_check();
 -- drop trigger extra_class_validation on extra_class;
 -- drop function extra_class_check();
 -- drop trigger teacher_routine_validation on teacher_routine;
