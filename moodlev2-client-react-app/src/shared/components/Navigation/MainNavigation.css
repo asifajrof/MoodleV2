@@ -1,0 +1,55 @@
+.main-navigation__menu-btn {
+    width: 3rem;
+    height: 3rem;
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin-right: 2rem;
+    cursor: pointer;
+  }
+  
+  .main-navigation__menu-btn span {
+    display: block;
+    width: 3rem;
+    height: 2.5px;
+    background: #000000;
+  }
+  
+  @import url(//fonts.googleapis.com/css?family=Inter);
+
+  .main-navigation__title {
+    color: #000000;
+    font-family: 'Inter';
+    font-weight: bold;
+  }
+  
+  .main-navigation__title a {
+    text-decoration: none;
+    color: #000000;
+  }
+  .main-navigation__title__image {
+    float: left;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.5rem;
+  }
+  
+  .main-navigation__header-nav {
+    display: none;
+  }
+  
+  .main-navigation__drawer-nav {
+    height: 100%;
+  }
+  
+  @media (min-width: 768px) {
+    .main-navigation__menu-btn {
+      display: none;
+    }
+  
+    .main-navigation__header-nav {
+      display: block;
+    }
+  }
