@@ -164,6 +164,7 @@ create table  evaluation(
     start INTEGER NOT NULL CHECK(start>=0 and start<288),
     _end INTEGER NOT NULL CHECK(_end>start and _end>=0 and _end<288),
     _date DATE NOT NULL,
+    total_marks FLOAT NOT NULL CHECK(total_marks>0),
     description VARCHAR(2048),
     unique (_date,type_id,section_no,start,_end)
 );
