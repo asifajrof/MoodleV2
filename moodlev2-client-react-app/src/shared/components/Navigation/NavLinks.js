@@ -3,45 +3,9 @@ import {NavLink} from 'react-router-dom';
 
 import './NavLinks.css';
 
-const Navlinks = (props) => {
-  const adminNavLinks = [
-    {
-      linkTo: '/admin/courses',
-      text: 'Courses'
-    },
-    {
-      linkTo: '/admin/teachers',
-      text: 'Teachers'
-    },
-    {
-      linkTo: '/admin/students',
-      text: 'Students'
-    },
-    {
-      linkTo: '/admin/sitenews',
-      text: 'Site News'
-    }
-  ];
-  const nonAdminNavLinks = [
-    {
-      linkTo: '/timeline',
-      text: 'Timeline'
-    },
-    {
-      linkTo: '/courses',
-      text: 'Courses'
-    },
-    {
-      linkTo: '/privatefiles',
-      text: 'Private Files'
-    },
-    {
-      linkTo: '/sitenews',
-      text: 'Site News'
-    }
-  ];
-  
+const NavLinks = (props) => {
   if(props.userType === 'admin') {
+    const adminNavLinks = props.navLinksList;
     return (
       <ul className='nav-links'>
         {adminNavLinks.map((navLink) => (
@@ -52,6 +16,7 @@ const Navlinks = (props) => {
       </ul>
     );
   } else if (props.userType === 'student' || props.userType === 'teacher') {
+    const nonAdminNavLinks = props.navLinksList;
     return (
       <ul className='nav-links'>
         {nonAdminNavLinks.map((navLink) => (
@@ -66,4 +31,4 @@ const Navlinks = (props) => {
   }
 };
 
-export default Navlinks;
+export default NavLinks;

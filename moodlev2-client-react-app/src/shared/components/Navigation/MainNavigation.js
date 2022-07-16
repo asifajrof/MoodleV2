@@ -6,6 +6,7 @@ import MainHeader from './MainHeader';
 import NavLinks from './NavLinks';
 import NavIcons from './NavIcons';
 import SideDrawer from './SideDrawer';
+import Backdrop from '../UIElements/Backdrop';
 import './MainNavigation.css';
 
 const MainNavigation = (props) => {
@@ -21,10 +22,10 @@ const MainNavigation = (props) => {
 
     return (
         <React.Fragment>
-            {/* {drawerIsOpen && <Backdrop show={drawerIsOpen} onClick={closeDrawerHandler} />} */}
+            {drawerIsOpen && <Backdrop show={drawerIsOpen} onClick={closeDrawerHandler} />}
             <SideDrawer show={drawerIsOpen} onClick={closeDrawerHandler}>
                 <nav className='main-navigation__drawer-nav'>
-                    <NavLinks userType={props.userType} />
+                    <NavLinks userType={props.userType} navLinksList={props.navLinksList} />
                 </nav>
                 <nav className='main-navigation__drawer-nav'>
                     <NavIcons userType={props.userType} />
@@ -32,7 +33,7 @@ const MainNavigation = (props) => {
             </SideDrawer>
 
             <MainHeader>
-                <button 
+                {(props.userType==='admin' || props.userType==='student' || props.userType==='teacher') && <button 
                     className='main-navigation__menu-btn'
                     onClick={openDrawerHandler}
                 >
@@ -40,12 +41,12 @@ const MainNavigation = (props) => {
                     <span />
                     <span />
                     <span />
-                </button>
+                </button>}
                 <h1 className='main-navigation__title'>
                     <Link to='/'><img src={logo} className='main-navigation__title__image' alt='M'/>Moodle V2</Link>
                 </h1>
                 <nav className='main-navigation__header-nav'>
-                    <NavLinks userType={props.userType} />
+                    <NavLinks userType={props.userType} navLinksList={props.navLinksList} />
                 </nav>
                 <nav className='main-navigation__header-nav'>
                     <NavIcons userType={props.userType} />
