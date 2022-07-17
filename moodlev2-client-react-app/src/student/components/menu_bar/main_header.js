@@ -1,6 +1,6 @@
 import React from 'react'
 
-import './MainHeader.css';
+import './main_header.css';
 
 const MainHeader = (props) => {
   return (

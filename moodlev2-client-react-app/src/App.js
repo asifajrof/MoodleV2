@@ -14,8 +14,8 @@ import AdminTeachers from './admin/pages/AdminTeachers';
 import AdminStudents from './admin/pages/AdminStudents';
 import AdminSiteNews from './admin/pages/AdminSiteNews';
 
-import MainNavigation from './shared/components/Navigation/MainNavigation';
 import './App.css';
+import MenuBar from './student/components/menu_bar';
 
 const App = () => {
   const userType = 'student';
@@ -70,16 +70,19 @@ const App = () => {
 
   return (
     <Router>
-      <MainNavigation userType={userType} navLinksList={navLinksList}/>
+      {/* <MainNavigation userType={userType} navLinksList={navLinksList}/> */}
+      <MenuBar studentNo={1} />
+
       <main>
-        <Routes>
+        {/* <Routes>
           <Route exact path='/' element={<UserHome userType={userType}/>}/>
           {
             navLinksList.map((navLink) => (
               <Route exact path={navLink.linkTo} element={navLink.target} />
             ))
           }
-        </Routes>
+        </Routes> */}
+        <h1>hi</h1>
       </main>
     </Router>
   );
