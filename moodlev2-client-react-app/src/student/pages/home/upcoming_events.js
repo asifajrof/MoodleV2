@@ -1,5 +1,5 @@
 import React from "react";
-import UpcomingEvent from "./upcoming/upcoming_event";
+import UpcomingEvent from "./upcoming_events/upcoming_event";
 
 const events = [
     {

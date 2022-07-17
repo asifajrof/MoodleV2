@@ -40,7 +40,7 @@ const RegisteredCourses = ({studentNo}) => {
     const L=getList(studentNo);
     return (
         <>
-        {course_list.forEach(course=>{
+        {course_list.map(course=>{
             <RegisteredCourse course={L} />
         })}
         </>
