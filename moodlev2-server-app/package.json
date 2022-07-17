@@ -4,6 +4,7 @@
   "description": "moodle v2 server side",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "1705092, 1705093, 1705119",
