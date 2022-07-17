@@ -30,7 +30,8 @@ create table teacher(
     teacher_name VARCHAR(255) NOT NULL,
     user_no INTEGER NOT NULL REFERENCES official_users(user_no),
     dept_code INTEGER NOT NULL REFERENCES department(dept_code),
-    notification_last_seen TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
+    notification_last_seen TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    unique(user_no)
 );
 create table course(
     course_id SERIAL PRIMARY KEY,
@@ -67,8 +68,8 @@ create table course_routine(
     class_id SERIAL PRIMARY KEY ,
     section_no INTEGER NOT NULL REFERENCES section(section_no),
     alternation INTEGER CHECK(alternation>0),
-    start INTEGER NOT NULL CHECK(start>=0 and start<288),
-    _end INTEGER NOT NULL CHECK(_end>start and _end>=0 and _end<288),
+    start TIME NOT NULL,
+    _end TIME NOT NULL CHECK(_end>start),
     day INTEGER NOT NULL CHECK(day>=0 and day<7),
     unique (day,section_no)
 );
@@ -142,15 +143,16 @@ create table extra_class(
     extra_class_id SERIAL PRIMARY KEY ,
     section_no INTEGER NOT NULL REFERENCES section(section_no),
     instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
-    start INTEGER NOT NULL CHECK(start>=0 and start<288),
-    _end INTEGER NOT NULL CHECK(_end>start and _end>=0 and _end<288),
+    start TIMESTAMP with time zone  NOT NULL CHECK(start>=CURRENT_TIMESTAMP),
+    _end TIMESTAMP with time zone NOT NULL CHECK(_end>start),
     _date DATE NOT NULL,
     unique(section_no,instructor_id,start,_end,_date)
 );
 create table extra_class_teacher(
     assignment_id SERIAL PRIMARY KEY ,
     extra_class_id INTEGER NOT NULL REFERENCES extra_class(extra_class_id),
-    instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id)
+    instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
+    unique(extra_class_id,instructor_id)
 );
 create table evaluation_type(
     typt_id SERIAL PRIMARY KEY ,
@@ -161,8 +163,8 @@ create table  evaluation(
     type_id INTEGER NOT NULL REFERENCES evaluation_type(typt_id),
     section_no INTEGER NOT NULL REFERENCES section(section_no),
     instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
-    start INTEGER NOT NULL CHECK(start>=0 and start<288),
-    _end INTEGER NOT NULL CHECK(_end>start and _end>=0 and _end<288),
+    start TIMESTAMP with time zone  NOT NULL,
+    _end TIMESTAMP with time zone NOT NULL CHECK(_end>start),
     _date DATE NOT NULL,
     total_marks FLOAT NOT NULL CHECK(total_marks>0),
     description VARCHAR(2048),
@@ -177,8 +179,8 @@ create table request_event(
     type_id INTEGER NOT NULL REFERENCES request_type(type_id),
     section_no INTEGER NOT NULL REFERENCES section(section_no),
     instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
-    start INTEGER NOT NULL CHECK(start>=0 and start<288),
-    _end INTEGER NOT NULL CHECK(_end>start and _end>=0 and _end<288),
+    start TIMESTAMP with time zone  NOT NULL CHECK(start>=CURRENT_TIMESTAMP),
+    _end TIMESTAMP with time zone NOT NULL CHECK(_end>start),
     _date DATE NOT NULL,
     notifucation_time TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     total_marks FLOAT NOT NULL CHECK(total_marks>0),
@@ -199,8 +201,8 @@ create table notification_event(
     type_id INTEGER NOT NULL REFERENCES notification_type(type_id),
     section_no INTEGER NOT NULL REFERENCES section(section_no),
     instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
-    start INTEGER NOT NULL CHECK(start>=0 and start<288),
-    _end INTEGER NOT NULL CHECK(_end>start and _end>=0 and _end<288),
+    start TIMESTAMP with time zone  NOT NULL CHECK(start>=CURRENT_TIMESTAMP),
+    _end TIMESTAMP with time zone NOT NULL CHECK(_end>start),
     _date DATE NOT NULL,
     notifucation_time TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     unique (type_id,section_no,instructor_id,start,_end,_date)
@@ -210,7 +212,8 @@ create table submission(
      event_id INTEGER NOT NULL REFERENCES evaluation(evaluation_id),
      enrol_id INTEGER NOT NULL REFERENCES enrolment(enrol_id),
      link VARCHAR(1024) UNIQUE NOT NULL,
-     sub_time TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
+     sub_time TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     unique(event_id,enrol_id)
 );
 create table grading(
     grading_id SERIAL PRIMARY KEY ,
@@ -219,12 +222,14 @@ create table grading(
     total_marks FLOAT NOT NULL CHECK(total_marks>0),
     obtained_marks FLOAT NOT NULL CHECK(obtained_marks<=total_marks),
     remarks VARCHAR(2048),
-    _date DATE NOT NULL DEFAULT CURRENT_DATE CHECK(_date<=CURRENT_DATE)
+    _date DATE NOT NULL DEFAULT CURRENT_DATE CHECK(_date<=CURRENT_DATE),
+    unique(sub_id,instructor_id)
 );
 create table admins(
     admin_id SERIAL PRIMARY KEY,
     name VARCHAR(32) NOT NULL,
-    user_no INTEGER NOT NULL REFERENCES official_users(user_no)
+    user_no INTEGER NOT NULL REFERENCES official_users(user_no),
+    unique(user_no)
 );
 create table forum_post(
     post_id SERIAL PRIMARY KEY,
