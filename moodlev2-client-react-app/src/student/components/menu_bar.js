@@ -35,7 +35,7 @@ const options = [
     }
 ]
 
-const MenuBar = ({studentNo})=>{
+const StudentMenuBar = ({studentNo})=>{
     const [drawerIsOpen, setDrawerIsOpen] = useState(false);
 
     const openDrawerHandler = () => {
@@ -114,4 +114,4 @@ const MenuBar = ({studentNo})=>{
     )
 }
 
-export default MenuBar;
+export default StudentMenuBar;
