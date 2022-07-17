@@ -1,6 +1,6 @@
 import React from "react";
 
-const PersonLogo = ()=>{
+const PersonLogo = (studentNo)=>{
     return (
         <>
         See person logo

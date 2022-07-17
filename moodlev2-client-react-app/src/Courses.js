@@ -2,7 +2,7 @@ import React from 'react'
 
 const Courses = (props) => {
   return (
-    <>{props.userType} Courses</>
+    <>{props.userType} Courses </>
   )
 }
 

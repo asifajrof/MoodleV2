@@ -1,5 +1,9 @@
 import React from "react";
-
-const MenuOption = ({opt_name})=>{
-    
+const MenuOption = (option)=>{
+    return (
+        <>
+        {option._name} {option.link}
+        </>
+    )
 }
+export default MenuOption;

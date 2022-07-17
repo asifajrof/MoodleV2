@@ -1,6 +1,6 @@
 import React from "react";
 
-const LogoutLogo = ()=>{
+const LogoutLogo = (studentNo)=>{
     return (
         <>
         See logout logo

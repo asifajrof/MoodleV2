@@ -1,6 +1,6 @@
 import React from "react";
 
-const NotificationLogo = ()=>{
+const NotificationLogo = (studentNo)=>{
     return (
         <>
         See notification logo
