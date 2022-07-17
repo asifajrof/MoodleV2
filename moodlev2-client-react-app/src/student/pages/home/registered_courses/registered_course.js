@@ -1,13 +1,13 @@
 import React from "react";
 
-const course = {
-        id: 1,
-        term: "January",
-        _year: 2022,
-        dept_shortname:"CSE",
-        course_code: "405",
-        course_name: "Computer Security"
-    }
+// const course = {
+//         id: 1,
+//         term: "January",
+//         _year: 2022,
+//         dept_shortname:"CSE",
+//         course_code: "405",
+//         course_name: "Computer Security"
+//     }
 
 const RegisteredCourse = ({course})=>{
     return (

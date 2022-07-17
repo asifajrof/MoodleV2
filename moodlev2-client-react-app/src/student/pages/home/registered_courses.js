@@ -37,12 +37,12 @@ const RegisteredCourses = ({studentNo}) => {
     {
         return course_list;
     }
-    const L=getList(studentNo);
+    const student_course_list=getList(studentNo);
     return (
         <>
-        {course_list.map(course=>{
-            <RegisteredCourse course={L} />
-        })}
+            {student_course_list.map( course => (
+                <RegisteredCourse course={course} />
+            ))}
         </>
     )
 }
