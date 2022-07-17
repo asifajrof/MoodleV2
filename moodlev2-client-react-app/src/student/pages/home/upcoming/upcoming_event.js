@@ -5,7 +5,7 @@ const UpcomingEvent = ({event})=>{
 
     console.log('Before Entering HTML');
     return (
-        <div>
+        <>
             <h1>
             {event.type}
             </h1>
@@ -15,8 +15,7 @@ const UpcomingEvent = ({event})=>{
             <h1>
             {event.time}
             </h1>
-          
-        </div>
+        </>
     )
 }
 

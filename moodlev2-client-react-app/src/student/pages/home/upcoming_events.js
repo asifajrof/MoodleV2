@@ -21,11 +21,9 @@ const UpcomingEvents = ({studentNo})=>{
     const eventList = getEvents(studentNo)
     return (
         <>
-        thalfrasldf
-        {eventList.forEach((event) =>{
-            console.log('sgfsdgjsg');
-            <UpcomingEvent event={event} />
-        })}
+            {eventList.map((event) =>(
+                <UpcomingEvent event={event} />
+            ))}
         </>
     )
 }
