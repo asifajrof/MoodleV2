@@ -1,0 +1,18 @@
+{
+  "name": "moodlev2-server-app",
+  "version": "1.0.0",
+  "description": "moodle v2 server side",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "1705092, 1705093, 1705119",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}
