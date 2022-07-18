@@ -4,10 +4,21 @@ const bodyParser = require('body-parser');
 const studentRoutes = require('./routes/student-routes');
 const HttpError = require('./models/http-error');
 
+const {getCurrentCoursesById} = require('./models/db_getCurrentCoursesById');
+
 const app = express();
 app.use(bodyParser.json());
 const PORT = process.env.PORT || 5000;
 app.listen(PORT);
+
+app.get("/api/:studentId",(req,res)=>{
+    // res.json({"users":["userOne","userTwo","userThree"]})
+    const studentID = req.params.studentId;
+    console.log('studentID: ' + studentID);
+    const someVar = getCurrentCoursesById(studentID);
+    console.log('print it ', someVar);
+    res.json(someVar);
+})
 
 app.use('/api/student',studentRoutes);
 
