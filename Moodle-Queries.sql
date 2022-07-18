@@ -10,8 +10,8 @@ values(1,'Introduction to Computer Programming',1,5,2018,1,1);
 insert into course
 values(2,'Data Structures and Algorithms',3,5,2018,2,1);
 
-insert into section(section_name, course_id)
-values('CSE-2017-B2-CSE101-2018',1);
+insert into section(section_no, section_name, course_id)
+values(1,'CSE-2017-B2-CSE101-2018',1);
 
 insert into enrolment(student_id, section_id)
 values (1,1);
