@@ -6,17 +6,25 @@ const client = new Client ({
     password: "PostgreSQLPassword08031998",
     database : "moodle_v2"
 });
+dc=1705119;
+client.connect().then(
+    client.query('select json_agg(t) FROM get_current_course($1) as t',[dc],(err,res)=>{
+        if(err)
+        {
+            console.log(err.message);
+        }
+        else
+        {
+            res.rows.map((row,index)=>{
+                // console.log(JSON.parse(row.json_agg));
+                row.json_agg.map((r,idx)=>{
 
-client.connect();
-dc=5;
-client.query('select * from department where dept_code=$1',[dc],(err,res)=>{
-    if(err)
-    {
-        console.log(err.message);
-    }
-    else
-    {
-        console.log(res.rows);
-    }
-    client.end;
-})
+                    console.log(r);
+                })
+            })
+            
+        }
+        client.end;
+    })
+);
+
