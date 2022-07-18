@@ -233,6 +233,18 @@ $grading_validation$ language plpgsql;
 create trigger grading_validation before insert or update on grading
      for each row execute function grading_check();
 
+create or replace function curr_course_update () returns trigger as $curr_course_validation$
+declare
+begin
+    refresh materialized view current_courses;
+end;
+$curr_course_validation$ language plpgsql;
+
+create trigger curr_course_validation after insert or update or delete on course
+     for each statement execute function curr_course_update();
+
+-- drop trigger curr_course_validation on course;
+-- drop function curr_course_update();
 -- drop trigger grading_validation on grading;
 -- drop function grading_check();
 -- drop trigger submission_validation on submission;
