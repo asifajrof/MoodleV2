@@ -11,11 +11,12 @@ app.use(bodyParser.json());
 const PORT = process.env.PORT || 5000;
 app.listen(PORT);
 
-app.get("/api/:studentId",(req,res)=>{
+app.get("/api/:studentId", async (req,res)=>{
     // res.json({"users":["userOne","userTwo","userThree"]})
-    const studentID = req.params.studentId;
-    console.log('studentID: ' + studentID);
-    const someVar = getCurrentCoursesById(studentID);
+    const studentId = parseInt(req.params.studentId);
+    console.log(typeof studentId);
+    console.log('studentId: ' + studentId);
+    const someVar = await getCurrentCoursesById(studentId);
     console.log('print it ', someVar);
     res.json(someVar);
 })
