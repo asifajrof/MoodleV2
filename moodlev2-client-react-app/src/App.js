@@ -1,16 +1,6 @@
+// import React, {useState, useEffect} from 'react';
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-
-// import UserHome from './UserHome';
-// import Timeline from './Timeline';
-// import Courses from './Courses';
-// import PrivateFiles from './PrivateFiles';
-// import SiteNews from './SiteNews';
-
-// import AdminCourses from './admin/pages/AdminCourses';
-// import AdminTeachers from './admin/pages/AdminTeachers';
-// import AdminStudents from './admin/pages/AdminStudents';
-// import AdminSiteNews from './admin/pages/AdminSiteNews';
 
 import StudentMenuBar from './student/components/menu_bar';
 import StudentHome from './student/pages/home/student_home';
@@ -20,6 +10,19 @@ import './App.css';
 import { home_link } from './links';
 
 const App = () => {
+
+  // const [backendData,setBackendData] = useState([{}])
+  // useEffect(() => {
+  //   fetch("/api/1705119").then(
+  //     response => response.json()
+  //   ).then(
+  //     data => {
+  //       setBackendData(data)
+  //     }
+  //   )
+  // },[]);
+  // console.log(backendData);
+
   const userType = 'student';
   
   if(userType === 'admin') {
