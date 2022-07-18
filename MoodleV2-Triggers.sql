@@ -237,6 +237,7 @@ create or replace function curr_course_update () returns trigger as $curr_course
 declare
 begin
     refresh materialized view current_courses;
+    return null;
 end;
 $curr_course_validation$ language plpgsql;
 
