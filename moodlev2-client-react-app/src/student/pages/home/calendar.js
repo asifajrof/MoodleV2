@@ -1,9 +1,11 @@
 import React from "react";
 
-const Calendar = ({studentNo,_year,term})=>{
+const Calendar = ({studentNo})=>{
     return (
         <>
         The Calendar
         </>
     )
 }
+
+export default Calendar;

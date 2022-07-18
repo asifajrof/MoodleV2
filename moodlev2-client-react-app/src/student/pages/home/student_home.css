@@ -1,0 +1,22 @@
+.home__container{
+    background: #EAEBEC;
+    /* margin-top: 5.6rem; */
+    padding: 0.5rem;
+    /* height: 100vh; */
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+}
+
+.home__container__divider{
+    width: 100%;
+    padding-top: 2rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    background: #EAEBEC;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}

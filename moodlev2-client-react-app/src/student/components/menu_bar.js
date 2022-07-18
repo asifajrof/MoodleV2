@@ -53,10 +53,8 @@ const StudentMenuBar = ({studentNo})=>{
         <SideDrawer show={drawerIsOpen} onClick={closeDrawerHandler}>
             <nav className='main-navigation__drawer-nav'>
                 <ul className='nav-links'>
-                        {options.map(option => (
-                            <li>
-                                <MenuOption option={option} />
-                            </li>
+                        {options.map((option, index) => (
+                            <MenuOption key={index} option={option} />
                         ))}
                 </ul>
             </nav>
@@ -88,10 +86,8 @@ const StudentMenuBar = ({studentNo})=>{
 
             <nav className='main-navigation__header-nav'>
                 <ul className='nav-links'>
-                        {options.map(option => (
-                            <li>
-                                <MenuOption option={option} />
-                            </li>
+                        {options.map((option, index) => (
+                            <MenuOption key={index} option={option} />
                         ))}
                 </ul>
             </nav>

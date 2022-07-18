@@ -1,21 +1,24 @@
 import React from "react";
 
+import './upcoming_event.css';
 
 const UpcomingEvent = ({event})=>{
-
-    console.log('Before Entering HTML');
     return (
-        <>
-            <h1>
-            {event.type}
-            </h1>
-            <h1>
-            {event.course_code}
-            </h1>
-            <h1>
-            {event.time}
-            </h1>
-        </>
+        <div className='event__container__item'>
+            <div className='event__container__item__1'>
+                <div >
+                {event.type}
+                </div>
+            </div>
+            <div className='event__container__item__2'>
+                <div>
+                {event.course_code}
+                </div>
+                <div>
+                {event.time}
+                </div>
+            </div>
+        </div>
     )
 }
 

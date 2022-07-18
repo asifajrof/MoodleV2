@@ -1,5 +1,7 @@
 import React from "react";
 
+import './registered_course.css';
+
 // const course = {
 //         id: 1,
 //         term: "January",
@@ -11,9 +13,11 @@ import React from "react";
 
 const RegisteredCourse = ({course})=>{
     return (
-        <>
-        {course.term} {course._year} {course.dept_shortname}{course_code}: {course.course_name}
-        </>
+        <div className='course__container__item'>
+            <div className='course__container__item__1'>
+            {course.term} {course._year} {course.dept_shortname}{course.course_code}: {course.course_name}
+            </div>
+        </div>
     )
 }
 export default RegisteredCourse;
