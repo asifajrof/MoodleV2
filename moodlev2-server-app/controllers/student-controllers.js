@@ -1,5 +1,6 @@
 const {v4: uuid} = require('uuid');
 
+const pool = require('../models/db_connect');
 const HttpError = require('../models/http-error');
 
 let DUMMY_COURSES = [
@@ -14,23 +15,39 @@ let DUMMY_COURSES = [
     }
 ];
 
-const getCourseById = (req, res, next) => {
-    const courseId = req.params.course_id;
-    const course = DUMMY_COURSES.find(c => c.course_id === courseId);
-    if(!course) {
-        // console.log('Course not found');
-        // res.status(404).json({message: 'Course not found'});
-        // const error = new Error('Course not found');
-        // error.status = 404;
-        // throw error;    // does not use this in async function
-        // next(error);
-
-        next(new HttpError('Course not found', 404));
-    } else {
-        console.log('GET /student');
-        res.json({course});
+const getCourseById = async (req, res, next) => {
+    try{
+        const courseId = req.params.course_id;
+        let result = await pool.query('SELECT * FROM course WHERE course_id = $1', [courseId]);
+        const course = result.rows[0];
+        if(!course) {
+            next(new HttpError('Course not found', 404));
+        }
+        else{
+            res.json({message:'getCourseById', data: course});
+        }
+    } catch(error) {
+        return next(new HttpError(error.message, 500));
     }
 };
+
+// const getCourseById = (req, res, next) => {
+//     const courseId = req.params.course_id;
+//     const course = DUMMY_COURSES.find(c => c.course_id === courseId);
+//     if(!course) {
+//         // console.log('Course not found');
+//         // res.status(404).json({message: 'Course not found'});
+//         // const error = new Error('Course not found');
+//         // error.status = 404;
+//         // throw error;    // does not use this in async function
+//         // next(error);
+
+//         next(new HttpError('Course not found', 404));
+//     } else {
+//         console.log('GET /student');
+//         res.json({course});
+//     }
+// };
 
 const createCourse = (req, res, next) => {
     const {course_id, course_name, course_num, dept_code, _year, level, term} = req.body;
