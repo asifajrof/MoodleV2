@@ -39,11 +39,21 @@ import './registered_courses.css';
 //         course_code: "409",
 //         course_name: "Computer Graphics"
 //     }
+//     ,
+//     {
+//         id: 5,
+//         term: "January",
+//         _year: 2022,
+//         dept_shortname:"CSE",
+//         course_code: "423",
+//         course_name: "FTS"
+//     }
 // ]
 
 
 
 const RegisteredCourses = ({studentNo}) => {
+    // const [currentCoursesList, setCurrentCoursesList] = useState(course_list);
     const [currentCoursesList, setCurrentCoursesList] = useState([]);
 
     useEffect(() => {
