@@ -24,6 +24,7 @@ const App = () => {
   // console.log(backendData);
 
   const userType = 'student';
+  const stdId = 1705119;
   
   if(userType === 'admin') {
     return (
@@ -40,10 +41,10 @@ const App = () => {
   } else if(userType === 'student') {
     return (
       <Router>
-        <StudentMenuBar studentNo={1}/>
+        <StudentMenuBar studentNo={stdId}/>
         <main>
           <Routes>
-            <Route path={home_link} element={<StudentHome studentNo={1}/>} />
+            <Route path={home_link} element={<StudentHome studentNo={stdId}/>} />
           </Routes>
         </main>
       </Router>
