@@ -8,7 +8,11 @@ export const courses_link = "/courses"
 export const privateFiles_link = "/privatefiles"
 export const siteNews_link = "/sitenews"
 
-export const course_link = "/course/:courseId"
+export const course_link = "/"
+export const course_events_link = "/events"
+export const course_grades_link = "/grades"
+export const course_resources_link = "/resources"
+export const course_forum_link = "/forum"
 
 export const adminTeachers_link = "/admin/teachers"
 export const adminStudents_link = "/admin/students"

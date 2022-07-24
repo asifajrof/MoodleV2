@@ -42,11 +42,11 @@ const App = () => {
   } else if(userType === 'student') {
     return (
       <Router>
-        {/* <StudentMenuBar studentNo={stdId}/> */}
+        <StudentMenuBar studentNo={stdId}/>
         <main>
           <Routes>
             <Route path={home_link} element={<StudentHome studentNo={stdId}/>} />
-            <Route path={course_link} element={<StudentCourseHome studentNo={stdId}/>} />
+            <Route path={'/course/:courseId'+ course_link} element={<StudentCourseHome studentNo={stdId}/>} />
             <Route
               path="*"
               element={
@@ -57,7 +57,7 @@ const App = () => {
             />
           </Routes>
         </main>
-        <StudentMenuBar studentNo={stdId}/>
+        {/* <StudentMenuBar studentNo={stdId}/> */}
       </Router>
     );
 
