@@ -176,6 +176,49 @@ $$;
 ALTER FUNCTION public.get_current_course(std_id integer) OWNER TO postgres;
 
 --
+-- Name: get_upcoming_events(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_upcoming_events(std_id integer) RETURNS TABLE(id integer, dept_shortname character varying, course_code integer, lookup_time time without time zone, event_type character varying)
+    LANGUAGE plpgsql
+    AS $$
+begin
+    return query
+    select cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
+                                                  ((select section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type
+                                                    from course_routine cr
+                                                    where day = extract(isodow from current_date) - 1
+                                                      and not exists(
+                                                            select class_id
+                                                            from canceled_class cc
+                                                            where cc.class_id = cr.class_id and _date = current_date and start::time>current_time
+                                                        ))
+                                                   union
+                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type
+                                                    from extra_class
+                                                    where start::date = current_date and start::time>current_time)
+                                                   union
+                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type
+                                                    from evaluation e
+                                                             join evaluation_type et
+                                                                  on (et.typt_id = e.type_id and mod(et.notification_time_type, 2) = 0)
+                                                                      and start::date = current_date and start::time>current_time)
+                                                   union
+                                                   (select section_no, _end::time as _lookup_time, et.type_name as _event_type
+                                                    from evaluation e
+                                                             join evaluation_type et
+                                                                  on (et.typt_id = e.type_id and mod(et.notification_time_type, 2) = 1)
+                                                                      and _end::date = current_date and _end::time>current_time))) ut join
+    (
+        select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
+    ) ss on (ut.section_no=ss.section_id) join section s on (ss.section_id=s.section_no) join current_courses cc on (s.course_id=cc._id);
+end
+$$;
+
+
+ALTER FUNCTION public.get_upcoming_events(std_id integer) OWNER TO postgres;
+
+--
 -- Name: grading_check(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -779,7 +822,9 @@ ALTER SEQUENCE public.evaluation_evaluation_id_seq OWNED BY public.evaluation.ev
 
 CREATE TABLE public.evaluation_type (
     typt_id integer NOT NULL,
-    type_name character varying(64) NOT NULL
+    type_name character varying(64) NOT NULL,
+    notification_time_type integer NOT NULL,
+    CONSTRAINT evaluation_type_notification_time_type_check CHECK (((notification_time_type = 0) OR (notification_time_type = 1)))
 );
 
 
@@ -1871,6 +1916,7 @@ INSERT INTO public.course (course_id, course_name, course_num, dept_code, _year,
 -- Data for Name: course_routine; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (1, 1, 7, '08:00:00', '10:00:00', 0);
 
 
 --
@@ -1884,7 +1930,7 @@ INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (5, 
 -- Data for Name: enrolment; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (3, 1, 1, '2022-07-18');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1, 1, 1, '2022-07-25');
 
 
 --
@@ -1994,7 +2040,7 @@ INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (
 -- Data for Name: student; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful Islam', '4149064daa97438c2dac602c7540e4eba55a353dd0611b3eac610bb66ad34e3b', 2017, 119, 5, '2022-07-18 12:26:42.824057+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful Islam', '4149064daa97438c2dac602c7540e4eba55a353dd0611b3eac610bb66ad34e3b', 2017, 119, 5, '2022-07-25 00:57:20.999873+06', NULL);
 
 
 --
@@ -2084,14 +2130,14 @@ SELECT pg_catalog.setval('public.course_post_post_id_seq', 1, false);
 -- Name: course_routine_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_routine_class_id_seq', 1, false);
+SELECT pg_catalog.setval('public.course_routine_class_id_seq', 1, true);
 
 
 --
 -- Name: enrolment_enrol_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 3, true);
+SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 1, true);
 
 
 --
@@ -2203,7 +2249,7 @@ SELECT pg_catalog.setval('public.resource_res_id_seq', 1, false);
 -- Name: section_section_no_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.section_section_no_seq', 2, true);
+SELECT pg_catalog.setval('public.section_section_no_seq', 1, false);
 
 
 --
