@@ -36,16 +36,16 @@ create or replace function get_upcoming_events (std_id integer)
 begin
     return query
     select cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
-                                                  ((select section_no, start as _lookup_time, 'Class' as _event_type
+                                                  ((select section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type
                                                     from course_routine cr
                                                     where day = extract(isodow from current_date) - 1
                                                       and not exists(
                                                             select class_id
                                                             from canceled_class cc
-                                                            where cc.class_id = cr.class_id and _date = current_date
+                                                            where cc.class_id = cr.class_id and _date = current_date and start::time>current_time
                                                         ))
                                                    union
-                                                   (select section_no, start::time as _lookup_time, 'Extra Class' as _event_type
+                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type
                                                     from extra_class
                                                     where start::date = current_date and start::time>current_time)
                                                    union
@@ -62,7 +62,7 @@ begin
                                                                       and _end::date = current_date and _end::time>current_time))) ut join
     (
         select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
-    ) ss on (ut.section_no=ss.section_id) join section s on (ss.section_id=s.section_no) join current_courses cc on (s.course_id=cc._course_code);
+    ) ss on (ut.section_no=ss.section_id) join section s on (ss.section_id=s.section_no) join current_courses cc on (s.course_id=cc._id);
 end
 $$ language plpgsql;
 
