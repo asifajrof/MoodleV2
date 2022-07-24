@@ -156,7 +156,8 @@ create table extra_class_teacher(
 );
 create table evaluation_type(
     typt_id SERIAL PRIMARY KEY ,
-    type_name VARCHAR(64) UNIQUE NOT NULL
+    type_name VARCHAR(64) UNIQUE NOT NULL,
+    notification_time_type INTEGER NOT NULL CHECK(notification_time_type=0 OR notification_time_type=1)
 );
 create table  evaluation(
     evaluation_id SERIAL PRIMARY KEY ,

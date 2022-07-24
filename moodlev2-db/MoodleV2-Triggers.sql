@@ -244,7 +244,7 @@ $curr_course_validation$ language plpgsql;
 create trigger curr_course_validation after insert or update or delete on course
      for each statement execute function curr_course_update();
 
-     create or replace function cancel_class_day_check() returns trigger as $cancel_class_validation$
+create or replace function cancel_class_day_check() returns trigger as $cancel_class_validation$
 declare
     ccd integer;
 	cnt integer;
