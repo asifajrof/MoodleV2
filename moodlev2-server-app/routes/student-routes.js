@@ -11,7 +11,10 @@ studentRoutes.get('/', (req, res, next) => {
     res.json({message: 'it works!'});
 });
 
-studentRoutes.get('/course/:course_id', studentControllers.getCourseById);
+// student home. get all current courses by student id
+studentRoutes.get('/courses/current/:student_id', studentControllers.getCurrentCoursesByStudentId);
+
+// studentRoutes.get('/course/:course_id', studentControllers.getCourseById);
 
 // router.post('/', studentControllers.createCourse);
 
