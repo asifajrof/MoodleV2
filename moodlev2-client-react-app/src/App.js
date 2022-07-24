@@ -4,10 +4,11 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import StudentMenuBar from './student/components/menu_bar';
 import StudentHome from './student/pages/student_home';
+import StudentCourseHome from './student/pages/course_home';
 
 import './App.css';
 
-import { home_link } from './links';
+import { course_link, home_link } from './links';
 
 const App = () => {
 
@@ -45,6 +46,15 @@ const App = () => {
         <main>
           <Routes>
             <Route path={home_link} element={<StudentHome studentNo={stdId}/>} />
+            <Route path={course_link} element={<StudentCourseHome studentNo={stdId}/>} />
+            <Route
+              path="*"
+              element={
+                <div>
+                  <h2>404 Page not found</h2>
+                </div>
+              }
+            />
           </Routes>
         </main>
         <StudentMenuBar studentNo={stdId}/>

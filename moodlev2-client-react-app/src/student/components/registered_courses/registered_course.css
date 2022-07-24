@@ -14,13 +14,14 @@
     border-radius: 1rem;
     padding: 1rem;
     z-index: 5;
-    cursor: pointer;
+    /* cursor: pointer; */
     margin: 1rem;
 }
 .course__container__item__1{
     display: flex;
     font-size: 2rem;
     font-weight: bold;
+    cursor: pointer;
 }
 .course__container__item__2{
     width: 100%;
