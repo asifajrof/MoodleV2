@@ -15,3 +15,5 @@ values(1,'CSE-2017-B2-CSE101-2018',1);
 
 insert into enrolment(student_id, section_id)
 values (1,1);
+
+insert into course_routine(section_no, alternation, start, _end, day) values (1,7,'8:00','10:00',0);
