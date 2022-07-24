@@ -41,12 +41,13 @@ const App = () => {
   } else if(userType === 'student') {
     return (
       <Router>
-        <StudentMenuBar studentNo={stdId}/>
+        {/* <StudentMenuBar studentNo={stdId}/> */}
         <main>
           <Routes>
             <Route path={home_link} element={<StudentHome studentNo={stdId}/>} />
           </Routes>
         </main>
+        <StudentMenuBar studentNo={stdId}/>
       </Router>
     );
 
