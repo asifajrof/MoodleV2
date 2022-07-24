@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const studentRoutes = require('./routes/student-routes');
+const sharedRoutes = require('./routes/shared-routes');
 const HttpError = require('./models/http-error');
 
 const pool = require('./models/db_connect');
@@ -19,6 +20,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/student', studentRoutes);
+
+app.use('/api/course', sharedRoutes);
 
 app.use((req, res, next) => {
     const error = new HttpError('Could not find this route.', 404);
