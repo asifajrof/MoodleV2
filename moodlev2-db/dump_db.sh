@@ -1,10 +1,7 @@
 #!/bin/bash
 DB_NAME=$1
-# DB_USER=$2
-# assign a value to a variable
 DB_USER=postgres
 
-# OUTPUT_FILE=$3
 OUTPUT_FILE=full_db.sql
 
 # DUMP Database:
