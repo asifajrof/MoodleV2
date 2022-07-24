@@ -1,9 +1,9 @@
 import React from 'react';
-import Calendar from './calendar';
-import RegisteredCourses from './registered_courses';
+import Calendar from '../components/calendar';
+import RegisteredCourses from '../components/registered_courses';
 
 import './student_home.css';
-import UpcomingEvents from './upcoming_events';
+import UpcomingEvents from '../components/upcoming_events';
 
 const StudentHome = ({studentNo}) => {
   return (

@@ -3,7 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import StudentMenuBar from './student/components/menu_bar';
-import StudentHome from './student/pages/home/student_home';
+import StudentHome from './student/pages/student_home';
 
 import './App.css';
 
