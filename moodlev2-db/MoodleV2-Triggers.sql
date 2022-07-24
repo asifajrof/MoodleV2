@@ -244,6 +244,26 @@ $curr_course_validation$ language plpgsql;
 create trigger curr_course_validation after insert or update or delete on course
      for each statement execute function curr_course_update();
 
+     create or replace function cancel_class_day_check() returns trigger as $cancel_class_validation$
+declare
+    ccd integer;
+	cnt integer;
+begin
+	ccd:=extract(isodow from new._date) - 1;
+    select count(class_id) into cnt from course_routine
+    where class_id=new.class_id and day=ccd;
+    if (cnt=0 or new.class_id is null or ccd is null) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    return new;
+end;
+$cancel_class_validation$ language plpgsql;
+
+create trigger cancel_class_validation before insert or update on canceled_class
+     for each row execute function cancel_class_day_check();
+
+-- drop trigger cancel_class_validation on canceled_class;
+-- drop function cancel_class_day_check();
 -- drop trigger curr_course_validation on course;
 -- drop function curr_course_update();
 -- drop trigger grading_validation on grading;
