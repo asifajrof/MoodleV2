@@ -1,0 +1,25 @@
+1. Week events (student)
+2. Month evaluation events (No Thesis)
+3. Deadlines
+4. Course topic description
+5. Course Evaluation Events (Student + attended status)
+6. Course Materials (Student + Teacher)
+7. Root posts on course
+8. Course Notifications (Canceled Class + Extra Class + Evaluation Events)
+9. Selected Post (Tree structure + Teacher student combination?)
+10. Extra class request
+11. Extra class approval
+12. CSE17 Routine
+13. Student Private Files
+14. Edit evaluation events (Own)
+15. Grading
+16. Forum Post View
+17. Forum Post Creation
+18. Site news view
+19. Edit account
+20. Teacher Private Files
+21. Add course
+22. Add Teacher
+23. Edit Tracher
+24. Add student
+25. Edit student
