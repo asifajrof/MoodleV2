@@ -38,10 +38,11 @@ create table course(
     course_name VARCHAR(255) NOT NULL,
     course_num INTEGER NOT NULL CHECK(course_num>=0 and course_num<100),
     dept_code INTEGER NOT NULL REFERENCES department(dept_code),
+    offered_dept_code INTEGER NOT NULL REFERENCES department(dept_code),
     _year INTEGER NOT NULL CHECK (_year>1900 and _year<=date_part('year', CURRENT_DATE)),
     level INTEGER NOT NULL CHECK(level>0 and level<6),
     term INTEGER NOT NULL CHECK(term=1 or term=2),
-    unique (course_num,dept_code,_year,level)
+    unique (course_num,dept_code,_year,level,offered_dept_code)
 );
 create table instructor(
     instructor_id SERIAL PRIMARY KEY,
@@ -71,16 +72,17 @@ create table course_routine(
     start TIME NOT NULL,
     _end TIME NOT NULL CHECK(_end>start),
     day INTEGER NOT NULL CHECK(day>=0 and day<7),
-    unique (day,section_no)
+    unique (day,section_no,start,_end)
 );
 create table course_post(
     post_id SERIAL PRIMARY KEY,
     parent_post INTEGER REFERENCES course_post(post_id) DEFAULT NULL,
-    poster_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
+    poster_id INTEGER NOT NULL,
+    student_post BOOLEAN NOT NULL DEFAULT FALSE,
     post_name VARCHAR(255) NOT NULL,
     post_content VARCHAR(8192) NOT NULL,
     post_time TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    unique (poster_id,post_time)
+    unique (poster_id,post_time,student_post)
 );
 create table course_post_file(
     file_id SERIAL PRIMARY KEY ,
@@ -92,6 +94,7 @@ create table topic(
     topic_num SERIAL PRIMARY KEY,
     topic_name VARCHAR(255) NOT NULL,
     instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
+    finished BOOLEAN NOT NULL DEFAULT FALSE,
     description VARCHAR(2048),
     unique (instructor_id,topic_name)
 );
@@ -157,19 +160,26 @@ create table extra_class_teacher(
 create table evaluation_type(
     typt_id SERIAL PRIMARY KEY ,
     type_name VARCHAR(64) UNIQUE NOT NULL,
-    notification_time_type INTEGER NOT NULL CHECK(notification_time_type=0 OR notification_time_type=1)
+    notification_time_type BOOLEAN NOT NULL DEFAULT TRUE
 );
 create table  evaluation(
     evaluation_id SERIAL PRIMARY KEY ,
     type_id INTEGER NOT NULL REFERENCES evaluation_type(typt_id),
     section_no INTEGER NOT NULL REFERENCES section(section_no),
     instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
+    caption_extension VARCHAR(32) DEFAULT NULL,
     start TIMESTAMP with time zone  NOT NULL,
     _end TIMESTAMP with time zone NOT NULL CHECK(_end>start),
     _date DATE NOT NULL,
     total_marks FLOAT NOT NULL CHECK(total_marks>0),
     description VARCHAR(2048),
     unique (_date,type_id,section_no,start,_end)
+);
+create table extra_evaluation_instructor(
+    assignment_id SERIAL PRIMARY KEY ,
+    evaluation_id INTEGER NOT NULL REFERENCES evaluation(evaluation_id),
+    instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
+    unique(evaluation_id,instructor_id)
 );
 create table request_type(
     type_id SERIAL PRIMARY KEY ,
@@ -212,7 +222,7 @@ create table submission(
      sub_id SERIAL PRIMARY KEY ,
      event_id INTEGER NOT NULL REFERENCES evaluation(evaluation_id),
      enrol_id INTEGER NOT NULL REFERENCES enrolment(enrol_id),
-     link VARCHAR(1024) UNIQUE NOT NULL,
+     link VARCHAR(1024) UNIQUE,
      sub_time TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
      unique(event_id,enrol_id)
 );
