@@ -222,7 +222,7 @@ create table submission(
      sub_id SERIAL PRIMARY KEY ,
      event_id INTEGER NOT NULL REFERENCES evaluation(evaluation_id),
      enrol_id INTEGER NOT NULL REFERENCES enrolment(enrol_id),
-     link VARCHAR(1024) UNIQUE,
+     link VARCHAR(1024) UNIQUE DEFAULT NULL,
      sub_time TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
      unique(event_id,enrol_id)
 );
@@ -268,6 +268,7 @@ create table forum_post_files(
 -- drop table visibility;
 -- drop table request_event;
 -- drop table request_type;
+-- drop table extra_evaluation_instructor;
 --drop table evaluation;
 --drop table evaluation_type;
 --drop table extra_class_teacher;

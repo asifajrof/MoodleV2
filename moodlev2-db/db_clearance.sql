@@ -38,6 +38,7 @@
 -- drop table visibility;
 -- drop table request_event;
 -- drop table request_type;
+-- drop table extra_evaluation_instructor;
 --drop table evaluation;
 --drop table evaluation_type;
 --drop table extra_class_teacher;
