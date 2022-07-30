@@ -262,6 +262,36 @@ $cancel_class_validation$ language plpgsql;
 create trigger cancel_class_validation before insert or update on canceled_class
      for each row execute function cancel_class_day_check();
 
+create or replace function poster_check() returns trigger as $post_check$
+declare
+    cnt integer;
+begin
+    if (new.poster_id is null or new.student_post is null) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    cnt:=0;
+    if (new.student_post) then
+        if (new.parent_post is null) then
+            raise exception 'Invalid data insertion or update';
+        end if;
+        select count(*) into cnt from enrolment
+        where enrol_id=new.poster_id;
+    else
+        select count(*) into cnt from instructor
+        where instructor_id=new.poster_id;
+    end if;
+    if (cnt = 0) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    return new;
+end;
+$post_check$ language plpgsql;
+
+create trigger post_check before insert or update on course_post
+     for each row execute function poster_check();
+
+-- drop trigger post_check on course_post;
+-- drop function poster_check();
 -- drop trigger cancel_class_validation on canceled_class;
 -- drop function cancel_class_day_check();
 -- drop trigger curr_course_validation on course;
