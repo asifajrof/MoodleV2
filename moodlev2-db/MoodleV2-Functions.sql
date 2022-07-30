@@ -1,14 +1,3 @@
-create or replace function term_name(term_num integer) returns varchar(64) as $$
-    declare
-        ans varchar(64);
-    begin
-        ans := 'January';
-        if (term_num = 2) then
-            ans := 'July';
-        end if;
-        return ans;
-    end
-$$ language plpgsql;
 create or replace function overlapped(first_begin timestamp,first_end timestamp,second_begin timestamp,second_end timestamp) returns boolean as $$
     declare
         ans boolean;
@@ -87,4 +76,3 @@ $$ language plpgsql;
 --drop function get_current_course(std_id integer);
 -- drop function section_to_course(sec_no integer);
 -- drop function overlapped(first_begin timestamp,first_end timestamp,second_begin timestamp,second_end timestamp);
---drop function term_name(term_num integer);
