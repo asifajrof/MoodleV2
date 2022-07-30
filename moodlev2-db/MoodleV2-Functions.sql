@@ -1,4 +1,21 @@
-create or replace function overlapped(first_begin timestamp,first_end timestamp,second_begin timestamp,second_end timestamp) returns boolean as $$
+create or replace function overlapped_timestamp(first_begin timestamp,first_end timestamp,second_begin timestamp,second_end timestamp) returns boolean as $$
+    declare
+        ans boolean;
+    begin
+        ans=false;
+        if (first_begin<= second_begin and second_begin<first_end) then
+            ans=true;
+        elsif (first_begin< second_end and second_end<=first_end) then
+            ans=true;
+        elsif (second_begin<= first_begin and first_begin<second_end) then
+            ans=true;
+        elsif (second_begin< first_end and first_end<=second_end) then
+            ans=true;
+        end if;
+        return ans;
+    end;
+$$ language plpgsql;
+create or replace function overlapped_time(first_begin time,first_end time,second_begin time,second_end time) returns boolean as $$
     declare
         ans boolean;
     begin
@@ -75,4 +92,5 @@ $$ language plpgsql;
 -- drop function get_upcoming_events(std_id integer);
 --drop function get_current_course(std_id integer);
 -- drop function section_to_course(sec_no integer);
--- drop function overlapped(first_begin timestamp,first_end timestamp,second_begin timestamp,second_end timestamp);
+-- drop function overlapped_time(first_begin time,first_end time,second_begin time,second_end time);
+-- drop function overlapped_timestamp(first_begin timestamp,first_end timestamp,second_begin timestamp,second_end timestamp);
