@@ -39,6 +39,7 @@ create table course(
     course_num INTEGER NOT NULL CHECK(course_num>=0 and course_num<100),
     dept_code INTEGER NOT NULL REFERENCES department(dept_code),
     offered_dept_code INTEGER NOT NULL REFERENCES department(dept_code),
+    batch INTEGER NOT NULL CHECK (_year>1900 and _year<=date_part('year', CURRENT_DATE)),
     _year INTEGER NOT NULL CHECK (_year>1900 and _year<=date_part('year', CURRENT_DATE)),
     level INTEGER NOT NULL CHECK(level>0 and level<6),
     term INTEGER NOT NULL CHECK(term=1 or term=2),
