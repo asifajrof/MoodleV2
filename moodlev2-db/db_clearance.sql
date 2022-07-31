@@ -417,8 +417,9 @@ begin
 end
 $$ language plpgsql;
 create or replace function get_course_topics (courseID integer)
-    returns table (topic_number integer,teacher_number integer,instructor_number integer,title varchar,topic_description integer,teacherName varchar,isFinished boolean, start_time timestamp) as $$
+    returns table (topic_number integer,teacher_number integer,instructor_number integer,title varchar,topic_description varchar,teacherName varchar,isFinished boolean, start_time timestamp with time zone) as $$
     begin
+	return query
     select topic_num, t.teacher_id, i.instructor_id, topic_name,description,teacher_name,finished,started
 from topic tp join instructor i on tp.instructor_id = i.instructor_id join current_courses c on c._id = i.course_id join teacher t on i.teacher_id = t.teacher_id
 where course_id = courseID
