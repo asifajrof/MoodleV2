@@ -139,9 +139,9 @@ create table canceled_class(
 );
 create table teacher_routine(
     teacher_class_id SERIAL PRIMARY KEY,
-    insturctor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
+    instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
     class_id INTEGER NOT NULL REFERENCES course_routine(class_id),
-    unique (insturctor_id,class_id)
+    unique (instructor_id,class_id)
 );
 create table extra_class(
     extra_class_id SERIAL PRIMARY KEY ,
