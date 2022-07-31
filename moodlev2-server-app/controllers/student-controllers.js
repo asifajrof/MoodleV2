@@ -109,8 +109,8 @@ const getCurrentCoursesByStudentId = async (req, res, next) => {
     try{
         console.log('GET api/student/courses/current/:student_id');
         const studentId = req.params.student_id;
-        console.log(typeof studentId);
-        console.log(studentId);
+        // console.log(typeof studentId);
+        // console.log(studentId);
         let result = await pool.query('SELECT json_agg(t) FROM get_current_course($1) as t',[studentId]);        
         const courses = result.rows[0].json_agg;
         if(!courses) {
@@ -128,15 +128,14 @@ const getUpcomingEventsByStudentId = async (req, res, next) => {
     try{
         console.log('GET api/student/upcoming/:student_id');
         const studentId = req.params.student_id;
-        console.log(typeof studentId);
-        console.log(studentId);
         let result = await pool.query('SELECT json_agg(t) FROM get_upcoming_events($1) as t',[studentId]);        
-        const courses = result.rows[0].json_agg;
-        if(!courses) {
-            next(new HttpError('Courses not found', 404));
+        const upcomingEvents = result.rows[0].json_agg;
+        console.log(upcomingEvents)
+        if(!upcomingEvents) {
+            next(new HttpError('Upcoming Events not found', 404));
         }
         else{
-            res.json({message:'getCurrentCoursesByStudentId', data: courses});
+            res.json({message:'getUpcomingEventsByStudentId', data: upcomingEvents});
         }
     } catch(error) {
         return next(new HttpError(error.message, 500));

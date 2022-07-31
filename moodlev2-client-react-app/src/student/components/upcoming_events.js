@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {FaAngleRight} from 'react-icons/fa';
 
@@ -31,16 +31,27 @@ const events = [
 ]
 
 const UpcomingEvents = ({studentNo})=>{
-    const getEvents = (studentNo) =>{
-        return events;
-    }
-    const eventList = getEvents(studentNo)
+    const [upcomingEventsList, setUpcomingEventsList] = useState([]);
+    
+    useEffect(() =>{
+        const fetchData = async () =>{
+            try{
+                const response = await fetch(`/api/student/upcoming/${studentNo}`);
+                const jsonData = await response.json();
+                setUpcomingEventsList(jsonData.data);
+            } catch (err) {
+                console.log(err);
+            }
+        };
+        fetchData();
+    }, []);
+
     return (
         <>
         <div className='event__container__title'>Upcoming Classes/Events</div>
         <div className='event__container'>
 
-            {eventList.map((event, index) =>(
+            {upcomingEventsList.map((event, index) =>(
                 <UpcomingEvent key={index} event={event} />
             ))}
             <div>
