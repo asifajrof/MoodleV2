@@ -211,10 +211,11 @@ ALTER FUNCTION public.extra_teacher_check() OWNER TO postgres;
 -- Name: get_course_topics(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_course_topics(courseid integer) RETURNS TABLE(topic_number integer, teacher_number integer, instructor_number integer, title character varying, topic_description integer, teachername character varying, isfinished boolean, start_time timestamp without time zone)
+CREATE FUNCTION public.get_course_topics(courseid integer) RETURNS TABLE(topic_number integer, teacher_number integer, instructor_number integer, title character varying, topic_description character varying, teachername character varying, isfinished boolean, start_time timestamp with time zone)
     LANGUAGE plpgsql
     AS $$
     begin
+    return query
     select topic_num, t.teacher_id, i.instructor_id, topic_name,description,teacher_name,finished,started
 from topic tp join instructor i on tp.instructor_id = i.instructor_id join current_courses c on c._id = i.course_id join teacher t on i.teacher_id = t.teacher_id
 where course_id = courseID
