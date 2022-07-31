@@ -2151,8 +2151,6 @@ ALTER TABLE ONLY public.visibility ALTER COLUMN type_id SET DEFAULT nextval('pub
 
 INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (1, 'Introduction to Computer Programming', 1, 5, 5, 2017, 2018, 1, 1);
 INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (2, 'Data Structures and Algorithms', 3, 5, 5, 2017, 2018, 2, 1);
-INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (3, 'Computer Security', 5, 5, 5, 2013, 2018, 4, 1);
-INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (4, 'Computer Graphics', 9, 5, 5, 2013, 2018, 4, 1);
 
 
 --
@@ -2264,7 +2262,6 @@ INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1
 -- Data for Name: official_users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (1, 'mukit', '8c60bb9ead7f20b53c32ebff6dd495674b13b9aa09993766d467ddd0a76db962', NULL);
 
 
 --
@@ -2302,8 +2299,7 @@ INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (
 -- Data for Name: student; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful Islam', '4149064daa97438c2dac602c7540e4eba55a353dd0611b3eac610bb66ad34e3b', 2017, 119, 5, '2022-07-31 18:42:07.686951+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (3, 'Asif Ajrof', '90d4d5863d9a43bc9054653a50bc6242fd1d6b68c3fe50d92a7d69798780087e', 2017, 92, 5, '2022-07-31 19:53:18.286943+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful Islam', '4149064daa97438c2dac602c7540e4eba55a353dd0611b3eac610bb66ad34e3b', 2017, 119, 5, '2022-07-31 21:07:40.238126+06', NULL);
 
 
 --
@@ -2328,7 +2324,6 @@ INSERT INTO public.student (student_id, student_name, password, _year, roll_num,
 -- Data for Name: teacher; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (1, 'Syed Md. Mukit Rashid', 1, 5, '2022-07-31 20:09:40.681174+06');
 
 
 --
@@ -2373,7 +2368,7 @@ SELECT pg_catalog.setval('public.canceled_class_canceled_class_id_seq', 1, false
 -- Name: course_course_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_course_id_seq', 4, true);
+SELECT pg_catalog.setval('public.course_course_id_seq', 2, true);
 
 
 --
@@ -2485,7 +2480,7 @@ SELECT pg_catalog.setval('public.notification_type_type_id_seq', 1, false);
 -- Name: official_users_user_no_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.official_users_user_no_seq', 2, true);
+SELECT pg_catalog.setval('public.official_users_user_no_seq', 1, false);
 
 
 --
@@ -2520,14 +2515,14 @@ SELECT pg_catalog.setval('public.resource_res_id_seq', 1, false);
 -- Name: section_section_no_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.section_section_no_seq', 1, false);
+SELECT pg_catalog.setval('public.section_section_no_seq', 1, true);
 
 
 --
 -- Name: student_student_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.student_student_id_seq', 5, true);
+SELECT pg_catalog.setval('public.student_student_id_seq', 1, true);
 
 
 --
@@ -2548,7 +2543,7 @@ SELECT pg_catalog.setval('public.teacher_routine_teacher_class_id_seq', 1, false
 -- Name: teacher_teacher_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.teacher_teacher_id_seq', 1, true);
+SELECT pg_catalog.setval('public.teacher_teacher_id_seq', 1, false);
 
 
 --

@@ -258,7 +258,6 @@ create table forum_post_files(
     file_name VARCHAR(255) NOT NULL,
     file_link VARCHAR(1024) UNIQUE NOT NULL
 );
-
 create or replace function term_name(term_num integer) returns varchar(64) as $$
     declare
         ans varchar(64);
@@ -292,7 +291,37 @@ from
         where s2._year=c.batch
     ) f on e.student_id = f.student_id
 group by e.section_id,f.section_id with data ;
-
+create or replace function get_dept_list ()
+    returns table (dept_code integer,dept_name varchar,dept_shortname varchar) as $$
+begin
+    return query
+    select * from department;
+end
+$$ language plpgsql;
+create or replace function add_student(name varchar,hashed_password varchar,roll integer,dept integer,batch integer, email varchar) returns void as $$
+    begin
+        insert into student(student_id,student_name, password, _year, roll_num, dept_code, email_address)
+        values (default,name,hashed_password,batch,roll,dept,email);
+    end;
+$$ language plpgsql;
+create or replace function add_teacher(name varchar,uname varchar,hashed_password varchar,dept integer, email varchar) returns void as $$
+    declare
+        uno integer;
+    begin
+        insert into official_users(user_no, username, password, email_address)
+        values (default,uname,hashed_password,email);
+        select user_no into uno from official_users
+        where username=uname;
+        insert into teacher(teacher_id, teacher_name, user_no, dept_code)
+        values (default,name,uno,dept);
+    end;
+$$ language plpgsql;
+create or replace function add_course(cname varchar,cnum integer,dept integer,offered_dept integer,offered_batch integer,offered_year integer,offered_level integer,offered_term integer) returns void as $$
+    begin
+        insert into course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term)
+        values(default,cname,cnum,dept,offered_dept,offered_batch,offered_year,offered_level,offered_term);
+    end;
+$$ language plpgsql;
 create or replace function overlapped_timestamp(first_begin timestamp,first_end timestamp,second_begin timestamp,second_end timestamp) returns boolean as $$
     declare
         ans boolean;
@@ -716,13 +745,15 @@ create trigger post_check before insert or update on course_post
 --drop function instructor_section_compare(new_ins_id integer, new_sec_no integer, old_ins_id integer, old_sec_no integer);
 -- drop trigger instructor_assignment on instructor;
 -- drop function instructor_check();
-
-
 -- drop function get_upcoming_events(std_id integer);
---drop function get_current_course(std_id integer);
+-- drop function get_current_course(std_id integer);
 -- drop function section_to_course(sec_no integer);
 -- drop function overlapped_time(first_begin time,first_end time,second_begin time,second_end time);
 -- drop function overlapped_timestamp(first_begin timestamp,first_end timestamp,second_begin timestamp,second_end timestamp);
+-- drop function add_course(cname varchar, cnum integer, dept integer, offered_dept integer, offered_batch integer, offered_year integer, offered_level integer, offered_term integer);
+-- drop function add_teacher(name varchar, uname varchar, hashed_password varchar, dept integer, email varchar);
+-- drop function add_student(name varchar,hashed_password varchar,roll integer,dept integer,batch integer, email varchar);
+-- drop function get_dept_list();
 -- drop materialized view intersected_sections;
 -- drop materialized view current_courses;
 -- drop function term_name(term_num integer);
