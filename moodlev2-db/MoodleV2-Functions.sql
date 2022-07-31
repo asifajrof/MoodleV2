@@ -50,9 +50,9 @@ from (
     select student_id from student
     where (mod(student._year,100)*100000+dept_code*1000+roll_num)=std_id
      ) s join (
-         select student_id,section_id from enrolment
+         select enrol_id,student_id,section_id from enrolment
     ) e on s.student_id=e.student_id join section sec on e.section_id=sec.section_no join current_courses cc on sec.course_id=cc._id
-    left outer join evaluation ev on ev.section_no=sec.section_no left outer join submission s2 on ev.evaluation_id = s2.event_id
+    left outer join evaluation ev on ev.section_no=sec.section_no left outer join submission s2 on (ev.evaluation_id = s2.event_id and s2.enrol_id = e.enrol_id)
 where ev._end<current_timestamp
 group by _id,_term,__year,_dept_shortname,_course_code,_course_name;
 end
