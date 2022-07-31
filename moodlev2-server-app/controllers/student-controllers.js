@@ -124,8 +124,27 @@ const getCurrentCoursesByStudentId = async (req, res, next) => {
     }    
 };
 
+const getUpcomingEventsByStudentId = async (req, res, next) => {
+    try{
+        console.log('GET api/student/upcoming/:student_id');
+        const studentId = req.params.student_id;
+        console.log(typeof studentId);
+        console.log(studentId);
+        let result = await pool.query('SELECT json_agg(t) FROM get_upcoming_events($1) as t',[studentId]);        
+        const courses = result.rows[0].json_agg;
+        if(!courses) {
+            next(new HttpError('Courses not found', 404));
+        }
+        else{
+            res.json({message:'getCurrentCoursesByStudentId', data: courses});
+        }
+    } catch(error) {
+        return next(new HttpError(error.message, 500));
+    }    
+};
 exports.getCourseById = getCourseById;
 exports.createCourse = createCourse;
 exports.updateCourseById = updateCourseById;
 exports.deleteCourseById = deleteCourseById;
 exports.getCurrentCoursesByStudentId = getCurrentCoursesByStudentId;
+exports.getUpcomingEventsByStudentId = getUpcomingEventsByStudentId;

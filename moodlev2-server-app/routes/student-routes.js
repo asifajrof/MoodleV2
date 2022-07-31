@@ -13,6 +13,7 @@ studentRoutes.get('/', (req, res, next) => {
 
 // student home. get all current courses by student id
 studentRoutes.get('/courses/current/:student_id', studentControllers.getCurrentCoursesByStudentId);
+studentRoutes.get('/upcoming/:student_id', studentControllers.getUpcomingEventsByStudentId);
 
 // studentRoutes.get('/course/:course_id', studentControllers.getCourseById);
 
