@@ -35,9 +35,9 @@ create or replace function instructor_section_compare(new_ins_id integer,new_sec
             return true;
         end if;
         select course_id into instructor_course from instructor
-        where instructor_id=old_ins_id;
+        where instructor_id=new_ins_id;
         select course_id into section_course from section
-        where section_no=old_sec_no;
+        where section_no=new_sec_no;
         if (instructor_course is null or section_course is null) then
             return true;
         elsif (instructor_course!=section_course) then
@@ -305,19 +305,21 @@ create trigger post_check before insert or update on course_post
 -- drop function poster_check();
 -- drop trigger cancel_class_validation on canceled_class;
 -- drop function cancel_class_day_check();
+-- drop trigger intersected_section_validation on enrolment;
+-- drop function intersected_section_update();
 -- drop trigger curr_course_validation on course;
 -- drop function curr_course_update();
 -- drop trigger grading_validation on grading;
 -- drop function grading_check();
 -- drop trigger submission_validation on submission;
 -- drop function submission_check();
---drop trigger notification_event_validation on notification_event;
+-- drop trigger notification_event_validation on notification_event;
 -- drop function notification_event_check();
---drop trigger request_event_validation on request_event;
+-- drop trigger request_event_validation on request_event;
 -- drop function request_event_check();
 -- drop trigger extra_teacher_validation on extra_class_teacher;
 -- drop function extra_teacher_check();
---drop trigger evaluation_validation on evaluation;
+-- drop trigger evaluation_validation on evaluation;
 -- drop function evaluation_check();
 -- drop trigger extra_class_validation on extra_class;
 -- drop function extra_class_check();
@@ -325,7 +327,7 @@ create trigger post_check before insert or update on course_post
 -- drop function teacher_routine_check();
 -- drop trigger cr_assignment on section;
 -- drop function cr_assignment_check();
---drop function instructor_section_compare(new_ins_id integer, new_sec_no integer, old_ins_id integer, old_sec_no integer);
+-- drop function instructor_section_compare(new_ins_id integer, new_sec_no integer, old_ins_id integer, old_sec_no integer);
 -- drop trigger instructor_assignment on instructor;
 -- drop function instructor_check();
 

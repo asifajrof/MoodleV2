@@ -211,11 +211,10 @@ ALTER FUNCTION public.extra_teacher_check() OWNER TO postgres;
 -- Name: get_course_topics(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_course_topics(courseid integer) RETURNS TABLE(topic_number integer, teacher_number integer, instructor_number integer, title character varying, topic_description character varying, teachername character varying, isfinished boolean, start_time timestamp with time zone)
+CREATE FUNCTION public.get_course_topics(courseid integer) RETURNS TABLE(topic_number integer, teacher_number integer, instructor_number integer, title character varying, topic_description integer, teachername character varying, isfinished boolean, start_time timestamp without time zone)
     LANGUAGE plpgsql
     AS $$
     begin
-    return query
     select topic_num, t.teacher_id, i.instructor_id, topic_name,description,teacher_name,finished,started
 from topic tp join instructor i on tp.instructor_id = i.instructor_id join current_courses c on c._id = i.course_id join teacher t on i.teacher_id = t.teacher_id
 where course_id = courseID
@@ -404,9 +403,9 @@ CREATE FUNCTION public.instructor_section_compare(new_ins_id integer, new_sec_no
             return true;
         end if;
         select course_id into instructor_course from instructor
-        where instructor_id=old_ins_id;
+        where instructor_id=new_ins_id;
         select course_id into section_course from section
-        where section_no=old_sec_no;
+        where section_no=new_sec_no;
         if (instructor_course is null or section_course is null) then
             return true;
         elsif (instructor_course!=section_course) then
@@ -2258,6 +2257,7 @@ INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1
 -- Data for Name: instructor; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (1, 1, 1, '2022-07-31');
 
 
 --
@@ -2282,6 +2282,7 @@ INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1
 -- Data for Name: official_users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (1, 'ashikur', '37880da19cfbaae9a0e6c3195203177184af3b4ff55beeb62733e0fca1fb0c7c', NULL);
 
 
 --
@@ -2319,7 +2320,7 @@ INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (
 -- Data for Name: student; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful Islam', '4149064daa97438c2dac602c7540e4eba55a353dd0611b3eac610bb66ad34e3b', 2017, 119, 5, '2022-07-31 23:44:32.61334+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful Islam', '4149064daa97438c2dac602c7540e4eba55a353dd0611b3eac610bb66ad34e3b', 2017, 119, 5, '2022-08-01 03:39:06.088984+06', NULL);
 
 
 --
@@ -2344,6 +2345,7 @@ INSERT INTO public.student (student_id, student_name, password, _year, roll_num,
 -- Data for Name: teacher; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (1, 'A.K.M. Ashikur Rahman', 1, 5, '2022-08-01 03:39:58.201967+06');
 
 
 --
@@ -2356,12 +2358,14 @@ INSERT INTO public.student (student_id, student_name, password, _year, roll_num,
 -- Data for Name: teacher_routine; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (1, 1, 1);
 
 
 --
 -- Data for Name: topic; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (1, 'Array', 1, false, 'It is our first topic', '2022-08-01 03:42:46.143155+06');
 
 
 --
@@ -2409,7 +2413,7 @@ SELECT pg_catalog.setval('public.course_post_post_id_seq', 1, false);
 -- Name: course_routine_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_routine_class_id_seq', 4, true);
+SELECT pg_catalog.setval('public.course_routine_class_id_seq', 1, true);
 
 
 --
@@ -2479,7 +2483,7 @@ SELECT pg_catalog.setval('public.grading_grading_id_seq', 1, false);
 -- Name: instructor_instructor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 1, false);
+SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 1, true);
 
 
 --
@@ -2500,7 +2504,7 @@ SELECT pg_catalog.setval('public.notification_type_type_id_seq', 1, false);
 -- Name: official_users_user_no_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.official_users_user_no_seq', 1, false);
+SELECT pg_catalog.setval('public.official_users_user_no_seq', 1, true);
 
 
 --
@@ -2556,21 +2560,21 @@ SELECT pg_catalog.setval('public.submission_sub_id_seq', 1, false);
 -- Name: teacher_routine_teacher_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.teacher_routine_teacher_class_id_seq', 1, false);
+SELECT pg_catalog.setval('public.teacher_routine_teacher_class_id_seq', 2, true);
 
 
 --
 -- Name: teacher_teacher_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.teacher_teacher_id_seq', 1, false);
+SELECT pg_catalog.setval('public.teacher_teacher_id_seq', 1, true);
 
 
 --
 -- Name: topic_topic_num_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.topic_topic_num_seq', 1, false);
+SELECT pg_catalog.setval('public.topic_topic_num_seq', 1, true);
 
 
 --
