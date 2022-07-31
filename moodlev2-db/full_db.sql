@@ -233,6 +233,22 @@ $$;
 ALTER FUNCTION public.get_current_course(std_id integer) OWNER TO postgres;
 
 --
+-- Name: get_dept_list(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_dept_list() RETURNS TABLE(dept_code integer, dept_name character varying, dept_shortname character varying)
+    LANGUAGE plpgsql
+    AS $$
+begin
+    return query
+    select * from department;
+end
+$$;
+
+
+ALTER FUNCTION public.get_dept_list() OWNER TO postgres;
+
+--
 -- Name: get_upcoming_events(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 

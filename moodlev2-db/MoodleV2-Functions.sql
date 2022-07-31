@@ -1,3 +1,10 @@
+create or replace function get_dept_list ()
+    returns table (dept_code integer,dept_name varchar,dept_shortname varchar) as $$
+begin
+    return query
+    select * from department;
+end
+$$ language plpgsql;
 create or replace function add_student(name varchar,hashed_password varchar,roll integer,dept integer,batch integer, email varchar) returns void as $$
     begin
         insert into student(student_id,student_name, password, _year, roll_num, dept_code, email_address)
@@ -124,3 +131,4 @@ $$ language plpgsql;
 -- drop function add_course(cname varchar, cnum integer, dept integer, offered_dept integer, offered_batch integer, offered_year integer, offered_level integer, offered_term integer);
 -- drop function add_teacher(name varchar, uname varchar, hashed_password varchar, dept integer, email varchar);
 -- drop function add_student(name varchar,hashed_password varchar,roll integer,dept integer,batch integer, email varchar);
+-- drop function get_dept_list();
