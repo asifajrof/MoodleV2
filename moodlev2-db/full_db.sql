@@ -302,7 +302,8 @@ begin
                                                                       and _end::date = current_date and _end::time>current_time))) ut join
     (
         select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
-    ) ss on (ut.section_no=ss.section_id) join section s on (ss.section_id=s.section_no) join current_courses cc on (s.course_id=cc._id);
+    ) ss on (ut.section_no=ss.section_id) join section s on (ss.section_id=s.section_no) join current_courses cc on (s.course_id=cc._id)
+	order by _lookup_time;
 end
 $$;
 
