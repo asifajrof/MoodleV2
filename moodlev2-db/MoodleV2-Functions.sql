@@ -1,3 +1,27 @@
+create or replace function add_student(name varchar,hashed_password varchar,roll integer,dept integer,batch integer, email varchar) returns void as $$
+    begin
+        insert into student(student_id,student_name, password, _year, roll_num, dept_code, email_address)
+        values (default,name,hashed_password,batch,roll,dept,email);
+    end;
+$$ language plpgsql;
+create or replace function add_teacher(name varchar,uname varchar,hashed_password varchar,dept integer, email varchar) returns void as $$
+    declare
+        uno integer;
+    begin
+        insert into official_users(user_no, username, password, email_address)
+        values (default,uname,hashed_password,email);
+        select user_no into uno from official_users
+        where username=uname;
+        insert into teacher(teacher_id, teacher_name, user_no, dept_code)
+        values (default,name,uno,dept);
+    end;
+$$ language plpgsql;
+create or replace function add_course(cname varchar,cnum integer,dept integer,offered_dept integer,offered_batch integer,offered_year integer,offered_level integer,offered_term integer) returns void as $$
+    begin
+        insert into course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term)
+        values(default,cname,cnum,dept,offered_dept,offered_batch,offered_year,offered_level,offered_term);
+    end;
+$$ language plpgsql;
 create or replace function overlapped_timestamp(first_begin timestamp,first_end timestamp,second_begin timestamp,second_end timestamp) returns boolean as $$
     declare
         ans boolean;
@@ -93,7 +117,10 @@ end
 $$ language plpgsql;
 
 -- drop function get_upcoming_events(std_id integer);
---drop function get_current_course(std_id integer);
+-- drop function get_current_course(std_id integer);
 -- drop function section_to_course(sec_no integer);
 -- drop function overlapped_time(first_begin time,first_end time,second_begin time,second_end time);
 -- drop function overlapped_timestamp(first_begin timestamp,first_end timestamp,second_begin timestamp,second_end timestamp);
+-- drop function add_course(cname varchar, cnum integer, dept integer, offered_dept integer, offered_batch integer, offered_year integer, offered_level integer, offered_term integer);
+-- drop function add_teacher(name varchar, uname varchar, hashed_password varchar, dept integer, email varchar);
+-- drop function add_student(name varchar,hashed_password varchar,roll integer,dept integer,batch integer, email varchar);
