@@ -2151,6 +2151,7 @@ ALTER TABLE ONLY public.visibility ALTER COLUMN type_id SET DEFAULT nextval('pub
 
 INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (1, 'Introduction to Computer Programming', 1, 5, 5, 2017, 2018, 1, 1);
 INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (2, 'Data Structures and Algorithms', 3, 5, 5, 2017, 2018, 2, 1);
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (3, 'Computer Security', 5, 5, 5, 2013, 2018, 4, 1);
 
 
 --
@@ -2300,6 +2301,7 @@ INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (
 --
 
 INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful Islam', '4149064daa97438c2dac602c7540e4eba55a353dd0611b3eac610bb66ad34e3b', 2017, 119, 5, '2022-07-31 21:07:40.238126+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (2, 'Asif Ajrof', '2598d121e25215a061fbc9914b14cb8db4831c19df3c12e13163b7909f7e928b', 2017, 92, 5, '2022-07-31 21:29:17.958218+06', NULL);
 
 
 --
@@ -2368,7 +2370,7 @@ SELECT pg_catalog.setval('public.canceled_class_canceled_class_id_seq', 1, false
 -- Name: course_course_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_course_id_seq', 2, true);
+SELECT pg_catalog.setval('public.course_course_id_seq', 3, true);
 
 
 --
@@ -2522,7 +2524,7 @@ SELECT pg_catalog.setval('public.section_section_no_seq', 1, true);
 -- Name: student_student_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.student_student_id_seq', 1, true);
+SELECT pg_catalog.setval('public.student_student_id_seq', 2, true);
 
 
 --
@@ -3584,6 +3586,13 @@ ALTER TABLE ONLY public.teacher
 
 ALTER TABLE ONLY public.topic
     ADD CONSTRAINT topic_instructor_id_fkey FOREIGN KEY (instructor_id) REFERENCES public.instructor(instructor_id);
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
