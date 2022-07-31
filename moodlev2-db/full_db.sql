@@ -229,18 +229,20 @@ ALTER FUNCTION public.get_course_topics(courseid integer) OWNER TO postgres;
 -- Name: get_current_course(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_current_course(std_id integer) RETURNS TABLE(id integer, term character varying, _year integer, dept_shortname character varying, course_code integer, course_name character varying)
+CREATE FUNCTION public.get_current_course(std_id integer) RETURNS TABLE(id integer, term character varying, _year integer, dept_shortname character varying, course_code integer, course_name character varying, submitted integer)
     LANGUAGE plpgsql
     AS $$
 begin
     return query
-    select _id,_term,__year,_dept_shortname,_course_code,_course_name
-from (
-    select student_id from student
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name,count(ev.evaluation_id)::integer
+from ((
+    (select student_id from student
     where (mod(student._year,100)*100000+dept_code*1000+roll_num)=std_id
      ) s join (
          select enrol_id,student_id,section_id from enrolment
-    ) e on s.student_id=e.student_id join section sec on e.section_id=sec.section_no join current_courses cc on sec.course_id=cc._id;
+    ) e on s.student_id=e.student_id join section sec on e.section_id=sec.section_no join current_courses cc on sec.course_id=cc._id)
+left outer join evaluation ev on (ev.section_no=e.section_id and ev._end<current_timestamp)) left outer join submission s2 on (s2.enrol_id=e.enrol_id)
+group by _id,_term,__year,_dept_shortname,_course_code,_course_name;
 end
 $$;
 
