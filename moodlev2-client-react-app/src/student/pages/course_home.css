@@ -6,7 +6,7 @@
     display: flex;
     flex-direction: column;
     /* justify-content: center; */
-    align-items: center;
+    align-items: flex-start;
 }
 
 .course__home__container__divider{
@@ -18,5 +18,21 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+}
+.course__home__container__item__1{
+    display: flex;
+    font-size: 2rem;
+    font-weight: bold;
+    /* cursor: pointer; */
+    padding-left: 1rem;
+}
+.course__home__container__item__2{
+    width: 100%;
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    font-size: 1rem;
 }

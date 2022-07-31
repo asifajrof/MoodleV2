@@ -11,6 +11,7 @@ sharedRoutes.get('/', (req, res, next) => {
     res.json({message: 'it works!'});
 });
 
+sharedRoutes.get('/topics/:course_id', sharedControllers.getCourseTopicsById)
 sharedRoutes.get('/:course_id', sharedControllers.getCourseById);
 
 module.exports = sharedRoutes;

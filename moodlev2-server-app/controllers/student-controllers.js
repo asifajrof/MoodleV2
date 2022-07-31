@@ -3,51 +3,6 @@ const {v4: uuid} = require('uuid');
 const pool = require('../models/db_connect');
 const HttpError = require('../models/http-error');
 
-let DUMMY_COURSES = [
-    {
-        course_id: '1',
-        course_name: 'Course 1',
-        course_num: '1',
-        dept_code: '5',
-        _year: '2018',
-        level: '1',
-        term: '1'
-    }
-];
-
-const getCourseById = async (req, res, next) => {
-    try{
-        const courseId = req.params.course_id;
-        let result = await pool.query('SELECT * FROM course WHERE course_id = $1', [courseId]);
-        const course = result.rows[0];
-        if(!course) {
-            next(new HttpError('Course not found', 404));
-        }
-        else{
-            res.json({message:'getCourseById', data: course});
-        }
-    } catch(error) {
-        return next(new HttpError(error.message, 500));
-    }
-};
-
-// const getCourseById = (req, res, next) => {
-//     const courseId = req.params.course_id;
-//     const course = DUMMY_COURSES.find(c => c.course_id === courseId);
-//     if(!course) {
-//         // console.log('Course not found');
-//         // res.status(404).json({message: 'Course not found'});
-//         // const error = new Error('Course not found');
-//         // error.status = 404;
-//         // throw error;    // does not use this in async function
-//         // next(error);
-
-//         next(new HttpError('Course not found', 404));
-//     } else {
-//         console.log('GET /student');
-//         res.json({course});
-//     }
-// };
 
 const createCourse = (req, res, next) => {
     const {course_id, course_name, course_num, dept_code, _year, level, term} = req.body;
@@ -63,18 +18,6 @@ const createCourse = (req, res, next) => {
     DUMMY_COURSES.push(createdCourse);
     res.status(201).json({course: createdCourse});
 };
-
-// sample json
-/* 
-{
-    "course_name": "Course 2",
-    "course_num": "2",
-    "dept_code": "5",
-    "_year": "2018",
-    "level": "1",
-    "term": "1"
-}
-*/
 
 const updateCourseById = (req, res, next) => {
     const courseId = req.params.course_id;
@@ -141,7 +84,6 @@ const getUpcomingEventsByStudentId = async (req, res, next) => {
         return next(new HttpError(error.message, 500));
     }    
 };
-exports.getCourseById = getCourseById;
 exports.createCourse = createCourse;
 exports.updateCourseById = updateCourseById;
 exports.deleteCourseById = deleteCourseById;

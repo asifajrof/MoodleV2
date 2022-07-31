@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import CourseMenuBar from '../components/course_menu_bar';
+import CourseTopics from '../components/course_topics';
 import './course_home.css';
 
 const StudentCourseHome = ({studentNo}) => {
@@ -27,12 +28,12 @@ const StudentCourseHome = ({studentNo}) => {
     <React.Fragment>
     <CourseMenuBar studentNo={studentNo} courseId={courseId}/>
     <div className='course__home__container'>
-      <div className='course__container__item__1'>
-      term {courseInfo.term} year {courseInfo._year} shortname {courseInfo.dept_shortname}code{courseInfo.course_code}: name{courseInfo.course_name}
+      <div className='course__home__container__item__1'>
+      {courseInfo._term} {courseInfo.__year} {courseInfo._dept_shortname} {courseInfo._course_code}: {courseInfo._course_name}
       </div>
       <div className='course__home__container__divider'>
-        <h1>student no: {studentNo}</h1>
-        <h2>course Id: {courseId}</h2>
+        <CourseTopics studentNo={studentNo} courseId={courseId}/>
+        <div>Upcoming/Latest post</div>
       </div>
     </div>
     </React.Fragment>
