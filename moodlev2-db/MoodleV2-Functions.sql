@@ -42,16 +42,19 @@ create or replace function section_to_course(sec_no integer) returns integer as 
     end
 $$ language plpgsql;
 create or replace function get_current_course (std_id integer)
-    returns table (id integer,term varchar,_year integer,dept_shortname varchar,course_code integer,course_name varchar) as $$
+    returns table (id integer,term varchar,_year integer,dept_shortname varchar,course_code integer,course_name varchar,submitted integer) as $$
 begin
     return query
-    select _id,_term,__year,_dept_shortname,_course_code,_course_name
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name,count(s2.sub_id)::integer
 from (
     select student_id from student
     where (mod(student._year,100)*100000+dept_code*1000+roll_num)=std_id
      ) s join (
-         select student_id,section_to_course(section_id) as course_id from enrolment
-    ) e on s.student_id=e.student_id join current_courses cc on e.course_id=cc._id;
+         select student_id,section_id from enrolment
+    ) e on s.student_id=e.student_id join section sec on e.section_id=sec.section_no join current_courses cc on sec.course_id=cc._id
+    left outer join evaluation ev on ev.section_no=sec.section_no left outer join submission s2 on ev.evaluation_id = s2.event_id
+where ev._end<current_timestamp
+group by _id,_term,__year,_dept_shortname,_course_code,_course_name;
 end
 $$ language plpgsql;
 create or replace function get_upcoming_events (std_id integer)
