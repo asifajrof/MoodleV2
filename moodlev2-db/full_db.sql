@@ -208,6 +208,24 @@ $$;
 ALTER FUNCTION public.extra_teacher_check() OWNER TO postgres;
 
 --
+-- Name: get_course_topics(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_course_topics(courseid integer) RETURNS TABLE(topic_number integer, teacher_number integer, instructor_number integer, title character varying, topic_description integer, teachername character varying, isfinished boolean, start_time timestamp without time zone)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    select topic_num, t.teacher_id, i.instructor_id, topic_name,description,teacher_name,finished,started
+from topic tp join instructor i on tp.instructor_id = i.instructor_id join current_courses c on c._id = i.course_id join teacher t on i.teacher_id = t.teacher_id
+where course_id = courseID
+order by started;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_course_topics(courseid integer) OWNER TO postgres;
+
+--
 -- Name: get_current_course(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1833,7 +1851,8 @@ CREATE TABLE public.topic (
     topic_name character varying(255) NOT NULL,
     instructor_id integer NOT NULL,
     finished boolean DEFAULT false NOT NULL,
-    description character varying(2048)
+    description character varying(2048),
+    started timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 
@@ -2149,9 +2168,6 @@ ALTER TABLE ONLY public.visibility ALTER COLUMN type_id SET DEFAULT nextval('pub
 -- Data for Name: course; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (1, 'Introduction to Computer Programming', 1, 5, 5, 2017, 2018, 1, 1);
-INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (2, 'Data Structures and Algorithms', 3, 5, 5, 2017, 2018, 2, 1);
-INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (3, 'Computer Security', 5, 5, 5, 2013, 2018, 4, 1);
 
 
 --
@@ -2170,21 +2186,18 @@ INSERT INTO public.course (course_id, course_name, course_num, dept_code, offere
 -- Data for Name: course_routine; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (1, 1, 7, '08:00:00', '10:00:00', 0);
 
 
 --
 -- Data for Name: department; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (5, 'Computer Science and Engineering', 'CSE');
 
 
 --
 -- Data for Name: enrolment; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1, 1, 1, '2022-07-31');
 
 
 --
@@ -2293,15 +2306,12 @@ INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1
 -- Data for Name: section; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (1, 'CSE-2017-B2-CSE101-2018', 1, NULL);
 
 
 --
 -- Data for Name: student; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful Islam', '4149064daa97438c2dac602c7540e4eba55a353dd0611b3eac610bb66ad34e3b', 2017, 119, 5, '2022-07-31 21:07:40.238126+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (2, 'Asif Ajrof', '2598d121e25215a061fbc9914b14cb8db4831c19df3c12e13163b7909f7e928b', 2017, 92, 5, '2022-07-31 21:29:17.958218+06', NULL);
 
 
 --
@@ -2370,7 +2380,7 @@ SELECT pg_catalog.setval('public.canceled_class_canceled_class_id_seq', 1, false
 -- Name: course_course_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_course_id_seq', 3, true);
+SELECT pg_catalog.setval('public.course_course_id_seq', 1, false);
 
 
 --
@@ -2391,14 +2401,14 @@ SELECT pg_catalog.setval('public.course_post_post_id_seq', 1, false);
 -- Name: course_routine_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_routine_class_id_seq', 1, true);
+SELECT pg_catalog.setval('public.course_routine_class_id_seq', 1, false);
 
 
 --
 -- Name: enrolment_enrol_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 1, true);
+SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 1, false);
 
 
 --
@@ -2517,14 +2527,14 @@ SELECT pg_catalog.setval('public.resource_res_id_seq', 1, false);
 -- Name: section_section_no_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.section_section_no_seq', 1, true);
+SELECT pg_catalog.setval('public.section_section_no_seq', 1, false);
 
 
 --
 -- Name: student_student_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.student_student_id_seq', 2, true);
+SELECT pg_catalog.setval('public.student_student_id_seq', 1, false);
 
 
 --

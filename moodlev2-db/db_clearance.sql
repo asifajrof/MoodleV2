@@ -97,6 +97,7 @@ create table topic(
     instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
     finished BOOLEAN NOT NULL DEFAULT FALSE,
     description VARCHAR(2048),
+	started TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     unique (instructor_id,topic_name)
 );
 create table resource(
@@ -414,6 +415,15 @@ begin
         select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
     ) ss on (ut.section_no=ss.section_id) join section s on (ss.section_id=s.section_no) join current_courses cc on (s.course_id=cc._id);
 end
+$$ language plpgsql;
+create or replace function get_course_topics (courseID integer)
+    returns table (topic_number integer,teacher_number integer,instructor_number integer,title varchar,topic_description integer,teacherName varchar,isFinished boolean, start_time timestamp) as $$
+    begin
+    select topic_num, t.teacher_id, i.instructor_id, topic_name,description,teacher_name,finished,started
+from topic tp join instructor i on tp.instructor_id = i.instructor_id join current_courses c on c._id = i.course_id join teacher t on i.teacher_id = t.teacher_id
+where course_id = courseID
+order by started;
+    end
 $$ language plpgsql;
 create or replace function instructor_check() returns trigger as $instructor_assignment$
 declare
@@ -745,6 +755,7 @@ create trigger post_check before insert or update on course_post
 --drop function instructor_section_compare(new_ins_id integer, new_sec_no integer, old_ins_id integer, old_sec_no integer);
 -- drop trigger instructor_assignment on instructor;
 -- drop function instructor_check();
+-- drop function get_course_topics(courseID integer);
 -- drop function get_upcoming_events(std_id integer);
 -- drop function get_current_course(std_id integer);
 -- drop function section_to_course(sec_no integer);

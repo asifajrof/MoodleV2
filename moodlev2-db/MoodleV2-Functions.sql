@@ -122,7 +122,17 @@ begin
     ) ss on (ut.section_no=ss.section_id) join section s on (ss.section_id=s.section_no) join current_courses cc on (s.course_id=cc._id);
 end
 $$ language plpgsql;
+create or replace function get_course_topics (courseID integer)
+    returns table (topic_number integer,teacher_number integer,instructor_number integer,title varchar,topic_description integer,teacherName varchar,isFinished boolean, start_time timestamp) as $$
+    begin
+    select topic_num, t.teacher_id, i.instructor_id, topic_name,description,teacher_name,finished,started
+from topic tp join instructor i on tp.instructor_id = i.instructor_id join current_courses c on c._id = i.course_id join teacher t on i.teacher_id = t.teacher_id
+where course_id = courseID
+order by started;
+    end
+$$ language plpgsql;
 
+-- drop function get_course_topics(courseID integer);
 -- drop function get_upcoming_events(std_id integer);
 -- drop function get_current_course(std_id integer);
 -- drop function section_to_course(sec_no integer);

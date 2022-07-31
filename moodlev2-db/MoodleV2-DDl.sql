@@ -97,6 +97,7 @@ create table topic(
     instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
     finished BOOLEAN NOT NULL DEFAULT FALSE,
     description VARCHAR(2048),
+	started TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     unique (instructor_id,topic_name)
 );
 create table resource(
