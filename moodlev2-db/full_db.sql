@@ -2169,6 +2169,8 @@ ALTER TABLE ONLY public.visibility ALTER COLUMN type_id SET DEFAULT nextval('pub
 -- Data for Name: course; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (1, 'Introduction to Computer Programming', 1, 5, 5, 2017, 2018, 1, 1);
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (2, 'Data Structures and Algorithms', 3, 5, 5, 2017, 2018, 2, 1);
 
 
 --
@@ -2187,18 +2189,21 @@ ALTER TABLE ONLY public.visibility ALTER COLUMN type_id SET DEFAULT nextval('pub
 -- Data for Name: course_routine; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (1, 1, 7, '08:00:00', '10:00:00', 0);
 
 
 --
 -- Data for Name: department; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (5, 'Computer Science and Engineering', 'CSE');
 
 
 --
 -- Data for Name: enrolment; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1, 1, 1, '2022-07-31');
 
 
 --
@@ -2307,12 +2312,14 @@ ALTER TABLE ONLY public.visibility ALTER COLUMN type_id SET DEFAULT nextval('pub
 -- Data for Name: section; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (1, 'CSE-2017-B2-CSE101-2018', 1, NULL);
 
 
 --
 -- Data for Name: student; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful Islam', '4149064daa97438c2dac602c7540e4eba55a353dd0611b3eac610bb66ad34e3b', 2017, 119, 5, '2022-07-31 23:44:32.61334+06', NULL);
 
 
 --
@@ -2381,7 +2388,7 @@ SELECT pg_catalog.setval('public.canceled_class_canceled_class_id_seq', 1, false
 -- Name: course_course_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_course_id_seq', 1, false);
+SELECT pg_catalog.setval('public.course_course_id_seq', 2, true);
 
 
 --
@@ -2402,14 +2409,14 @@ SELECT pg_catalog.setval('public.course_post_post_id_seq', 1, false);
 -- Name: course_routine_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_routine_class_id_seq', 1, false);
+SELECT pg_catalog.setval('public.course_routine_class_id_seq', 1, true);
 
 
 --
 -- Name: enrolment_enrol_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 1, false);
+SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 1, true);
 
 
 --
@@ -2528,14 +2535,14 @@ SELECT pg_catalog.setval('public.resource_res_id_seq', 1, false);
 -- Name: section_section_no_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.section_section_no_seq', 1, false);
+SELECT pg_catalog.setval('public.section_section_no_seq', 1, true);
 
 
 --
 -- Name: student_student_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.student_student_id_seq', 1, false);
+SELECT pg_catalog.setval('public.student_student_id_seq', 1, true);
 
 
 --
@@ -3597,13 +3604,6 @@ ALTER TABLE ONLY public.teacher
 
 ALTER TABLE ONLY public.topic
     ADD CONSTRAINT topic_instructor_id_fkey FOREIGN KEY (instructor_id) REFERENCES public.instructor(instructor_id);
-
-
---
--- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
---
-
-GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
