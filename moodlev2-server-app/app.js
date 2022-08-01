@@ -20,8 +20,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/student', studentRoutes);
-
 app.use('/api/course', sharedRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.use((req, res, next) => {
     const error = new HttpError('Could not find this route.', 404);
