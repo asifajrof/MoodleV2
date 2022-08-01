@@ -16,9 +16,11 @@ const CourseAddForm = ({course})=>{
             term_num:2
         }
     ]
-    const onSubmitAction  = () =>
+    const onSubmitAction  = (event) =>
     {
-
+        // prevent def
+        event.preventDefault();
+        console.log(offering);
     }
     const handleChange  = () =>
     {
@@ -42,14 +44,15 @@ const CourseAddForm = ({course})=>{
             <fieldset>
                 <label>
                     <p>Choose the department of the course:</p>
-                    <select name={offering} onChange={handleChange}>
+                    <select name='offering'>
                     <option value="">--Please choose an option--</option>
-                        {deptList.map((dept) =>(
-                            <option value={dept.dept_code}>{dept.dept_shortname}</option>
+                        {deptList.map((dept, index) =>(
+                            <option key={index} value={dept.dept_code}>{dept.dept_shortname}</option>
                         ))}
                     </select>
                 </label>
             </fieldset>
+            <input type="submit" value="Submit" />
         </form>
         //     <label for="offering_dept">Choose the department of the course:</label>
         //     <select id="offering_dept" name={offering}>
