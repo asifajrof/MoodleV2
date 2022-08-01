@@ -3,8 +3,13 @@ import { Link } from "react-router-dom";
 
 const CourseAddForm = ({course})=>{
     const [deptList, setDeptList] = useState([]);
-    var offering,offered,_year,batch,level,term,course_num;
-    var course_name;
+    const [offering,setOffering]=useState();
+    const [offered,setOffered]=useState();
+    const [_year,setYear]=useState();
+    const [batch,setBatch]=useState();
+    const [level,setLevel]=useState();
+    const [term,setTerm]=useState();
+    const [course_name,setCourseName]=useState();
     const current_year=2022;
     const term_list = [
         {
@@ -45,7 +50,7 @@ const CourseAddForm = ({course})=>{
                 <label>
                     <p>Choose the department of the course:</p>
                     <select name='offering'>
-                    <option value="">--Please choose an option--</option>
+                    <option value={offering}>--Please choose an option--</option>
                         {deptList.map((dept, index) =>(
                             <option key={index} value={dept.dept_code}>{dept.dept_shortname}</option>
                         ))}
