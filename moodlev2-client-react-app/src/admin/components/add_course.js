@@ -3,13 +3,8 @@ import { Link } from "react-router-dom";
 
 const CourseAddForm = ({course})=>{
     const [deptList, setDeptList] = useState([]);
-    const [offering,setOffering]=useState();
-    const [offered,setOffered]=useState();
-    const [_year,setYear]=useState();
-    const [batch,setBatch]=useState();
-    const [level,setLevel]=useState();
-    const [term,setTerm]=useState();
-    const [course_name,setCourseName]=useState();
+    var offering,offered,_year,batch,level,term,course_num;
+    var course_name;
     const current_year=2022;
     const term_list = [
         {
@@ -21,26 +16,8 @@ const CourseAddForm = ({course})=>{
             term_num:2
         }
     ]
-    const onSubmitAction  = async () => {
-        const data = {
-            offering,
-            offered,
-            _year,
-            batch,
-            level,
-            term,
-            course_name
-        }
-        const response = await fetch("/api/admin/addcourse", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        });
-        const body = await response.json();
-        console.log(body);
-    }
+    const onSubmitAction  = () =>
+    {
 
     }
     const handleChange  = () =>
@@ -62,21 +39,18 @@ const CourseAddForm = ({course})=>{
 
     return (
         <form onSubmit={onSubmitAction}>
-                            <label>
+            <fieldset>
+                <label>
                     <p>Choose the department of the course:</p>
-                    <select name='offering'>
-                    <option value={offering}>--Please choose an option--</option>
-                        {deptList.map((dept, index) =>(
-                            <option key={index} value={dept.dept_code}>{dept.dept_shortname}</option>
+                    <select name={offering} onChange={handleChange}>
+                    <option value="">--Please choose an option--</option>
+                        {deptList.map((dept) =>(
+                            <option value={dept.dept_code}>{dept.dept_shortname}</option>
                         ))}
                     </select>
                 </label>
-            <br />
-                <label htmlFor="offering">Offering</label>
-                <input value={offering} onChange={(e) => setOffering(e.target.value)}></input>
-                <br />
-                <input type="submit" value="Submit" />
-            </form>
+            </fieldset>
+        </form>
         //     <label for="offering_dept">Choose the department of the course:</label>
         //     <select id="offering_dept" name={offering}>
         //         {deptList.map((dept) =>(
