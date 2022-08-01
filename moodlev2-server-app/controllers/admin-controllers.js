@@ -38,5 +38,16 @@ const getDeptList = async (req, res, next) => {
     }
 };
 
+const postCourseAdd = async (req, res, next) => {
+    try{
+        const {data} = req.body;
+        console.log(data);
+        res.json({message:'course added'});
+    } catch(err) {
+        return next(new HttpError(error.message, 500));
+    }
+};
+
 exports.getAllCourses = getAllCourses;
 exports.getDeptList = getDeptList;
+exports.postCourseAdd = postCourseAdd;

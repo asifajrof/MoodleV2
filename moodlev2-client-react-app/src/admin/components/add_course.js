@@ -21,11 +21,27 @@ const CourseAddForm = ({course})=>{
             term_num:2
         }
     ]
-    const onSubmitAction  = (event) =>
-    {
-        // prevent def
-        event.preventDefault();
-        console.log(offering);
+    const onSubmitAction  = async () => {
+        const data = {
+            offering,
+            offered,
+            _year,
+            batch,
+            level,
+            term,
+            course_name
+        }
+        const response = await fetch("/api/admin/addcourse", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+        const body = await response.json();
+        console.log(body);
+    }
+
     }
     const handleChange  = () =>
     {
@@ -46,8 +62,7 @@ const CourseAddForm = ({course})=>{
 
     return (
         <form onSubmit={onSubmitAction}>
-            <fieldset>
-                <label>
+                            <label>
                     <p>Choose the department of the course:</p>
                     <select name='offering'>
                     <option value={offering}>--Please choose an option--</option>
@@ -56,9 +71,12 @@ const CourseAddForm = ({course})=>{
                         ))}
                     </select>
                 </label>
-            </fieldset>
-            <input type="submit" value="Submit" />
-        </form>
+            <br />
+                <label htmlFor="offering">Offering</label>
+                <input value={offering} onChange={(e) => setOffering(e.target.value)}></input>
+                <br />
+                <input type="submit" value="Submit" />
+            </form>
         //     <label for="offering_dept">Choose the department of the course:</label>
         //     <select id="offering_dept" name={offering}>
         //         {deptList.map((dept) =>(
