@@ -25,7 +25,7 @@ const getDeptList = async (req, res, next) => {
     try{
         console.log('GET api/admin/dept_list');
         let result = await pool.query('SELECT json_agg(t) FROM get_dept_list() as t');
-        const courses = result.rows;
+        const courses = result.rows[0].json_agg;
         console.log(courses);
         console.log(result);
         if(!courses) {
