@@ -15,8 +15,10 @@ import CourseTopicTableRow from "./course_topics/course_topic_table_row";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
+    //   backgroundColor: theme.palette.common.black,
+      backgroundColor: '#F4F7FC',
+      color: theme.palette.common.black,
+      fontWeight: 'bold',
     },
     [`&.${tableCellClasses.body}`]: {
       fontSize: 14,
@@ -63,10 +65,10 @@ const CourseTopics = ({studentNo, courseId}) => {
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead>
                 <TableRow>
-                    <StyledTableCell> </StyledTableCell>
-                    <StyledTableCell> </StyledTableCell>
+                    <StyledTableCell align="center"> </StyledTableCell>
+                    <StyledTableCell align="center"> </StyledTableCell>
                     <StyledTableCell align="center">Teacher</StyledTableCell>
-                    <StyledTableCell>Topic Name</StyledTableCell>
+                    <StyledTableCell align="center">Topic Name</StyledTableCell>
                     <StyledTableCell align="center">Posted</StyledTableCell>
                     <StyledTableCell align="center">Description</StyledTableCell>
                 </TableRow>

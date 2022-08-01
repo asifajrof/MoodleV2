@@ -47,17 +47,15 @@ export default function CourseTopicTableRow({courseTopic}) {
     const row = createData(courseTopic.isfinished, courseTopic.teachername, courseTopic.title, courseTopic.start_time, courseTopic.topic_description);
   
   return (
-        <>
-            <StyledTableRow>
-            <StyledTableCell align="center">{row.checkBox}</StyledTableCell>
-            <StyledTableCell align="center">{row.dataIndex}</StyledTableCell>
-            <StyledTableCell align="center">{row.teacherName}</StyledTableCell>
-            <StyledTableCell component="th" scope="row">
-                {row.topicName} 
-            </StyledTableCell>
-            <StyledTableCell align="center">{row.startTime}</StyledTableCell>
-            <StyledTableCell align="center">{row.topicDescription}</StyledTableCell>
-            </StyledTableRow>
-        </>
+        <StyledTableRow>
+        <StyledTableCell align="center">{row.checkBox}</StyledTableCell>
+        <StyledTableCell align="center">{row.dataIndex}</StyledTableCell>
+        <StyledTableCell align="center">{row.teacherName}</StyledTableCell>
+        <StyledTableCell align="center" component="th" scope="row">
+            {row.topicName}
+        </StyledTableCell>
+        <StyledTableCell align="center">{row.startTime}</StyledTableCell>
+        <StyledTableCell align="center">{row.topicDescription}</StyledTableCell>
+        </StyledTableRow>
   );
 }
