@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 
 const studentRoutes = require('./routes/student-routes');
 const sharedRoutes = require('./routes/shared-routes');
+const adminRoutes = require('./routes/admin-routes');
 const HttpError = require('./models/http-error');
 
 const pool = require('./models/db_connect');

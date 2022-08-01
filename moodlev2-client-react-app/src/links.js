@@ -7,6 +7,8 @@ export const timeline_link = "/timeline"
 export const courses_link = "/courses"
 export const privateFiles_link = "/privatefiles"
 export const siteNews_link = "/sitenews"
+export const teachers_link = "/teachers"
+export const students_link = "/students"
 
 export const course_link = "/"
 export const course_events_link = "/events"

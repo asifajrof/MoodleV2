@@ -50,7 +50,7 @@ const deleteCourseById = (req, res, next) => {
 
 const getCurrentCoursesByStudentId = async (req, res, next) => {
     try{
-        console.log('GET api/student/courses/current/:student_id');
+        // console.log('GET api/student/courses/current/:student_id');
         const studentId = req.params.student_id;
         // console.log(typeof studentId);
         // console.log(studentId);
@@ -69,11 +69,11 @@ const getCurrentCoursesByStudentId = async (req, res, next) => {
 
 const getUpcomingEventsByStudentId = async (req, res, next) => {
     try{
-        console.log('GET api/student/upcoming/:student_id');
+        // console.log('GET api/student/upcoming/:student_id');
         const studentId = req.params.student_id;
         let result = await pool.query('SELECT json_agg(t) FROM get_upcoming_events($1) as t',[studentId]);        
         const upcomingEvents = result.rows[0].json_agg;
-        console.log(upcomingEvents)
+        // console.log(upcomingEvents)
         if(!upcomingEvents) {
             next(new HttpError('Upcoming Events not found', 404));
         }
