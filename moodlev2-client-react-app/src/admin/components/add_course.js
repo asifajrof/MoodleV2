@@ -1,7 +1,11 @@
+import Select from 'react-select';
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Button } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
 
 const CourseAddForm = ({course})=>{
+    // const [selectedOption, setSelectedOption] = useState(null);
     const [deptList, setDeptList] = useState([]);
     var offering,offered,_year,batch,level,term,course_num;
     var course_name;
@@ -16,20 +20,31 @@ const CourseAddForm = ({course})=>{
             term_num:2
         }
     ]
-    const onSubmitAction  = () =>
+    const onSubmitAction  = (event) =>
     {
+        event.preventDefault();
 
+        console.log("onSubmitAction");
     }
-    const handleChange  = () =>
+    const onChangeHandlerSelectDept  = (selectedDept) =>
     {
-
+        console.log(selectedDept);
     }
+    const makeDeptList = (data) =>{
+        var deptListTemp = [];
+        data.forEach(dept => {
+            deptListTemp.push({value:dept.dept_code,
+                label:dept.dept_shortname});
+        });
+        setDeptList(deptListTemp);
+    };
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await fetch(`/api/admin/dept_list/`);
                 const jsonData = await response.json();
-                setDeptList(jsonData.data);
+                makeDeptList(jsonData.data);
+                // setDeptList(jsonData.data);
             } catch (err) {
                 console.log(err);
             }
@@ -37,21 +52,36 @@ const CourseAddForm = ({course})=>{
         fetchData();
     }, []);
 
+    // const optionList = [
+    //     {value: '1', label: 'One'},
+    //     {value: 'two', label: 'Two'},
+    //     {value: 'three', label: 'Three'}
+    // ];
     return (
+
+        // <Select id='select-dept'
+        //     onChange={onChangeHandlerSelectDept}
+        //     options={deptList}/>
         <form onSubmit={onSubmitAction}>
-            <fieldset>
-                <label>
-                    <p>Choose the department of the course:</p>
-                    <select name={offering} onChange={handleChange}>
-                    <option value="">--Please choose an option--</option>
-                        {deptList.map((dept) =>(
-                            <option value={dept.dept_code}>{dept.dept_shortname}</option>
-                        ))}
-                    </select>
-                </label>
-            </fieldset>
+            <label htmlFor='select-dept'>Choose the department of the course:</label>
+            <Select id='select-dept'
+                onChange={onChangeHandlerSelectDept}
+                options={deptList}
+            />
+
+            <label htmlFor='select-dept'>Choose the department of the course:</label>
+            <Select id='select-dept'
+                onChange={onChangeHandlerSelectDept}
+                options={deptList}
+            />
+            {/* <Button type='submit' variant="contained" endIcon={<SendIcon />} onClick={onSubmitAction}> */}
+            <Button type='submit' variant="contained" onClick={onSubmitAction}>
+                Submit
+            </Button>
         </form>
-        //     <label for="offering_dept">Choose the department of the course:</label>
+
+
+        //     
         //     <select id="offering_dept" name={offering}>
         //         {deptList.map((dept) =>(
         //             <option value={dept.dept_code}>{dept.dept_shortname}</option>

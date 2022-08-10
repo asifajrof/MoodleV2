@@ -1,5 +1,8 @@
 import React, {useEffect, useState} from "react";
 import Course from "./all_courses/course";
+import { Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { Link } from "react-router-dom";
 
 // import './registered_courses.css';
 
@@ -23,6 +26,13 @@ const AllCourses = ({adminNo}) => {
 
     return (
         <div className='course__container'>
+            <div className='course__container__add'>
+            <Link to='/courses/addnew'>
+                <Button variant="contained">
+                    Add New<AddIcon />
+                </Button>
+            </Link>
+            </div>
             {allCoursesList.map( (course, index) => (
                 <Course key={index} course={course} />
             ))}
