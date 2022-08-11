@@ -11,7 +11,7 @@ const pool = require("./models/db_connect");
 
 const app = express();
 app.use(bodyParser.json());
-app.use(fileUpload);
+app.use(fileUpload());
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
