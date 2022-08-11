@@ -8,16 +8,25 @@ const DeptAddForm = ({ course }) => {
   const [deptCode, setDeptCode] = useState(0);
 
   const onAddDept = async (dept) => {
-    const res = await fetch(`/api/admin/adddept`, {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify(dept),
-    });
-
-    const data = await res.json();
-    alert(data.message);
+    try {
+      // console.log("trying");
+      const res = await fetch(`/api/admin/adddept`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(dept),
+      });
+      // console.log("post done");
+      const data = await res.json();
+      alert(data.message);
+    } catch (err) {
+      // console.log("error khaisi");
+      // console.log(err);
+      // if (err.response.status === 500) {
+      //   alert("Server Error");
+      // }
+    }
   };
 
   const onSubmitAction = (event) => {
@@ -33,33 +42,14 @@ const DeptAddForm = ({ course }) => {
       return;
     }
 
-    console.log("onSubmitAction");
-    console.log(deptName, deptShortName, deptCode);
+    // console.log("onSubmitAction");
+    // console.log(deptName, deptShortName, deptCode);
     setDeptName("");
     setDeptShortName("");
     setDeptCode(0);
     onAddDept({ deptName, deptShortName, deptCode });
   };
 
-  // useEffect(() => {
-  //     const fetchData = async () => {
-  //         try {
-  //             const response = await fetch(`/api/admin/dept_list/`);
-  //             const jsonData = await response.json();
-  //             makeDeptList(jsonData.data);
-  //             // setDeptList(jsonData.data);
-  //         } catch (err) {
-  //             console.log(err);
-  //         }
-  //     };
-  //     fetchData();
-  // }, []);
-
-  // const optionList = [
-  //     {value: '1', label: 'One'},
-  //     {value: 'two', label: 'Two'},
-  //     {value: 'three', label: 'Three'}
-  // ];
   return (
     <form onSubmit={onSubmitAction}>
       <label htmlFor="deptName">Department Name:</label>
