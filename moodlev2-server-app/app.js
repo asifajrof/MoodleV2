@@ -36,13 +36,16 @@ app.post("/upload", (req, res) => {
     return new HttpError("No file uploaded", 400);
   }
   const file = req.files.file;
-  file.mv(`${__dirname}/client/public/uploads/${file.name}`, (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send(err);
+  file.mv(
+    `${__dirname}/../moodlev2-client-react-app/public/uploads/${file.name}`,
+    (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send(err);
+      }
+      res.json({ fileName: file.name, filePath: `/uploads/${file.name}` });
     }
-    res.json({ fileName: file.name, filePath: `/uploads/${file.name}` });
-  });
+  );
 });
 
 app.use((req, res, next) => {

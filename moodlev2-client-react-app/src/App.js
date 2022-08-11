@@ -18,8 +18,9 @@ import DeptAddForm from "./admin/components/add_dept";
 
 import "./App.css";
 
-import { course_link, home_link } from "./links";
+import { course_events_link, course_link, home_link } from "./links";
 import CourseAddForm from "./admin/components/add_course";
+import StudentCourseEvents from "./student/pages/course_events";
 
 const App = () => {
   // const [backendData,setBackendData] = useState([{}])
@@ -34,8 +35,8 @@ const App = () => {
   // },[]);
   // console.log(backendData);
 
-  // const userType = 'student';
-  const userType = "admin";
+  const userType = "student";
+  // const userType = "admin";
   const stdId = 1705119;
   const adminId = 1;
 
@@ -87,6 +88,10 @@ const App = () => {
             <Route
               path={"/course/:courseId" + course_link}
               element={<StudentCourseHome studentNo={stdId} />}
+            />
+            <Route
+              path={"/course/:courseId" + course_events_link}
+              element={<StudentCourseEvents studentNo={stdId} />}
             />
             <Route
               path="*"
