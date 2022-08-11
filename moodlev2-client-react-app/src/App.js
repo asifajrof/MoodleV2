@@ -9,6 +9,7 @@ import StudentCourseHome from './student/pages/course_home';
 import AdminMenuBar from './admin/components/menu_bar';
 import AdminHome from './admin/pages/AdminHome';
 import AddNewCourse from './admin/pages/AddNewCourse';
+import DeptAddForm from './admin/components/add_dept';
 
 import './App.css';
 
@@ -44,6 +45,7 @@ const App = () => {
             {/* <Route path={home_link} element={<AdminHome adminNo={adminId}/> } /> */}
             <Route path={'/courses'} element={<AdminHome adminNo={adminId}/> } />
             <Route path={'/courses/addnew'} element={<CourseAddForm adminNo={adminId}/> } />
+            <Route path={'/dept/addnew'} element={<DeptAddForm adminNo={adminId}/> } />
             <Route
               path="*"
               element={

@@ -15,5 +15,6 @@ adminRoutes.get('/', (req, res, next) => {
 adminRoutes.get('/courses/all', adminControllers.getAllCourses);
 adminRoutes.get('/dept_list', adminControllers.getDeptList);
 adminRoutes.post('/addcourse', adminControllers.postCourseAdd);
+adminRoutes.post('/adddept', adminControllers.postDeptAdd);
 
 module.exports = adminRoutes;

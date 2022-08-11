@@ -48,6 +48,23 @@ const postCourseAdd = async (req, res, next) => {
     }
 };
 
+const postDeptAdd = async (req, res, next) => {
+    try{
+        console.log(req.body);
+        const { deptName, deptShortName, deptCode } = req.body;
+        queryRes = await pool.query("insert into department values ($1,$2,$3)",[
+            deptCode,
+            deptName,
+            deptShortName
+        ]);
+        res.json({message:'new dept added'});
+    } catch(error) {
+
+        return next(new HttpError(error.message, 500));
+    }
+};
+
 exports.getAllCourses = getAllCourses;
 exports.getDeptList = getDeptList;
 exports.postCourseAdd = postCourseAdd;
+exports.postDeptAdd = postDeptAdd;
