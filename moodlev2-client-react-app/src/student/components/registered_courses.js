@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import RegisteredCourse from "./registered_courses/registered_course";
 
-import './registered_courses.css';
+import "./registered_courses.css";
 
 // const course_list = [
 //     {
@@ -50,32 +50,32 @@ import './registered_courses.css';
 //     }
 // ]
 
+const RegisteredCourses = ({ studentNo }) => {
+  // const [currentCoursesList, setCurrentCoursesList] = useState(course_list);
+  const [currentCoursesList, setCurrentCoursesList] = useState([]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `/api/student/courses/current/${studentNo}`
+        );
+        const jsonData = await response.json();
+        setCurrentCoursesList(jsonData.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, []);
 
-const RegisteredCourses = ({studentNo}) => {
-    // const [currentCoursesList, setCurrentCoursesList] = useState(course_list);
-    const [currentCoursesList, setCurrentCoursesList] = useState([]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`/api/student/courses/current/${studentNo}`);
-                const jsonData = await response.json();
-                setCurrentCoursesList(jsonData.data);
-            } catch (err) {
-                console.log(err);
-            }
-        };
-        fetchData();
-    }, []);
-
-    return (
-        <div className='course__container'>
-            {currentCoursesList.map( (course, index) => (
-                <RegisteredCourse key={index} course={course} />
-            ))}
-        </div>
-    )
-}
+  return (
+    <div className="course__container">
+      {currentCoursesList.map((course, index) => (
+        <RegisteredCourse key={index} course={course} />
+      ))}
+    </div>
+  );
+};
 
 export default RegisteredCourses;

@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const AdminTeachers = (props) => {
-  return (
-    <>{props.userType} Teachers</>
-  )
-}
+  return <>{props.userType} Teachers</>;
+};
 
 export default AdminTeachers;

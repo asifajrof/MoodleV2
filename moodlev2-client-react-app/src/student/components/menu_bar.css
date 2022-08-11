@@ -1,58 +1,58 @@
 .main-navigation__menu-btn {
-    width: 3rem;
-    height: 3rem;
-    background: transparent;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    margin-right: 2rem;
-    cursor: pointer;
-  }
-  
-  .main-navigation__menu-btn span {
-    display: block;
-    width: 3rem;
-    height: 0.1rem;
-    background: #000000;
-  }
-  
-  @import url(//fonts.googleapis.com/css?family=Inter);
+  width: 3rem;
+  height: 3rem;
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  margin-right: 2rem;
+  cursor: pointer;
+}
 
-  .main-navigation__title {
-    color: #000000;
-    font-family: 'Inter';
-    font-weight: bold;
-  }
-  
-  .main-navigation__title a {
-    text-decoration: none;
-    color: #000000;
-  }
-  .main-navigation__title__image {
-    float: left;
-    width: 1.5rem;
-    height: 1.5rem;
-    margin-right: 0.5rem;
-  }
-  
-  .main-navigation__header-nav {
+.main-navigation__menu-btn span {
+  display: block;
+  width: 3rem;
+  height: 0.1rem;
+  background: #000000;
+}
+
+@import url(//fonts.googleapis.com/css?family=Inter);
+
+.main-navigation__title {
+  color: #000000;
+  font-family: "Inter";
+  font-weight: bold;
+}
+
+.main-navigation__title a {
+  text-decoration: none;
+  color: #000000;
+}
+.main-navigation__title__image {
+  float: left;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.main-navigation__header-nav {
+  display: none;
+}
+
+.main-navigation__drawer-nav {
+  height: 100%;
+}
+
+@media (min-width: 768px) {
+  .main-navigation__menu-btn {
     display: none;
   }
-  
-  .main-navigation__drawer-nav {
-    height: 100%;
+
+  .main-navigation__header-nav {
+    display: block;
   }
-  
-  @media (min-width: 768px) {
-    .main-navigation__menu-btn {
-      display: none;
-    }
-  
-    .main-navigation__header-nav {
-      display: block;
-    }
-  }
+}
 
 /* menu_option.css */
 
@@ -83,12 +83,12 @@
 .nav-links a:active,
 .nav-links a.active {
   color: #292929;
-  transition: box-shadow .3s;
-  border-radius:10px;
+  transition: box-shadow 0.3s;
+  border-radius: 10px;
   border: 1px solid #ccc;
   background: #fff;
   float: left;
-  box-shadow: 0 0 11px rgba(33,33,33,.2); 
+  box-shadow: 0 0 11px rgba(33, 33, 33, 0.2);
 }
 
 .nav-links button {
@@ -129,7 +129,7 @@
     color: white;
     background: transparent;
   }
-  
+
   .nav-links button:hover,
   .nav-links button:active {
     background: #84c2ff;
@@ -212,7 +212,7 @@
     color: white;
     background: transparent;
   }
-  
+
   .nav-icons button:hover,
   .nav-icons button:active {
     background: #84c2ff;

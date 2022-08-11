@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const AdminStudents = (props) => {
-  return (
-    <>{props.userType} Students</>
-  )
-}
+  return <>{props.userType} Students</>;
+};
 
 export default AdminStudents;

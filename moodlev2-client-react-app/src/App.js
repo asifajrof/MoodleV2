@@ -1,23 +1,27 @@
 // import React, {useState, useEffect} from 'react';
-import React from 'react';
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
 
-import StudentMenuBar from './student/components/menu_bar';
-import StudentHome from './student/pages/student_home';
-import StudentCourseHome from './student/pages/course_home';
+import StudentMenuBar from "./student/components/menu_bar";
+import StudentHome from "./student/pages/student_home";
+import StudentCourseHome from "./student/pages/course_home";
 
-import AdminMenuBar from './admin/components/menu_bar';
-import AdminHome from './admin/pages/AdminHome';
-import AddNewCourse from './admin/pages/AddNewCourse';
-import DeptAddForm from './admin/components/add_dept';
+import AdminMenuBar from "./admin/components/menu_bar";
+import AdminHome from "./admin/pages/AdminHome";
+import AddNewCourse from "./admin/pages/AddNewCourse";
+import DeptAddForm from "./admin/components/add_dept";
 
-import './App.css';
+import "./App.css";
 
-import { course_link, home_link } from './links';
-import CourseAddForm from './admin/components/add_course';
+import { course_link, home_link } from "./links";
+import CourseAddForm from "./admin/components/add_course";
 
 const App = () => {
-
   // const [backendData,setBackendData] = useState([{}])
   // useEffect(() => {
   //   fetch("/api/1705119").then(
@@ -31,21 +35,33 @@ const App = () => {
   // console.log(backendData);
 
   // const userType = 'student';
-  const userType = 'admin';
+  const userType = "admin";
   const stdId = 1705119;
   const adminId = 1;
-  
-  if(userType === 'admin') {
+
+  if (userType === "admin") {
     return (
       <Router>
-        <AdminMenuBar adminNo={adminId}/>
+        <AdminMenuBar adminNo={adminId} />
         <main>
           <Routes>
-            <Route path={home_link} element={<Navigate to='/courses' replace /> } />
+            <Route
+              path={home_link}
+              element={<Navigate to="/courses" replace />}
+            />
             {/* <Route path={home_link} element={<AdminHome adminNo={adminId}/> } /> */}
-            <Route path={'/courses'} element={<AdminHome adminNo={adminId}/> } />
-            <Route path={'/courses/addnew'} element={<CourseAddForm adminNo={adminId}/> } />
-            <Route path={'/dept/addnew'} element={<DeptAddForm adminNo={adminId}/> } />
+            <Route
+              path={"/courses"}
+              element={<AdminHome adminNo={adminId} />}
+            />
+            <Route
+              path={"/courses/addnew"}
+              element={<CourseAddForm adminNo={adminId} />}
+            />
+            <Route
+              path={"/dept/addnew"}
+              element={<DeptAddForm adminNo={adminId} />}
+            />
             <Route
               path="*"
               element={
@@ -58,15 +74,20 @@ const App = () => {
         </main>
       </Router>
     );
-
-  } else if(userType === 'student') {
+  } else if (userType === "student") {
     return (
       <Router>
-        <StudentMenuBar studentNo={stdId}/>
+        <StudentMenuBar studentNo={stdId} />
         <main>
           <Routes>
-            <Route path={home_link} element={<StudentHome studentNo={stdId}/>} />
-            <Route path={'/course/:courseId'+ course_link} element={<StudentCourseHome studentNo={stdId}/>} />
+            <Route
+              path={home_link}
+              element={<StudentHome studentNo={stdId} />}
+            />
+            <Route
+              path={"/course/:courseId" + course_link}
+              element={<StudentCourseHome studentNo={stdId} />}
+            />
             <Route
               path="*"
               element={
@@ -80,8 +101,7 @@ const App = () => {
         {/* <StudentMenuBar studentNo={stdId}/> */}
       </Router>
     );
-
-  } else if(userType === 'teacher') {
+  } else if (userType === "teacher") {
     return (
       <Router>
         <h1>teacher menu bar here</h1>
