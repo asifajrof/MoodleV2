@@ -24,6 +24,7 @@ import "./App.css";
 import { course_events_link, course_link, home_link } from "./links";
 import CourseAddForm from "./admin/components/add_course";
 import StudentCourseEvents from "./student/pages/course_events";
+import useToken from "./shared/pages/useToken";
 
 const App = () => {
   // const [backendData,setBackendData] = useState([{}])
@@ -38,7 +39,8 @@ const App = () => {
   // },[]);
   // console.log(backendData);
 
-  const [token, setToken] = useState({});
+  // const [token, setToken] = useState({});
+  const { token, setToken } = useToken();
 
   if (!token) {
     return <Login onLogin={setToken} />;
