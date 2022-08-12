@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
+const cors = require("cors");
 
 const studentRoutes = require("./routes/student-routes");
 const sharedRoutes = require("./routes/shared-routes");
@@ -12,6 +13,7 @@ const pool = require("./models/db_connect");
 const app = express();
 app.use(bodyParser.json());
 app.use(fileUpload());
+app.use(cors());
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
@@ -29,6 +31,14 @@ app.use((req, res, next) => {
 app.use("/api/student", studentRoutes);
 app.use("/api/course", sharedRoutes);
 app.use("/api/admin", adminRoutes);
+
+app.use("/api/login", (req, res) => {
+  res.send({
+    token: "test123",
+    type: "student",
+    id: 1705119,
+  });
+});
 
 // upload endpoint
 app.post("/upload", (req, res) => {

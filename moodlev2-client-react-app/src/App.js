@@ -38,17 +38,24 @@ const App = () => {
   // },[]);
   // console.log(backendData);
 
-  const [userType, setUserType] = useState("nologin");
+  const [token, setToken] = useState({});
+
+  if (!token) {
+    return <Login onLogin={setToken} />;
+  }
+
+  // const [userType, setUserType] = useState("nologin");
   useEffect(() => {
-    setUserType("student");
+    setToken({ id: 1705119, type: "student" });
+    // setUserType("student");
     // setUserType("admin");
     // setUserType("teacher");
   }, []);
 
-  const stdId = 1705119;
-  const adminId = 1;
+  const stdId = token.id;
+  const adminId = token.id;
 
-  if (userType === "admin") {
+  if (token.type === "admin") {
     return (
       <Router>
         <AdminMenuBar adminNo={adminId} />
@@ -83,7 +90,7 @@ const App = () => {
         </main>
       </Router>
     );
-  } else if (userType === "student") {
+  } else if (token.type === "student") {
     return (
       <Router>
         <StudentMenuBar studentNo={stdId} />
@@ -114,7 +121,7 @@ const App = () => {
         {/* <StudentMenuBar studentNo={stdId}/> */}
       </Router>
     );
-  } else if (userType === "teacher") {
+  } else if (token.type === "teacher") {
     return (
       <Router>
         <h1>teacher menu bar here</h1>
@@ -131,7 +138,7 @@ const App = () => {
         <BlankMenuBar />
         <main>
           <Routes>
-            <Route path={home_link} element={<Login onLogin={setUserType} />} />
+            <Route path={home_link} element={<Login onLogin={setToken} />} />
             <Route
               path="*"
               element={
