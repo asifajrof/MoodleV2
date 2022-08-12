@@ -1,10 +1,10 @@
 @import url(//fonts.googleapis.com/css?family=Inter);
 .login__title {
-  position: fixed;
-  width: 70%;
-  left: 50%;
+  /* position: fixed; */
+  /* width: 70%; */
+  /* left: 50%; */
   /* top: 50%; */
-  transform: translate(-50%, -0%);
+  /* transform: translate(-50%, -0%); */
 
   font-family: "Inter";
   font-style: normal;
@@ -19,18 +19,20 @@
 }
 
 .login__centered {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  width: 70%;
-  /* bring your own prefixes */
-  transform: translate(-50%, -50%);
+  align-items: center;
 }
 
 .login__container {
+  display: flex;
+  flex-direction: column;
+  /* gap: 1rem; */
+  justify-content: space-evenly;
   position: fixed;
   width: 30%;
   height: 70%;
+  /* max-height: 70%; */
+  overflow: auto;
+  scrollbar-width: none;
   left: 50%;
   top: 50%;
   /* bring your own prefixes */
@@ -46,4 +48,9 @@
   /* Note: backdrop-filter has minimal browser support */
 
   border-radius: 2em;
+}
+.login__container::-webkit-scrollbar {
+  /* WebKit */
+  width: 0;
+  height: 0;
 }
