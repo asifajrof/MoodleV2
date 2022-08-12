@@ -13,7 +13,7 @@ import StudentCourseHome from "./student/pages/course_home";
 
 import AdminMenuBar from "./admin/components/menu_bar";
 import AdminHome from "./admin/pages/AdminHome";
-import AddNewCourse from "./admin/pages/AddNewCourse";
+// import AddNewCourse from "./admin/pages/AddNewCourse";
 import DeptAddForm from "./admin/components/add_dept";
 
 import BlankMenuBar from "./shared/components/BlankMenuBar";
@@ -39,10 +39,12 @@ const App = () => {
   // console.log(backendData);
 
   const [userType, setUserType] = useState("nologin");
-  // const userType = "student";
-  // const userType = "admin";
-  // const userType = "teacher";
-  // const userType = "nologin";
+  useEffect(() => {
+    setUserType("student");
+    // setUserType("admin");
+    // setUserType("teacher");
+  }, []);
+
   const stdId = 1705119;
   const adminId = 1;
 

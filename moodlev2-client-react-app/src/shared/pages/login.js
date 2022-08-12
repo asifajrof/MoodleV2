@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  FormControl,
-  InputLabel,
-  Input,
-  FormHelperText,
-  TextField,
-  Button,
-} from "@mui/material";
+import { FormHelperText, TextField, Button } from "@mui/material";
 import "./login.css";
 
 const Login = ({ onLogin }) => {
