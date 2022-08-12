@@ -8,8 +8,8 @@ create table department(
 create table student(
     student_id SERIAL PRIMARY KEY,
     student_name VARCHAR(255) NOT NULL,
-    password CHAR(64) NOT NULL CHECK(password SIMILAR TO '[a-zA-Z0-9+/]%' and password SIMILAR TO '%[a-zA-Z0-9+/]'
-        and password SIMILAR TO '%[a-zA-Z0-9+/]%'),
+    password CHAR(60) NOT NULL CHECK(password SIMILAR TO '[a-zA-Z0-9+./$]%' and password SIMILAR TO '%[a-zA-Z0-9+./$]'
+        and password SIMILAR TO '%[a-zA-Z0-9+./$]%'),
     _year INTEGER NOT NULL CHECK (_year>1900 and _year<=date_part('year', CURRENT_DATE)),
     roll_num INTEGER NOT NULL CHECK(roll_num>0),
     dept_code INTEGER NOT NULL REFERENCES department(dept_code),
@@ -21,8 +21,8 @@ create table official_users(
     user_no SERIAL PRIMARY KEY,
     username VARCHAR(32) UNIQUE NOT NULL CHECK(username SIMILAR TO '[a-zA-Z]%' and username SIMILAR TO '%[a-zA-Z0-9]'
         and username SIMILAR TO '%[a-zA-Z0-9]%'),
-    password CHAR(64) NOT NULL CHECK(password SIMILAR TO '[a-zA-Z0-9+/]%' and password SIMILAR TO '%[a-zA-Z0-9+/]'
-        and password SIMILAR TO '%[a-zA-Z0-9+/]%'),
+    password CHAR(60) NOT NULL CHECK(password SIMILAR TO '[a-zA-Z0-9+./$]%' and password SIMILAR TO '%[a-zA-Z0-9+./$]'
+        and password SIMILAR TO '%[a-zA-Z0-9+./$]%'),
     email_address VARCHAR(128) UNIQUE CHECK(email_address LIKE '_%@%_._%' AND email_address NOT LIKE '%@%@%' AND email_address NOT LIKE '% %')
 );
 create table teacher(
@@ -317,6 +317,21 @@ create or replace function add_teacher(name varchar,uname varchar,hashed_passwor
         values (default,name,uno,dept);
     end;
 $$ language plpgsql;
+create function add_admin(admin_name character varying, uname character varying, hashed_password character varying, email character varying) returns void
+    language plpgsql
+as
+$$
+    declare
+        uno integer;
+    begin
+        insert into official_users(user_no, username, password, email_address)
+        values (default,uname,hashed_password,email);
+        select user_no into uno from official_users
+        where username=uname;
+        insert into admins(admin_id, name, user_no)
+        values (default,admin_name,uno);
+    end;
+$$;
 create or replace function add_course(cname varchar,cnum integer,dept integer,offered_dept integer,offered_batch integer,offered_year integer,offered_level integer,offered_term integer) returns void as $$
     begin
         insert into course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term)
@@ -765,6 +780,7 @@ create trigger post_check before insert or update on course_post
 -- drop function overlapped_time(first_begin time,first_end time,second_begin time,second_end time);
 -- drop function overlapped_timestamp(first_begin timestamp,first_end timestamp,second_begin timestamp,second_end timestamp);
 -- drop function add_course(cname varchar, cnum integer, dept integer, offered_dept integer, offered_batch integer, offered_year integer, offered_level integer, offered_term integer);
+-- drop function add_admin(admin_name character varying, uname character varying, hashed_password character varying, email character varying);
 -- drop function add_teacher(name varchar, uname varchar, hashed_password varchar, dept integer, email varchar);
 -- drop function add_student(name varchar,hashed_password varchar,roll integer,dept integer,batch integer, email varchar);
 -- drop function get_dept_list();
@@ -782,28 +798,28 @@ create trigger post_check before insert or update on course_post
 -- drop table request_event;
 -- drop table request_type;
 -- drop table extra_evaluation_instructor;
---drop table evaluation;
---drop table evaluation_type;
---drop table extra_class_teacher;
---drop table extra_class;
---drop table teacher_routine;
---drop table canceled_class;
---drop table student_file;
---drop table teacher_file;
---drop table private_file;
---drop table student_resource;
---drop table instructor_resource;
---drop table resource;
---drop table topic;
---drop table course_post_file;
---drop table course_post;
---drop table course_routine;
---drop table enrolment;
---drop table section;
---drop table instructor;
---drop table course;
---drop table teacher;
---drop table official_users;
---drop table student;
---drop table department;
+-- drop table evaluation;
+-- drop table evaluation_type;
+-- drop table extra_class_teacher;
+-- drop table extra_class;
+-- drop table teacher_routine;
+-- drop table canceled_class;
+-- drop table student_file;
+-- drop table teacher_file;
+-- drop table private_file;
+-- drop table student_resource;
+-- drop table instructor_resource;
+-- drop table resource;
+-- drop table topic;
+-- drop table course_post_file;
+-- drop table course_post;
+-- drop table course_routine;
+-- drop table enrolment;
+-- drop table section;
+-- drop table instructor;
+-- drop table course;
+-- drop table teacher;
+-- drop table official_users;
+-- drop table student;
+-- drop table department;
 --drop database moodle_v2;

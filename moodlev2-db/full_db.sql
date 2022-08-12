@@ -21,6 +21,28 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: add_admin(character varying, character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.add_admin(admin_name character varying, uname character varying, hashed_password character varying, email character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        uno integer;
+    begin
+        insert into official_users(user_no, username, password, email_address)
+        values (default,uname,hashed_password,email);
+        select user_no into uno from official_users
+        where username=uname;
+        insert into admins(admin_id, name, user_no)
+        values (default,admin_name,uno);
+    end;
+$$;
+
+
+ALTER FUNCTION public.add_admin(admin_name character varying, uname character varying, hashed_password character varying, email character varying) OWNER TO postgres;
+
+--
 -- Name: add_course(character varying, integer, integer, integer, integer, integer, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1362,7 +1384,7 @@ ALTER TABLE public.section OWNER TO postgres;
 CREATE TABLE public.student (
     student_id integer NOT NULL,
     student_name character varying(255) NOT NULL,
-    password character(64) NOT NULL,
+    password character(60) NOT NULL,
     _year integer NOT NULL,
     roll_num integer NOT NULL,
     dept_code integer NOT NULL,
@@ -1370,7 +1392,7 @@ CREATE TABLE public.student (
     email_address character varying(128),
     CONSTRAINT student__year_check CHECK (((_year > 1900) AND ((_year)::double precision <= date_part('year'::text, CURRENT_DATE)))),
     CONSTRAINT student_email_address_check CHECK ((((email_address)::text ~~ '_%@%_._%'::text) AND ((email_address)::text !~~ '%@%@%'::text) AND ((email_address)::text !~~ '% %'::text))),
-    CONSTRAINT student_password_check CHECK (((password ~ similar_to_escape('[a-zA-Z0-9+/]%'::text)) AND (password ~ similar_to_escape('%[a-zA-Z0-9+/]'::text)) AND (password ~ similar_to_escape('%[a-zA-Z0-9+/]%'::text)))),
+    CONSTRAINT student_password_check CHECK (((password ~ similar_to_escape('[a-zA-Z0-9+./$]%'::text)) AND (password ~ similar_to_escape('%[a-zA-Z0-9+./$]'::text)) AND (password ~ similar_to_escape('%[a-zA-Z0-9+./$]%'::text)))),
     CONSTRAINT student_roll_num_check CHECK ((roll_num > 0))
 );
 
@@ -1489,10 +1511,10 @@ ALTER SEQUENCE public.notification_type_type_id_seq OWNED BY public.notification
 CREATE TABLE public.official_users (
     user_no integer NOT NULL,
     username character varying(32) NOT NULL,
-    password character(64) NOT NULL,
+    password character(60) NOT NULL,
     email_address character varying(128),
     CONSTRAINT official_users_email_address_check CHECK ((((email_address)::text ~~ '_%@%_._%'::text) AND ((email_address)::text !~~ '%@%@%'::text) AND ((email_address)::text !~~ '% %'::text))),
-    CONSTRAINT official_users_password_check CHECK (((password ~ similar_to_escape('[a-zA-Z0-9+/]%'::text)) AND (password ~ similar_to_escape('%[a-zA-Z0-9+/]'::text)) AND (password ~ similar_to_escape('%[a-zA-Z0-9+/]%'::text)))),
+    CONSTRAINT official_users_password_check CHECK (((password ~ similar_to_escape('[a-zA-Z0-9+./$]%'::text)) AND (password ~ similar_to_escape('%[a-zA-Z0-9+./$]'::text)) AND (password ~ similar_to_escape('%[a-zA-Z0-9+./$]%'::text)))),
     CONSTRAINT official_users_username_check CHECK ((((username)::text ~ similar_to_escape('[a-zA-Z]%'::text)) AND ((username)::text ~ similar_to_escape('%[a-zA-Z0-9]'::text)) AND ((username)::text ~ similar_to_escape('%[a-zA-Z0-9]%'::text))))
 );
 
@@ -2157,6 +2179,7 @@ ALTER TABLE ONLY public.visibility ALTER COLUMN type_id SET DEFAULT nextval('pub
 -- Data for Name: admins; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.admins (admin_id, name, user_no) VALUES (1, 'Nazmul Haque', 1);
 
 
 --
@@ -2169,8 +2192,8 @@ ALTER TABLE ONLY public.visibility ALTER COLUMN type_id SET DEFAULT nextval('pub
 -- Data for Name: course; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (1, 'Introduction to Computer Programming', 1, 5, 5, 2017, 2018, 1, 1);
-INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (2, 'Data Structures and Algorithms', 3, 5, 5, 2017, 2018, 2, 1);
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (1, 'Fault Tolerant Systems', 23, 5, 5, 2017, 2022, 4, 1);
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (2, 'High Performance Database System', 53, 5, 5, 2017, 2022, 4, 1);
 
 
 --
@@ -2196,14 +2219,23 @@ INSERT INTO public.course_routine (class_id, section_no, alternation, start, _en
 -- Data for Name: department; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (1, 'Architecture', 'Arch');
+INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (2, 'Chemical Engineering', 'ChE');
+INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (4, 'Civil Engineering', 'CE');
 INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (5, 'Computer Science and Engineering', 'CSE');
+INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (6, 'Electrical and Electronic Engineering', 'EEE');
+INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (8, 'Industrial and Production Engineering', 'IPE');
+INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (10, 'Mechanical Engineering', 'ME');
+INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (11, 'Materials and Metallurgical Engineering', 'MME');
+INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (15, 'Urban and Regional Planning', 'URP');
+INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (18, 'Biomedical Engineering', 'BME');
 
 
 --
 -- Data for Name: enrolment; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1, 1, 1, '2022-07-31');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1, 1, 1, '2022-08-12');
 
 
 --
@@ -2258,7 +2290,7 @@ INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1
 -- Data for Name: instructor; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (1, 1, 1, '2022-07-31');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (1, 1, 1, '2022-08-12');
 
 
 --
@@ -2283,7 +2315,8 @@ INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALU
 -- Data for Name: official_users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (1, 'ashikur', '37880da19cfbaae9a0e6c3195203177184af3b4ff55beeb62733e0fca1fb0c7c', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (1, 'nazmuladmin', '$2a$12$a3sA/qgphlpSnjZl2EkaW.EvlHrTbsrX8ZjD1iqJzqZgYLdkPXmAy', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (2, 'alimrazi', '$2a$12$vJa9O6JwQkfILdYj5bSsCuVbeSC863/MIe7x1UZM0qU7iPcwfewB2', NULL);
 
 
 --
@@ -2314,14 +2347,14 @@ INSERT INTO public.official_users (user_no, username, password, email_address) V
 -- Data for Name: section; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (1, 'CSE-2017-B2-CSE101-2018', 1, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (1, 'CSE-2017-B2-CSE423-2022', 1, NULL);
 
 
 --
 -- Data for Name: student; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful Islam', '4149064daa97438c2dac602c7540e4eba55a353dd0611b3eac610bb66ad34e3b', 2017, 119, 5, '2022-08-01 03:39:06.088984+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful', '$2a$12$BjvAnEmgjQsjLxPmFsD8Peh7H0DV49ZiXZisriA/IZ92ySlPJc1p.', 2017, 119, 5, '2022-08-12 16:29:53.587539+06', NULL);
 
 
 --
@@ -2346,7 +2379,7 @@ INSERT INTO public.student (student_id, student_name, password, _year, roll_num,
 -- Data for Name: teacher; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (1, 'A.K.M. Ashikur Rahman', 1, 5, '2022-08-01 03:39:58.201967+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (1, 'A.B.M. Alim Al Islam', 2, 5, '2022-08-12 16:29:53.74521+06');
 
 
 --
@@ -2359,14 +2392,13 @@ INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notifi
 -- Data for Name: teacher_routine; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (1, 1, 1);
 
 
 --
 -- Data for Name: topic; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (1, 'Array', 1, false, 'It is our first topic', '2022-08-01 03:42:46.143155+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (1, 'State Space Modeling', 1, true, 'Here we will learn how to make a model to use in Markov chain', '2022-08-12 16:53:35.099193+06');
 
 
 --
@@ -2379,7 +2411,7 @@ INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, descri
 -- Name: admins_admin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.admins_admin_id_seq', 1, false);
+SELECT pg_catalog.setval('public.admins_admin_id_seq', 1, true);
 
 
 --
@@ -2505,7 +2537,7 @@ SELECT pg_catalog.setval('public.notification_type_type_id_seq', 1, false);
 -- Name: official_users_user_no_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.official_users_user_no_seq', 1, true);
+SELECT pg_catalog.setval('public.official_users_user_no_seq', 2, true);
 
 
 --
@@ -2561,7 +2593,7 @@ SELECT pg_catalog.setval('public.submission_sub_id_seq', 1, false);
 -- Name: teacher_routine_teacher_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.teacher_routine_teacher_class_id_seq', 2, true);
+SELECT pg_catalog.setval('public.teacher_routine_teacher_class_id_seq', 1, false);
 
 
 --
@@ -2575,7 +2607,7 @@ SELECT pg_catalog.setval('public.teacher_teacher_id_seq', 1, true);
 -- Name: topic_topic_num_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.topic_topic_num_seq', 1, true);
+SELECT pg_catalog.setval('public.topic_topic_num_seq', 2, true);
 
 
 --
