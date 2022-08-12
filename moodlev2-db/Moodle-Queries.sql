@@ -46,6 +46,42 @@ $$;
 do
 $$
 begin
+    execute add_student('Fatima Nawmi','$2y$10$/q5rPYxPDEDi14Hp33AgfOjhuF8mglmjqBnyN58zN17L4hJ4Oclpu',93,5,2017,null);
+end;
+$$;
+
+do
+$$
+begin
+    execute add_student('Asif Ajrof','$2y$10$pYUj/gnwUYpkBdWQiXi3buA8rVAE3EFSJbd2FSQuWkAEAF3SZqGPW',92,5,2017,null);
+end;
+$$;
+
+
+do
+$$
+begin
+    execute add_student('Saif Ahmed Khan','$2y$10$nCoBIjkAYSLLwLW8tDe4Ku3Ud.TkJvViq62cGQ.dkfmpl3XqavsvW',110,5,2017,null);
+end;
+$$;
+
+do
+$$
+begin
+    execute add_student('Nazmul Takbir','$2y$10$iVzkVjUWBYUKA2rcPz83BubHExrrr0guL5nEZHrK4GdZj8PzRZQd.',103,5,2017,null);
+end;
+$$;
+
+do
+$$
+begin
+    execute add_student('Sihat Afnan','$2y$10$WoVLtw9ux4j13piNbC3df.UKBJwO7wFVmLzfbqzZeNBc8NE3ierLO',98,5,2017,null);
+end;
+$$;
+
+do
+$$
+begin
     execute add_course('Fault Tolerant Systems',23,5,5,2017,2022,4,1);
 end;
 $$;
