@@ -45,12 +45,12 @@ const App = () => {
   }
 
   // const [userType, setUserType] = useState("nologin");
-  useEffect(() => {
-    setToken({ id: 1705119, type: "student" });
-    // setUserType("student");
-    // setUserType("admin");
-    // setUserType("teacher");
-  }, []);
+  // useEffect(() => {
+  //   setToken({ id: 1705119, type: "student" });
+  //   // setUserType("student");
+  //   // setUserType("admin");
+  //   // setUserType("teacher");
+  // }, []);
 
   const stdId = token.id;
   const adminId = token.id;
