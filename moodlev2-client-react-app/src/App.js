@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-// import React from "react";
+// import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Navigate,
@@ -42,9 +42,9 @@ const App = () => {
   // const [token, setToken] = useState({});
   const { token, setToken } = useToken();
 
-  if (!token) {
-    return <Login onLogin={setToken} />;
-  }
+  // if (!token) {
+  //   return <Login onLogin={setToken} />;
+  // }
 
   // const [userType, setUserType] = useState("nologin");
   // useEffect(() => {
@@ -54,31 +54,52 @@ const App = () => {
   //   // setUserType("teacher");
   // }, []);
 
-  const stdId = token.id;
-  const adminId = token.id;
+  // const stdId = token.id;
+  // const adminId = token.id;
 
-  if (token.type === "admin") {
+  const loginElement = (
+    <Router>
+      <BlankMenuBar />
+      <main>
+        <Routes>
+          <Route path={home_link} element={<Login onLogin={setToken} />} />
+          <Route
+            path="*"
+            element={
+              <>
+                Redirecting to Login Page...
+                <Navigate to="/" replace />
+              </>
+            }
+          />
+        </Routes>
+      </main>
+    </Router>
+  );
+  if (!token) {
+    return loginElement;
+  } else if (token.type === "admin") {
     return (
       <Router>
-        <AdminMenuBar adminNo={adminId} />
+        <AdminMenuBar adminNo={token.id} />
         <main>
           <Routes>
             <Route
               path={home_link}
               element={<Navigate to="/courses" replace />}
             />
-            {/* <Route path={home_link} element={<AdminHome adminNo={adminId}/> } /> */}
+            {/* <Route path={home_link} element={<AdminHome adminNo={token.id}/> } /> */}
             <Route
               path={"/courses"}
-              element={<AdminHome adminNo={adminId} />}
+              element={<AdminHome adminNo={token.id} />}
             />
             <Route
               path={"/courses/addnew"}
-              element={<CourseAddForm adminNo={adminId} />}
+              element={<CourseAddForm adminNo={token.id} />}
             />
             <Route
               path={"/dept/addnew"}
-              element={<DeptAddForm adminNo={adminId} />}
+              element={<DeptAddForm adminNo={token.id} />}
             />
             <Route
               path="*"
@@ -95,20 +116,20 @@ const App = () => {
   } else if (token.type === "student") {
     return (
       <Router>
-        <StudentMenuBar studentNo={stdId} />
+        <StudentMenuBar studentNo={token.id} />
         <main>
           <Routes>
             <Route
               path={home_link}
-              element={<StudentHome studentNo={stdId} />}
+              element={<StudentHome studentNo={token.id} />}
             />
             <Route
               path={"/course/:courseId" + course_link}
-              element={<StudentCourseHome studentNo={stdId} />}
+              element={<StudentCourseHome studentNo={token.id} />}
             />
             <Route
               path={"/course/:courseId" + course_events_link}
-              element={<StudentCourseEvents studentNo={stdId} />}
+              element={<StudentCourseEvents studentNo={token.id} />}
             />
             <Route
               path="*"
@@ -120,7 +141,7 @@ const App = () => {
             />
           </Routes>
         </main>
-        {/* <StudentMenuBar studentNo={stdId}/> */}
+        {/* <StudentMenuBar studentNo={token.id}/> */}
       </Router>
     );
   } else if (token.type === "teacher") {
@@ -135,25 +156,7 @@ const App = () => {
       </Router>
     );
   } else {
-    return (
-      <Router>
-        <BlankMenuBar />
-        <main>
-          <Routes>
-            <Route path={home_link} element={<Login onLogin={setToken} />} />
-            <Route
-              path="*"
-              element={
-                <>
-                  Redirecting to Login Page...
-                  <Navigate to="/" replace />
-                </>
-              }
-            />
-          </Routes>
-        </main>
-      </Router>
-    );
+    return loginElement;
   }
 };
 
