@@ -1,11 +1,9 @@
 import React from "react";
-import { Button } from "@mui/material";
 
 import "./Notification.css";
 import NotificationItem from "./Notification/NotificationItem";
-import { Link } from "react-router-dom";
 
-const Notification = ({ onClick }) => {
+const Notification = () => {
   const notificationList = [
     {
       id: 1,
@@ -110,11 +108,6 @@ const Notification = ({ onClick }) => {
       {notificationList.map((notificationitem, index) => (
         <NotificationItem key={index} notificationitem={notificationitem} />
       ))}
-      <div className="notification__centered__text">
-        <Link onClick={onClick} to="/notification">
-          <Button variant="contained">See All</Button>
-        </Link>
-      </div>
     </div>
   );
 };

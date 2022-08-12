@@ -23,7 +23,7 @@ const Login = ({ onLogin }) => {
   return (
     <div className="login__container">
       <div className="login__title">Login</div>
-      <form onSubmit={onSubmitAction} className="login__centered">
+      <form onSubmit={onSubmitAction} className="centered">
         <TextField
           fullWidth
           type="email"

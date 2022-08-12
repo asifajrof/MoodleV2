@@ -2,10 +2,6 @@
   align-items: center;
   padding: 0.5rem;
 }
-.notification__centered__text {
-  text-align: center;
-  padding: 0.5rem;
-}
 
 .notification__box {
   position: fixed;
