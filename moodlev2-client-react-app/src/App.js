@@ -1,5 +1,5 @@
-// import React, {useState, useEffect} from 'react';
-import React from "react";
+import React, { useState, useEffect } from "react";
+// import React from "react";
 import {
   BrowserRouter as Router,
   Navigate,
@@ -38,10 +38,11 @@ const App = () => {
   // },[]);
   // console.log(backendData);
 
+  const [userType, setUserType] = useState("nologin");
   // const userType = "student";
   // const userType = "admin";
   // const userType = "teacher";
-  const userType = "nologin";
+  // const userType = "nologin";
   const stdId = 1705119;
   const adminId = 1;
 
@@ -128,7 +129,7 @@ const App = () => {
         <BlankMenuBar />
         <main>
           <Routes>
-            <Route path={home_link} element={<Login />} />
+            <Route path={home_link} element={<Login onLogin={setUserType} />} />
             <Route
               path="*"
               element={

@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import "./login.css";
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const onSubmitAction = (event) => {
@@ -24,6 +24,8 @@ const Login = () => {
     setEmail("");
     setPassword("");
     // onAddDept({ deptName, deptShortName, deptCode });
+    onLogin("student");
+    console.log("onSubmitAction end");
   };
   return (
     <div className="login__container">
