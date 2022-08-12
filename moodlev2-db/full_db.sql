@@ -2290,6 +2290,7 @@ INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1
 -- Data for Name: instructor; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (1, 1, 1, '2022-08-12');
 
 
 --
@@ -2397,6 +2398,7 @@ INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notifi
 -- Data for Name: topic; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (1, 'State Space Modeling', 1, true, 'Here we will learn how to make a model to use in Markov chain', '2022-08-12 16:53:35.099193+06');
 
 
 --
@@ -2514,7 +2516,7 @@ SELECT pg_catalog.setval('public.grading_grading_id_seq', 1, false);
 -- Name: instructor_instructor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 1, false);
+SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 1, true);
 
 
 --
@@ -2605,7 +2607,7 @@ SELECT pg_catalog.setval('public.teacher_teacher_id_seq', 1, true);
 -- Name: topic_topic_num_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.topic_topic_num_seq', 1, false);
+SELECT pg_catalog.setval('public.topic_topic_num_seq', 2, true);
 
 
 --
