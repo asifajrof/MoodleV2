@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 
 
-const loginUser =  async function loginUser(credentials) => {
+const loginUser =  async (credentials) => {
   try {
     const res = await fetch(`/api/login`, {
       method: "POST",
@@ -53,7 +53,7 @@ const Login = ({ onLogin }) => {
   return (
     <div className="login__container">
       <div className="login__title">Login</div>
-      <form onSubmit={onSubmitAction} className="centered">
+      <form onSubmit={onSubmitAction} className="login__centered">
         <TextField
           fullWidth
           type="email"
