@@ -8,9 +8,9 @@ import Backdrop from "../UIElements/Backdrop";
 
 const NotificationLogo = ({ studentNo }) => {
   const [notificationShow, setNotificationShow] = useState(false);
-  const onClickHandler = (event) => {
-    console.log(event);
-    console.log("Notification clicked");
+  const onClickHandler = () => {
+    // console.log(event);
+    // console.log("Notification clicked");
     setNotificationShow(!notificationShow);
   };
   return (
@@ -18,7 +18,7 @@ const NotificationLogo = ({ studentNo }) => {
       {notificationShow && (
         <>
           <Backdrop show={notificationShow} onClick={onClickHandler} />{" "}
-          <Notification />
+          <Notification onClick={onClickHandler} />
         </>
       )}
       <NavLink to={notification_link} onClick={onClickHandler}>
