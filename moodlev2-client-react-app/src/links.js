@@ -1,6 +1,6 @@
 export const home_link = "/";
 export const logout_link = "/logout";
-export const notification_link = "#notification";
+export const notification_link = "#";
 export const personal_link = "/personal";
 
 export const timeline_link = "/timeline";
