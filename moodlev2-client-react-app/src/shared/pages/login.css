@@ -1,0 +1,49 @@
+@import url(//fonts.googleapis.com/css?family=Inter);
+.login__title {
+  position: fixed;
+  width: 70%;
+  left: 50%;
+  /* top: 50%; */
+  transform: translate(-50%, -0%);
+
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 3rem;
+  /* line-height: 5rem; */
+  /* identical to box height */
+
+  text-align: center;
+
+  color: #000000;
+}
+
+.centered {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 70%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+}
+
+.login__container {
+  position: fixed;
+  width: 30%;
+  height: 70%;
+  left: 50%;
+  top: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+  padding: 4em;
+  box-sizing: border-box;
+  background: linear-gradient(
+    145.36deg,
+    rgba(113, 113, 113, 0.2) -4.23%,
+    rgba(255, 255, 255, 0.4) 102.58%
+  );
+  /* backdrop-filter: blur(20px); */
+  /* Note: backdrop-filter has minimal browser support */
+
+  border-radius: 2em;
+}

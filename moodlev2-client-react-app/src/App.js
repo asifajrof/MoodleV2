@@ -16,6 +16,9 @@ import AdminHome from "./admin/pages/AdminHome";
 import AddNewCourse from "./admin/pages/AddNewCourse";
 import DeptAddForm from "./admin/components/add_dept";
 
+import BlankMenuBar from "./shared/components/BlankMenuBar";
+import Login from "./shared/pages/login";
+
 import "./App.css";
 
 import { course_events_link, course_link, home_link } from "./links";
@@ -35,8 +38,10 @@ const App = () => {
   // },[]);
   // console.log(backendData);
 
-  const userType = "student";
+  // const userType = "student";
   // const userType = "admin";
+  // const userType = "teacher";
+  const userType = "nologin";
   const stdId = 1705119;
   const adminId = 1;
 
@@ -120,11 +125,20 @@ const App = () => {
   } else {
     return (
       <Router>
-        <h1>nologin menu bar here</h1>
+        <BlankMenuBar />
         <main>
-          {/* <Routes>
-            <Route path='/' element={something} />
-          </Routes> */}
+          <Routes>
+            <Route path={home_link} element={<Login />} />
+            <Route
+              path="*"
+              element={
+                <>
+                  Redirecting to Login Page...
+                  <Navigate to="/" replace />
+                </>
+              }
+            />
+          </Routes>
         </main>
       </Router>
     );
