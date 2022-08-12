@@ -18,12 +18,12 @@ const Login = ({ onLogin }) => {
         body: JSON.stringify(credentials),
       });
       const data = await res.json();
-      // console.log(data);
+      console.log(data);
       setToken({ type: data.type, id: data.id });
       // return { type: data.type, id: data.id };
     } catch (err) {
       console.log(err);
-      alert("Wrong credentials. Try again.");
+      alert(err);
     }
   };
 
@@ -56,7 +56,7 @@ const Login = ({ onLogin }) => {
       <form onSubmit={onSubmitAction} className="login__centered">
         <TextField
           fullWidth
-          type="email"
+          type="text"
           id="email-input"
           label="E-mail Address"
           variant="outlined"

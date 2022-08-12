@@ -6,6 +6,7 @@ const cors = require("cors");
 const studentRoutes = require("./routes/student-routes");
 const sharedRoutes = require("./routes/shared-routes");
 const adminRoutes = require("./routes/admin-routes");
+const loginRoutes = require("./routes/login-routes");
 const HttpError = require("./models/http-error");
 
 const pool = require("./models/db_connect");
@@ -31,14 +32,15 @@ app.use((req, res, next) => {
 app.use("/api/student", studentRoutes);
 app.use("/api/course", sharedRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/login", loginRoutes);
 
-app.use("/api/login", (req, res) => {
-  res.send({
-    token: "test123",
-    type: "student",
-    id: 1705119,
-  });
-});
+// app.use("/api/login", (req, res) => {
+//   res.send({
+//     token: "test123",
+//     type: "student",
+//     id: 1705119,
+//   });
+// });
 
 // upload endpoint
 app.post("/upload", (req, res) => {
