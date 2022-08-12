@@ -299,6 +299,19 @@ begin
     select * from department;
 end
 $$ language plpgsql;
+create or replace function get_account_type (uname varchar)
+    returns table (id integer,type varchar,hashed_password char(60)) as $$
+begin
+    return query
+    select t.teacher_id as _id,cast('Teacher' as varchar) as _type, password from teacher t join official_users ou on t.user_no=ou.user_no
+where ou.username=uname
+union
+select a.admin_id as _id,cast('Admin' as varchar) as _type,password from admins a join official_users ou on a.user_no=ou.user_no
+where ou.username=uname
+union
+select student_id as _id, cast('Student' as varchar) as _type,password from student where cast((mod(_year,100)*100000+dept_code*1000+roll_num) as varchar)=uname;
+end
+$$ language plpgsql;
 create or replace function add_student(name varchar,hashed_password varchar,roll integer,dept integer,batch integer, email varchar) returns void as $$
     begin
         insert into student(student_id,student_name, password, _year, roll_num, dept_code, email_address)
@@ -783,6 +796,7 @@ create trigger post_check before insert or update on course_post
 -- drop function add_admin(admin_name character varying, uname character varying, hashed_password character varying, email character varying);
 -- drop function add_teacher(name varchar, uname varchar, hashed_password varchar, dept integer, email varchar);
 -- drop function add_student(name varchar,hashed_password varchar,roll integer,dept integer,batch integer, email varchar);
+-- drop function get_account_type(uname varchar);
 -- drop function get_dept_list();
 -- drop materialized view intersected_sections;
 -- drop materialized view current_courses;
