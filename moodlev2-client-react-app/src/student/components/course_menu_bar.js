@@ -9,9 +9,9 @@ import {
 
 import CourseHeader from "./course_menu_bar/course_header";
 // import CourseMenuOption from './course_menu_bar/course_menu_option';
-import MenuOption from "./menu_bar/menu_option";
+import MenuOption from "../../shared/components/menu_bar/menu_option";
 import Backdrop from "../../shared/components/UIElements/Backdrop";
-import SideDrawer from "./menu_bar/side_drawer";
+import SideDrawer from "../../shared/components/menu_bar/side_drawer";
 // import './course_menu_bar.css';
 
 const CourseMenuBar = ({ studentNo, courseId }) => {

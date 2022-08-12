@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 
-import MainHeader from "./menu_bar/main_header";
-import LogoutLogo from "./menu_bar/logout_logo";
-import MainLogo from "./menu_bar/main_logo";
-import MenuOption from "./menu_bar/menu_option";
-import NotificationLogo from "./menu_bar/notification_logo";
-import PersonLogo from "./menu_bar/person_logo";
-import SideDrawer from "./menu_bar/side_drawer";
+import MainHeader from "../../shared/components/menu_bar/main_header";
+import LogoutLogo from "../../shared/components/menu_bar/logout_logo";
+import MainLogo from "../../shared/components/menu_bar/main_logo";
+import MenuOption from "../../shared/components/menu_bar/menu_option";
+import NotificationLogo from "../../shared/components/menu_bar/notification_logo";
+import PersonLogo from "../../shared/components/menu_bar/person_logo";
+import SideDrawer from "../../shared/components/menu_bar/side_drawer";
 import Backdrop from "../../shared/components/UIElements/Backdrop";
 
 import {
