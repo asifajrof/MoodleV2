@@ -121,6 +121,122 @@ $$;
 ALTER FUNCTION public.cancel_class_day_check() OWNER TO postgres;
 
 --
+-- Name: class_class_conflict_student(time without time zone, time without time zone, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.class_class_conflict_student(start_time time without time zone, end_time time without time zone, weekday integer, sec_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans integer;
+    begin
+        ans = 0;
+        select count(*) from course_routine cr join intersected_sections iss on cr.section_no=iss.second_section
+where iss.first_section=sec_id and cr.day=weekday and overlapped_time(cr.start,cr._end,start_time,end_time);
+        if (ans>0) then
+            return true;
+        end if;
+        return false;
+    end
+$$;
+
+
+ALTER FUNCTION public.class_class_conflict_student(start_time time without time zone, end_time time without time zone, weekday integer, sec_id integer) OWNER TO postgres;
+
+--
+-- Name: class_class_conflict_teacher(time without time zone, time without time zone, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.class_class_conflict_teacher(start_time time without time zone, end_time time without time zone, weekday integer, ins_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans integer;
+        tid integer;
+    begin
+        ans = 0;
+        tid = instructor_to_teacher(ins_id);
+        select count(*) into ans from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id join instructor i on tr.instructor_id = i.instructor_id
+where i.teacher_id=tid and i.instructor_id!=ins_id and cr.day=weekday and overlapped_time(cr.start,cr._end,start_time,end_time);
+        if (ans>0) then
+            return true;
+        end if;
+        return false;
+    end
+$$;
+
+
+ALTER FUNCTION public.class_class_conflict_teacher(start_time time without time zone, end_time time without time zone, weekday integer, ins_id integer) OWNER TO postgres;
+
+--
+-- Name: class_event_conflict_student(time without time zone, time without time zone, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.class_event_conflict_student(start_time time without time zone, end_time time without time zone, weekday integer, sec_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans integer;
+    begin
+        ans = 0;
+select count(*) from extra_class ec join intersected_sections iss on ec.section_no=iss.second_section
+where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section
+where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
+        if (ans>0) then
+            return true;
+        end if;
+        return false;
+    end
+$$;
+
+
+ALTER FUNCTION public.class_event_conflict_student(start_time time without time zone, end_time time without time zone, weekday integer, sec_id integer) OWNER TO postgres;
+
+--
+-- Name: class_event_conflict_teacher(time without time zone, time without time zone, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.class_event_conflict_teacher(start_time time without time zone, end_time time without time zone, weekday integer, ins_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans integer;
+        tid integer;
+    begin
+        ans = 0;
+        tid = instructor_to_teacher(ins_id);
+select count(*) into ans from extra_class ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from extra_class_teacher ect join extra_class ec on ect.extra_class_id=ec.extra_class_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+        return false;
+    end
+$$;
+
+
+ALTER FUNCTION public.class_event_conflict_teacher(start_time time without time zone, end_time time without time zone, weekday integer, ins_id integer) OWNER TO postgres;
+
+--
 -- Name: cr_assignment_check(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -178,12 +294,100 @@ begin
     if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
         raise exception 'Invalid data insertion or update';
     end if;
+    if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
     return new;
 end;
 $$;
 
 
 ALTER FUNCTION public.evaluation_check() OWNER TO postgres;
+
+--
+-- Name: event_class_conflict(time without time zone, time without time zone, date, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.event_class_conflict(start_time time without time zone, end_time time without time zone, curr_date date, sec_id integer, ins_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans integer;
+        tid integer;
+    begin
+        ans = 0;
+        tid = instructor_to_teacher(ins_id);
+        select count(*) into ans from course_routine cr join intersected_sections iss on cr.section_no=iss.second_section
+where iss.first_section=sec_id and cr.day=extract(isodow from curr_date)-1 and overlapped_time(cr.start,cr._end,start_time,end_time) and not exists (select canceled_class_id from canceled_class cc
+    where cc.class_id=cr.class_id and cc._date=curr_date);
+        if (ans>0) then
+            return true;
+        end if;
+        select count(*) into ans from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id join instructor i on tr.instructor_id = i.instructor_id
+where i.teacher_id=tid and i.instructor_id!=ins_id and cr.day=extract(isodow from curr_date)-1 and overlapped_time(cr.start,cr._end,start_time,end_time) and not exists (select canceled_class_id from canceled_class cc
+    where cc.class_id=cr.class_id and cc._date=curr_date);
+        if (ans>0) then
+            return true;
+        end if;
+        return false;
+    end
+$$;
+
+
+ALTER FUNCTION public.event_class_conflict(start_time time without time zone, end_time time without time zone, curr_date date, sec_id integer, ins_id integer) OWNER TO postgres;
+
+--
+-- Name: event_event_conflict(timestamp without time zone, timestamp without time zone, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.event_event_conflict(start_timestamp timestamp without time zone, end_timestamp timestamp without time zone, sec_id integer, ins_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans integer;
+        tid integer;
+    begin
+        ans = 0;
+        tid = instructor_to_teacher(ins_id);
+        select count(*) into ans from extra_class ec join intersected_sections iss on ec.section_no=iss.second_section
+where iss.first_section=sec_id and overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp);
+        if (ans>0) then
+            return true;
+        end if;
+    select count(*) into ans from extra_class ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from extra_class_teacher ect join extra_class ec on ect.extra_class_id=ec.extra_class_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section
+where iss.first_section=sec_id and overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp);
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+        return false;
+    end
+$$;
+
+
+ALTER FUNCTION public.event_event_conflict(start_timestamp timestamp without time zone, end_timestamp timestamp without time zone, sec_id integer, ins_id integer) OWNER TO postgres;
 
 --
 -- Name: extra_class_check(); Type: FUNCTION; Schema: public; Owner: postgres
@@ -195,6 +399,12 @@ CREATE FUNCTION public.extra_class_check() RETURNS trigger
 declare
 begin
     if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -309,6 +519,24 @@ $$;
 
 
 ALTER FUNCTION public.get_dept_list() OWNER TO postgres;
+
+--
+-- Name: get_teacher_id(character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_teacher_id(teacher_uname character varying) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans integer;
+    begin
+        select teacher_id into ans from teacher where teacher_name=teacher_uname;
+        return ans;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_teacher_id(teacher_uname character varying) OWNER TO postgres;
 
 --
 -- Name: get_upcoming_events(integer); Type: FUNCTION; Schema: public; Owner: postgres
@@ -464,6 +692,24 @@ CREATE FUNCTION public.instructor_section_compare(new_ins_id integer, new_sec_no
 ALTER FUNCTION public.instructor_section_compare(new_ins_id integer, new_sec_no integer, old_ins_id integer, old_sec_no integer) OWNER TO postgres;
 
 --
+-- Name: instructor_to_teacher(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.instructor_to_teacher(ins_id integer) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans integer;
+    begin
+        select teacher_id into ans from instructor where instructor_id=ins_id;
+        return ans;
+    end
+$$;
+
+
+ALTER FUNCTION public.instructor_to_teacher(ins_id integer) OWNER TO postgres;
+
+--
 -- Name: intersected_section_update(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -488,8 +734,19 @@ CREATE FUNCTION public.notification_event_check() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 declare
+    cnt integer;
 begin
-    if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
+    cnt:=0;
+    if (new.event_type=0) then
+        select count(*) into cnt from request_event where req_id=new.event_no;
+    elsif (new.event_type=1) then
+        select count(*) into cnt from extra_class where extra_class_id=new.event_no;
+    elsif (new.event_type=2) then
+        select count(*) into cnt from evaluation where evaluation_id=new.event_no;
+    else
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (cnt=0) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -599,6 +856,12 @@ begin
     if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
         raise exception 'Invalid data insertion or update';
     end if;
+    if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
     return new;
 end;
 $$;
@@ -674,13 +937,22 @@ CREATE FUNCTION public.teacher_routine_check() RETURNS trigger
     AS $$
 declare
     sec_no integer;
+    start_time time;
+    end_time time;
+    weekday integer;
 begin
     if (new.class_id is null or new.instructor_id is null) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Invalid data insertion or update from line 9';
     end if;
-    select section_no into sec_no from course_routine
+    select section_no,start,_end,day into sec_no,start_time,end_time,weekday from course_routine
     where class_id=new.class_id;
     if (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null)) then
+        raise exception 'Invalid data insertion or update from line 12';
+    end if;
+    if (class_class_conflict_teacher(start_time,end_time,weekday,new.instructor_id)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (class_event_conflict_teacher(start_time,end_time,weekday,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -1443,6 +1715,7 @@ CREATE MATERIALIZED VIEW public.intersected_sections AS
              JOIN public.course c ON ((c.course_id = s.course_id)))
              JOIN public.student s2 ON ((e_1.student_id = s2.student_id)))
           WHERE (s2._year = c.batch)) f ON ((e.student_id = f.student_id)))
+  WHERE (e.section_id <> f.section_id)
   GROUP BY e.section_id, f.section_id
   WITH NO DATA;
 
@@ -1456,14 +1729,10 @@ ALTER TABLE public.intersected_sections OWNER TO postgres;
 CREATE TABLE public.notification_event (
     not_id integer NOT NULL,
     type_id integer NOT NULL,
-    section_no integer NOT NULL,
-    instructor_id integer NOT NULL,
-    start timestamp with time zone NOT NULL,
-    _end timestamp with time zone NOT NULL,
+    event_no integer NOT NULL,
+    event_type integer NOT NULL,
     _date date NOT NULL,
-    notifucation_time timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    CONSTRAINT notification_event_check CHECK ((_end > start)),
-    CONSTRAINT notification_event_start_check CHECK ((start >= CURRENT_TIMESTAMP))
+    notifucation_time timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 
@@ -2257,7 +2526,7 @@ INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (18,
 -- Data for Name: enrolment; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1, 1, 1, '2022-08-12');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1, 1, 1, '2022-08-14');
 
 
 --
@@ -2312,7 +2581,7 @@ INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1
 -- Data for Name: instructor; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (1, 1, 1, '2022-08-12');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (1, 1, 1, '2022-08-14');
 
 
 --
@@ -2376,12 +2645,12 @@ INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (
 -- Data for Name: student; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful', '$2a$12$BjvAnEmgjQsjLxPmFsD8Peh7H0DV49ZiXZisriA/IZ92ySlPJc1p.', 2017, 119, 5, '2022-08-12 16:29:53.587539+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (2, 'Fatima Nawmi', '$2y$10$/q5rPYxPDEDi14Hp33AgfOjhuF8mglmjqBnyN58zN17L4hJ4Oclpu', 2017, 93, 5, '2022-08-12 22:02:16.818142+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (3, 'Asif Ajrof', '$2y$10$pYUj/gnwUYpkBdWQiXi3buA8rVAE3EFSJbd2FSQuWkAEAF3SZqGPW', 2017, 92, 5, '2022-08-12 22:03:43.623458+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (4, 'Nazmul Takbir', '$2y$10$iVzkVjUWBYUKA2rcPz83BubHExrrr0guL5nEZHrK4GdZj8PzRZQd.', 2017, 103, 5, '2022-08-12 22:05:15.281132+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (5, 'Sihat Afnan', '$2y$10$WoVLtw9ux4j13piNbC3df.UKBJwO7wFVmLzfbqzZeNBc8NE3ierLO', 2017, 98, 5, '2022-08-12 22:06:27.078734+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (6, 'Saif Ahmed Khan', '$2y$10$nCoBIjkAYSLLwLW8tDe4Ku3Ud.TkJvViq62cGQ.dkfmpl3XqavsvW', 2017, 110, 5, '2022-08-12 22:07:34.48277+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful', '$2a$12$BjvAnEmgjQsjLxPmFsD8Peh7H0DV49ZiXZisriA/IZ92ySlPJc1p.', 2017, 119, 5, '2022-08-14 19:06:40.710254+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (2, 'Fatima Nawmi', '$2y$10$/q5rPYxPDEDi14Hp33AgfOjhuF8mglmjqBnyN58zN17L4hJ4Oclpu', 2017, 93, 5, '2022-08-14 19:06:40.740985+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (3, 'Asif Ajrof', '$2y$10$pYUj/gnwUYpkBdWQiXi3buA8rVAE3EFSJbd2FSQuWkAEAF3SZqGPW', 2017, 92, 5, '2022-08-14 19:06:40.781217+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (4, 'Saif Ahmed Khan', '$2y$10$nCoBIjkAYSLLwLW8tDe4Ku3Ud.TkJvViq62cGQ.dkfmpl3XqavsvW', 2017, 110, 5, '2022-08-14 19:06:40.800452+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (5, 'Nazmul Takbir', '$2y$10$iVzkVjUWBYUKA2rcPz83BubHExrrr0guL5nEZHrK4GdZj8PzRZQd.', 2017, 103, 5, '2022-08-14 19:06:40.82747+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (6, 'Sihat Afnan', '$2y$10$WoVLtw9ux4j13piNbC3df.UKBJwO7wFVmLzfbqzZeNBc8NE3ierLO', 2017, 98, 5, '2022-08-14 19:06:40.842895+06', NULL);
 
 
 --
@@ -2406,7 +2675,7 @@ INSERT INTO public.student (student_id, student_name, password, _year, roll_num,
 -- Data for Name: teacher; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (1, 'A.B.M. Alim Al Islam', 2, 5, '2022-08-12 16:29:53.74521+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (1, 'A.B.M. Alim Al Islam', 2, 5, '2022-08-14 19:06:40.951946+06');
 
 
 --
@@ -2419,13 +2688,13 @@ INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notifi
 -- Data for Name: teacher_routine; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (1, 1, 1);
 
 
 --
 -- Data for Name: topic; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (1, 'State Space Modeling', 1, true, 'Here we will learn how to make a model to use in Markov chain', '2022-08-12 16:53:35.099193+06');
 
 
 --
@@ -2620,7 +2889,7 @@ SELECT pg_catalog.setval('public.submission_sub_id_seq', 1, false);
 -- Name: teacher_routine_teacher_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.teacher_routine_teacher_class_id_seq', 1, false);
+SELECT pg_catalog.setval('public.teacher_routine_teacher_class_id_seq', 1, true);
 
 
 --
@@ -2634,7 +2903,7 @@ SELECT pg_catalog.setval('public.teacher_teacher_id_seq', 1, true);
 -- Name: topic_topic_num_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.topic_topic_num_seq', 2, true);
+SELECT pg_catalog.setval('public.topic_topic_num_seq', 1, false);
 
 
 --
@@ -2949,11 +3218,11 @@ ALTER TABLE ONLY public.notification_event
 
 
 --
--- Name: notification_event notification_event_type_id_section_no_instructor_id_start___key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: notification_event notification_event_type_id_event_no_event_type__date_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.notification_event
-    ADD CONSTRAINT notification_event_type_id_section_no_instructor_id_start___key UNIQUE (type_id, section_no, instructor_id, start, _end, _date);
+    ADD CONSTRAINT notification_event_type_id_event_no_event_type__date_key UNIQUE (type_id, event_no, event_type, _date);
 
 
 --
@@ -3508,22 +3777,6 @@ ALTER TABLE ONLY public.instructor_resource
 
 ALTER TABLE ONLY public.instructor
     ADD CONSTRAINT instructor_teacher_id_fkey FOREIGN KEY (teacher_id) REFERENCES public.teacher(teacher_id);
-
-
---
--- Name: notification_event notification_event_instructor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.notification_event
-    ADD CONSTRAINT notification_event_instructor_id_fkey FOREIGN KEY (instructor_id) REFERENCES public.instructor(instructor_id);
-
-
---
--- Name: notification_event notification_event_section_no_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.notification_event
-    ADD CONSTRAINT notification_event_section_no_fkey FOREIGN KEY (section_no) REFERENCES public.section(section_no);
 
 
 --
