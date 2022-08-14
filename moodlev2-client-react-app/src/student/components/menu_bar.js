@@ -64,13 +64,13 @@ const StudentMenuBar = ({ studentNo }) => {
         <nav className="main-navigation__drawer-nav">
           <ul className="nav-icons">
             <li>
-              <NotificationLogo studentNo={studentNo} />
+              <NotificationLogo uId={studentNo} />
             </li>
             <li>
-              <PersonLogo studentNo={studentNo} />
+              <PersonLogo uId={studentNo} />
             </li>
             <li>
-              <LogoutLogo studentNo={studentNo} />
+              <LogoutLogo uId={studentNo} />
             </li>
           </ul>
         </nav>
@@ -98,13 +98,13 @@ const StudentMenuBar = ({ studentNo }) => {
         <nav className="main-navigation__header-nav">
           <ul className="nav-icons">
             <li>
-              <NotificationLogo studentNo={studentNo} />
+              <NotificationLogo uId={studentNo} />
             </li>
             <li>
-              <PersonLogo studentNo={studentNo} />
+              <PersonLogo uId={studentNo} />
             </li>
             <li>
-              <LogoutLogo studentNo={studentNo} />
+              <LogoutLogo uId={studentNo} />
             </li>
           </ul>
         </nav>

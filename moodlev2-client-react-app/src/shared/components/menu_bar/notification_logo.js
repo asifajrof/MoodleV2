@@ -8,7 +8,7 @@ import Backdrop from "../UIElements/Backdrop";
 
 const IntervalTime = 2000;
 
-const NotificationLogo = ({ studentNo }) => {
+const NotificationLogo = ({ uId }) => {
   const [notificationShow, setNotificationShow] = useState(false);
   const [notificationList, setnotificationList] = useState([]);
   const onClickHandler = () => {
@@ -16,7 +16,7 @@ const NotificationLogo = ({ studentNo }) => {
   };
   useEffect(() => {
     let interval = setInterval(async () => {
-      const res = await fetch(`/api/notification/${studentNo}`);
+      const res = await fetch(`/api/notification/${uId}`);
       const jsonData = await res.json();
       if (res.status == 200) {
         setnotificationList(jsonData.data);
@@ -33,7 +33,7 @@ const NotificationLogo = ({ studentNo }) => {
           <Notification
             onClick={onClickHandler}
             notificationList={notificationList}
-            uId={studentNo}
+            uId={uId}
           />
         </>
       )}

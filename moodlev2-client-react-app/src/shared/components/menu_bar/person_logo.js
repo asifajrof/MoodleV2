@@ -4,7 +4,7 @@ import { FaUserAlt } from "react-icons/fa";
 
 import { personal_link } from "../../../links";
 
-const PersonLogo = ({ studentNo }) => {
+const PersonLogo = ({ uId }) => {
   return (
     <>
       <NavLink to={personal_link}>

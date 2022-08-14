@@ -64,13 +64,13 @@ const TeacherMenuBar = ({ userName }) => {
         <nav className="main-navigation__drawer-nav">
           <ul className="nav-icons">
             <li>
-              <NotificationLogo userName={userName} />
+              <NotificationLogo uId={userName} />
             </li>
             <li>
-              <PersonLogo userName={userName} />
+              <PersonLogo uId={userName} />
             </li>
             <li>
-              <LogoutLogo userName={userName} />
+              <LogoutLogo uId={userName} />
             </li>
           </ul>
         </nav>
@@ -98,13 +98,13 @@ const TeacherMenuBar = ({ userName }) => {
         <nav className="main-navigation__header-nav">
           <ul className="nav-icons">
             <li>
-              <NotificationLogo userName={userName} />
+              <NotificationLogo uId={userName} />
             </li>
             <li>
-              <PersonLogo userName={userName} />
+              <PersonLogo uId={userName} />
             </li>
             <li>
-              <LogoutLogo userName={userName} />
+              <LogoutLogo uId={userName} />
             </li>
           </ul>
         </nav>
