@@ -131,7 +131,7 @@ CREATE FUNCTION public.class_class_conflict_student(start_time time without time
         ans integer;
     begin
         ans = 0;
-        select count(*) from course_routine cr join intersected_sections iss on cr.section_no=iss.second_section
+        select count(*) into ans from course_routine cr join intersected_sections iss on cr.section_no=iss.second_section
 where iss.first_section=sec_id and cr.day=weekday and overlapped_time(cr.start,cr._end,start_time,end_time);
         if (ans>0) then
             return true;
@@ -179,12 +179,12 @@ CREATE FUNCTION public.class_event_conflict_student(start_time time without time
         ans integer;
     begin
         ans = 0;
-select count(*) from extra_class ec join intersected_sections iss on ec.section_no=iss.second_section
+select count(*) into ans from extra_class ec join intersected_sections iss on ec.section_no=iss.second_section
 where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
         if (ans>0) then
             return true;
         end if;
-select count(*) from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section
+select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section
 where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
         if (ans>0) then
             return true;
@@ -527,6 +527,27 @@ $$;
 ALTER FUNCTION public.get_current_course(std_id integer) OWNER TO postgres;
 
 --
+-- Name: get_current_course_teacher(character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_current_course_teacher(teacher_username character varying) RETURNS TABLE(id integer, term character varying, _year integer, dept_shortname character varying, course_code integer, course_name character varying)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+    return query
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name
+    from current_courses cc join instructor i on cc._id=i.course_id join teacher t on i.teacher_id = t.teacher_id
+    where t.teacher_id=tid;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_current_course_teacher(teacher_username character varying) OWNER TO postgres;
+
+--
 -- Name: get_dept_list(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -552,7 +573,8 @@ CREATE FUNCTION public.get_teacher_id(teacher_uname character varying) RETURNS i
     declare
         ans integer;
     begin
-        select teacher_id into ans from teacher where teacher_name=teacher_uname;
+        select teacher_id into ans from teacher join official_users ou on teacher.user_no = ou.user_no
+        where username=teacher_uname;
         return ans;
     end
 $$;
@@ -2667,12 +2689,12 @@ INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (
 -- Data for Name: student; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful', '$2a$12$BjvAnEmgjQsjLxPmFsD8Peh7H0DV49ZiXZisriA/IZ92ySlPJc1p.', 2017, 119, 5, '2022-08-14 19:06:40.710254+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (2, 'Fatima Nawmi', '$2y$10$/q5rPYxPDEDi14Hp33AgfOjhuF8mglmjqBnyN58zN17L4hJ4Oclpu', 2017, 93, 5, '2022-08-14 19:06:40.740985+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (3, 'Asif Ajrof', '$2y$10$pYUj/gnwUYpkBdWQiXi3buA8rVAE3EFSJbd2FSQuWkAEAF3SZqGPW', 2017, 92, 5, '2022-08-14 19:06:40.781217+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (4, 'Saif Ahmed Khan', '$2y$10$nCoBIjkAYSLLwLW8tDe4Ku3Ud.TkJvViq62cGQ.dkfmpl3XqavsvW', 2017, 110, 5, '2022-08-14 19:06:40.800452+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (5, 'Nazmul Takbir', '$2y$10$iVzkVjUWBYUKA2rcPz83BubHExrrr0guL5nEZHrK4GdZj8PzRZQd.', 2017, 103, 5, '2022-08-14 19:06:40.82747+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (6, 'Sihat Afnan', '$2y$10$WoVLtw9ux4j13piNbC3df.UKBJwO7wFVmLzfbqzZeNBc8NE3ierLO', 2017, 98, 5, '2022-08-14 19:06:40.842895+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful', '$2a$12$BjvAnEmgjQsjLxPmFsD8Peh7H0DV49ZiXZisriA/IZ92ySlPJc1p.', 2017, 119, 5, '2022-08-14 20:43:58.549871+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (2, 'Fatima Nawmi', '$2y$10$/q5rPYxPDEDi14Hp33AgfOjhuF8mglmjqBnyN58zN17L4hJ4Oclpu', 2017, 93, 5, '2022-08-14 20:43:58.563509+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (3, 'Asif Ajrof', '$2y$10$pYUj/gnwUYpkBdWQiXi3buA8rVAE3EFSJbd2FSQuWkAEAF3SZqGPW', 2017, 92, 5, '2022-08-14 20:43:58.576829+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (4, 'Saif Ahmed Khan', '$2y$10$nCoBIjkAYSLLwLW8tDe4Ku3Ud.TkJvViq62cGQ.dkfmpl3XqavsvW', 2017, 110, 5, '2022-08-14 20:43:58.592679+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (5, 'Nazmul Takbir', '$2y$10$iVzkVjUWBYUKA2rcPz83BubHExrrr0guL5nEZHrK4GdZj8PzRZQd.', 2017, 103, 5, '2022-08-14 20:43:58.605065+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (6, 'Sihat Afnan', '$2y$10$WoVLtw9ux4j13piNbC3df.UKBJwO7wFVmLzfbqzZeNBc8NE3ierLO', 2017, 98, 5, '2022-08-14 20:43:58.617231+06', NULL);
 
 
 --
@@ -2697,7 +2719,7 @@ INSERT INTO public.student (student_id, student_name, password, _year, roll_num,
 -- Data for Name: teacher; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (1, 'A.B.M. Alim Al Islam', 2, 5, '2022-08-14 19:06:40.951946+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (1, 'A.B.M. Alim Al Islam', 2, 5, '2022-08-14 20:43:58.769793+06');
 
 
 --

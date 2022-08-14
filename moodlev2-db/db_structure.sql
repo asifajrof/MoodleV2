@@ -771,7 +771,8 @@ create or replace function get_teacher_id(teacher_uname varchar) returns integer
     declare
         ans integer;
     begin
-        select teacher_id into ans from teacher where teacher_name=teacher_uname;
+        select teacher_id into ans from teacher join official_users ou on teacher.user_no = ou.user_no
+        where username=teacher_uname;
         return ans;
     end
 $$ language plpgsql;
@@ -902,7 +903,7 @@ create or replace function class_class_conflict_student(start_time time,end_time
         ans integer;
     begin
         ans = 0;
-        select count(*) from course_routine cr join intersected_sections iss on cr.section_no=iss.second_section
+        select count(*) into ans from course_routine cr join intersected_sections iss on cr.section_no=iss.second_section
 where iss.first_section=sec_id and cr.day=weekday and overlapped_time(cr.start,cr._end,start_time,end_time);
         if (ans>0) then
             return true;
@@ -916,12 +917,12 @@ create or replace function class_event_conflict_student(start_time time,end_time
         ans integer;
     begin
         ans = 0;
-select count(*) from extra_class ec join intersected_sections iss on ec.section_no=iss.second_section
+select count(*) into ans from extra_class ec join intersected_sections iss on ec.section_no=iss.second_section
 where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
         if (ans>0) then
             return true;
         end if;
-select count(*) from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section
+select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section
 where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
         if (ans>0) then
             return true;
@@ -974,18 +975,32 @@ $course_routine_validation$ language plpgsql;
 create trigger course_routine_validation before insert or update on course_routine
      for each row execute function course_routine_check();
 
+create or replace function get_current_course_teacher (teacher_username varchar)
+    returns table (id integer,term varchar,_year integer,dept_shortname varchar,course_code integer,course_name varchar) as $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+    return query
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name
+    from current_courses cc join instructor i on cc._id=i.course_id join teacher t on i.teacher_id = t.teacher_id
+    where t.teacher_id=tid;
+    end
+$$ language plpgsql;
+
+-- drop function get_current_course_teacher(teacher_username varchar);
 -- drop trigger course_routine_validation on course_routine;
 -- drop function course_routine_check();
 -- drop trigger teacher_routine_validation on teacher_routine;
 -- drop function teacher_routine_check();
 -- drop function class_event_conflict_student(start_time time, end_time time, weekday integer, sec_id integer);
 -- drop function class_class_conflict_student(start_time time, end_time time, weekday integer, sec_id integer);
---drop function class_event_conflict_teacher(start_time time, end_time time, weekday integer, ins_id integer);
---drop function class_class_conflict_teacher(start_time time, end_time time, weekday integer, ins_id integer);
---drop function event_event_conflict(start_timestamp timestamp, end_timestamp timestamp, sec_id integer, ins_id integer);
---drop function event_class_conflict(start_time time,end_time time,curr_date date,sec_id integer,ins_id integer);
---drop function instructor_to_teacher(ins_id integer);
---drop function get_teacher_id(teacher_uname varchar);
+-- drop function class_event_conflict_teacher(start_time time, end_time time, weekday integer, ins_id integer);
+-- drop function class_class_conflict_teacher(start_time time, end_time time, weekday integer, ins_id integer);
+-- drop function event_event_conflict(start_timestamp timestamp, end_timestamp timestamp, sec_id integer, ins_id integer);
+-- drop function event_class_conflict(start_time time,end_time time,curr_date date,sec_id integer,ins_id integer);
+-- drop function instructor_to_teacher(ins_id integer);
+-- drop function get_teacher_id(teacher_uname varchar);
 -- drop trigger post_check on course_post;
 -- drop function poster_check();
 -- drop trigger cancel_class_validation on canceled_class;
