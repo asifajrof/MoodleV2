@@ -958,6 +958,24 @@ $teacher_routine_validation$ language plpgsql;
 create trigger teacher_routine_validation before insert or update on teacher_routine
      for each row execute function teacher_routine_check();
 
+create or replace function course_routine_check() returns trigger as $course_routine_validation$
+declare
+begin
+    if (class_class_conflict_student(new.start,new._end,new.day,new.section_no)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (class_event_conflict_student(new.start,new._end,new.day,new.section_no)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    return new;
+end;
+$course_routine_validation$ language plpgsql;
+
+create trigger course_routine_validation before insert or update on course_routine
+     for each row execute function course_routine_check();
+
+-- drop trigger course_routine_validation on course_routine;
+-- drop function course_routine_check();
 -- drop trigger teacher_routine_validation on teacher_routine;
 -- drop function teacher_routine_check();
 -- drop function class_event_conflict_student(start_time time, end_time time, weekday integer, sec_id integer);

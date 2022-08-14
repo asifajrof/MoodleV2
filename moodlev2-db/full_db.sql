@@ -237,6 +237,28 @@ $$;
 ALTER FUNCTION public.class_event_conflict_teacher(start_time time without time zone, end_time time without time zone, weekday integer, ins_id integer) OWNER TO postgres;
 
 --
+-- Name: course_routine_check(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.course_routine_check() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+declare
+begin
+    if (class_class_conflict_student(new.start,new._end,new.day,new.section_no)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (class_event_conflict_student(new.start,new._end,new.day,new.section_no)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    return new;
+end;
+$$;
+
+
+ALTER FUNCTION public.course_routine_check() OWNER TO postgres;
+
+--
 -- Name: cr_assignment_check(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -3478,6 +3500,13 @@ ALTER TABLE ONLY public.visibility
 --
 
 CREATE TRIGGER cancel_class_validation BEFORE INSERT OR UPDATE ON public.canceled_class FOR EACH ROW EXECUTE FUNCTION public.cancel_class_day_check();
+
+
+--
+-- Name: course_routine course_routine_validation; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER course_routine_validation BEFORE INSERT OR UPDATE ON public.course_routine FOR EACH ROW EXECUTE FUNCTION public.course_routine_check();
 
 
 --
