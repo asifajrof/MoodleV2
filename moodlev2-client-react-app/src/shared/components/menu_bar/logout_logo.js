@@ -7,7 +7,6 @@ import { home_link, logout_link } from "../../../links";
 const LogoutLogo = ({ uId }) => {
   const onClickHandler = () => {
     localStorage.clear();
-    sessionStorage.clear();
     window.location.href = "/";
   };
 
