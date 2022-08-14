@@ -4,7 +4,7 @@ import "./login.css";
 import PropTypes from "prop-types";
 
 const Login = ({ onLogin }) => {
-  const [email, setEmail] = useState("");
+  const [uName, setUName] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState({});
 
@@ -19,7 +19,8 @@ const Login = ({ onLogin }) => {
       });
       const data = await res.json();
       console.log(data);
-      setToken({ type: data.type, id: data.id });
+      setToken({ type: data.type, id: credentials.uName });
+      // setToken({ type: data.type, id: data.id });
       // return { type: data.type, id: data.id };
     } catch (err) {
       console.log(err);
@@ -33,19 +34,19 @@ const Login = ({ onLogin }) => {
 
   const onSubmitAction = (event) => {
     event.preventDefault();
-    if (!email) {
-      alert("Please enter email");
+    if (!uName) {
+      alert("Please enter username");
       return;
     }
 
-    console.log("onSubmitAction");
-    console.log(email, password);
-    setEmail("");
+    // console.log("onSubmitAction");
+    // console.log(uName, password);
+    setUName("");
     setPassword("");
 
-    // const token = await loginUser({ email, password });
+    // const token = await loginUser({ uName, password });
     // onLogin(token);
-    loginUser({ email, password });
+    loginUser({ uName, password });
 
     // onLogin("student");
     console.log("onSubmitAction end");
@@ -57,14 +58,14 @@ const Login = ({ onLogin }) => {
         <TextField
           fullWidth
           type="text"
-          id="email-input"
-          label="E-mail Address"
+          id="uName-input"
+          label="Username"
           variant="outlined"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={uName}
+          onChange={(e) => setUName(e.target.value)}
         />
-        <FormHelperText id="email-input-helper-text">
-          Enter your email address
+        <FormHelperText id="uName-input-helper-text">
+          Enter your Username
         </FormHelperText>
         <br />
         <TextField
@@ -76,7 +77,7 @@ const Login = ({ onLogin }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <FormHelperText id="email-input-helper-text">
+        <FormHelperText id="password-input-helper-text">
           Enter your password
         </FormHelperText>
         <br />

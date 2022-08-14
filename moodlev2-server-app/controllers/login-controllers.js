@@ -5,10 +5,10 @@ const { compare } = require("bcryptjs");
 const loginAuthenticate = async (req, res, next) => {
   try {
     console.log("inside login authentication");
-    const { email, password } = req.body;
+    const { uName, password } = req.body;
     let result = await pool.query(
       "SELECT json_agg(t) FROM get_account_type($1) as t",
-      [email]
+      [uName]
     );
     const user = result.rows[0].json_agg;
     console.log(user);
