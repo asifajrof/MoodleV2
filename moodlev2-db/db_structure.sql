@@ -212,13 +212,11 @@ create table notification_type(
 create table notification_event(
     not_id SERIAL PRIMARY KEY ,
     type_id INTEGER NOT NULL REFERENCES notification_type(type_id),
-    section_no INTEGER NOT NULL REFERENCES section(section_no),
-    instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
-    start TIMESTAMP with time zone  NOT NULL CHECK(start>=CURRENT_TIMESTAMP),
-    _end TIMESTAMP with time zone NOT NULL CHECK(_end>start),
+    event_no INTEGER NOT NULL,
+    event_type INTEGER NOT NULL,
     _date DATE NOT NULL,
     notifucation_time TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    unique (type_id,section_no,instructor_id,start,_end,_date)
+    unique (type_id,event_no,event_type,_date)
 );
 create table submission(
      sub_id SERIAL PRIMARY KEY ,
@@ -291,6 +289,7 @@ from
         from section s join enrolment e on s.section_no = e.section_id join course c on c.course_id = s.course_id join student s2 on e.student_id = s2.student_id
         where s2._year=c.batch
     ) f on e.student_id = f.student_id
+where e.section_id!=f.section_id
 group by e.section_id,f.section_id with data ;
 create or replace function get_dept_list ()
     returns table (dept_code integer,dept_name varchar,dept_shortname varchar) as $$
@@ -525,29 +524,16 @@ $cr_assignment$ language plpgsql;
 create trigger cr_assignment before insert or update on section
      for each row execute function cr_assignment_check();
 
-create or replace function teacher_routine_check() returns trigger as $teacher_routine_validation$
-declare
-    sec_no integer;
-begin
-    if (new.class_id is null or new.instructor_id is null) then
-        raise exception 'Invalid data insertion or update';
-    end if;
-    select section_no into sec_no from course_routine
-    where class_id=new.class_id;
-    if (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null)) then
-        raise exception 'Invalid data insertion or update';
-    end if;
-    return new;
-end;
-$teacher_routine_validation$ language plpgsql;
-
-create trigger teacher_routine_validation before insert or update on teacher_routine
-     for each row execute function teacher_routine_check();
-
 create or replace function extra_class_check() returns trigger as $extra_class_validation$
 declare
 begin
     if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -561,6 +547,12 @@ create or replace function evaluation_check() returns trigger as $evaluation_val
 declare
 begin
     if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -595,6 +587,12 @@ begin
     if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
         raise exception 'Invalid data insertion or update';
     end if;
+    if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
     return new;
 end;
 $request_event_validation$ language plpgsql;
@@ -602,10 +600,22 @@ $request_event_validation$ language plpgsql;
 create trigger request_event_validation before insert or update on request_event
      for each row execute function request_event_check();
 
+
 create or replace function notification_event_check() returns trigger as $notification_event_validation$
 declare
+    cnt integer;
 begin
-    if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
+    cnt:=0;
+    if (new.event_type=0) then
+        select count(*) into cnt from request_event where req_id=new.event_no;
+    elsif (new.event_type=1) then
+        select count(*) into cnt from extra_class where extra_class_id=new.event_no;
+    elsif (new.event_type=2) then
+        select count(*) into cnt from evaluation where evaluation_id=new.event_no;
+    else
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (cnt=0) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -757,6 +767,240 @@ $post_check$ language plpgsql;
 create trigger post_check before insert or update on course_post
      for each row execute function poster_check();
 
+create or replace function get_teacher_id(teacher_uname varchar) returns integer as $$
+    declare
+        ans integer;
+    begin
+        select teacher_id into ans from teacher join official_users ou on teacher.user_no = ou.user_no
+        where username=teacher_uname;
+        return ans;
+    end
+$$ language plpgsql;
+
+create or replace function instructor_to_teacher(ins_id integer) returns integer as $$
+    declare
+        ans integer;
+    begin
+        select teacher_id into ans from instructor where instructor_id=ins_id;
+        return ans;
+    end
+$$ language plpgsql;
+
+create or replace function event_class_conflict(start_time time,end_time time,curr_date date,sec_id integer,ins_id integer) returns boolean as $$
+    declare
+        ans integer;
+        tid integer;
+    begin
+        ans = 0;
+        tid = instructor_to_teacher(ins_id);
+        select count(*) into ans from course_routine cr join intersected_sections iss on cr.section_no=iss.second_section
+where iss.first_section=sec_id and cr.day=extract(isodow from curr_date)-1 and overlapped_time(cr.start,cr._end,start_time,end_time) and not exists (select canceled_class_id from canceled_class cc
+    where cc.class_id=cr.class_id and cc._date=curr_date);
+        if (ans>0) then
+            return true;
+        end if;
+        select count(*) into ans from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id join instructor i on tr.instructor_id = i.instructor_id
+where i.teacher_id=tid and i.instructor_id!=ins_id and cr.day=extract(isodow from curr_date)-1 and overlapped_time(cr.start,cr._end,start_time,end_time) and not exists (select canceled_class_id from canceled_class cc
+    where cc.class_id=cr.class_id and cc._date=curr_date);
+        if (ans>0) then
+            return true;
+        end if;
+        return false;
+    end
+$$ language plpgsql;
+
+
+create or replace function event_event_conflict(start_timestamp timestamp,end_timestamp timestamp,sec_id integer,ins_id integer) returns boolean as $$
+    declare
+        ans integer;
+        tid integer;
+    begin
+        ans = 0;
+        tid = instructor_to_teacher(ins_id);
+        select count(*) into ans from extra_class ec join intersected_sections iss on ec.section_no=iss.second_section
+where iss.first_section=sec_id and overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp);
+        if (ans>0) then
+            return true;
+        end if;
+    select count(*) into ans from extra_class ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from extra_class_teacher ect join extra_class ec on ect.extra_class_id=ec.extra_class_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section
+where iss.first_section=sec_id and overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp);
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+        return false;
+    end
+$$ language plpgsql;
+
+create or replace function class_class_conflict_teacher(start_time time,end_time time,weekday integer,ins_id integer) returns boolean as $$
+    declare
+        ans integer;
+        tid integer;
+    begin
+        ans = 0;
+        tid = instructor_to_teacher(ins_id);
+        select count(*) into ans from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id join instructor i on tr.instructor_id = i.instructor_id
+where i.teacher_id=tid and i.instructor_id!=ins_id and cr.day=weekday and overlapped_time(cr.start,cr._end,start_time,end_time);
+        if (ans>0) then
+            return true;
+        end if;
+        return false;
+    end
+$$ language plpgsql;
+
+create or replace function class_event_conflict_teacher(start_time time,end_time time,weekday integer,ins_id integer) returns boolean as $$
+    declare
+        ans integer;
+        tid integer;
+    begin
+        ans = 0;
+        tid = instructor_to_teacher(ins_id);
+select count(*) into ans from extra_class ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from extra_class_teacher ect join extra_class ec on ect.extra_class_id=ec.extra_class_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+        if (ans>0) then
+            return true;
+        end if;
+        return false;
+    end
+$$ language plpgsql;
+
+create or replace function class_class_conflict_student(start_time time,end_time time,weekday integer,sec_id integer) returns boolean as $$
+    declare
+        ans integer;
+    begin
+        ans = 0;
+        select count(*) into ans from course_routine cr join intersected_sections iss on cr.section_no=iss.second_section
+where iss.first_section=sec_id and cr.day=weekday and overlapped_time(cr.start,cr._end,start_time,end_time);
+        if (ans>0) then
+            return true;
+        end if;
+        return false;
+    end
+$$ language plpgsql;
+
+create or replace function class_event_conflict_student(start_time time,end_time time,weekday integer,sec_id integer) returns boolean as $$
+    declare
+        ans integer;
+    begin
+        ans = 0;
+select count(*) into ans from extra_class ec join intersected_sections iss on ec.section_no=iss.second_section
+where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
+        if (ans>0) then
+            return true;
+        end if;
+select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section
+where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
+        if (ans>0) then
+            return true;
+        end if;
+        return false;
+    end
+$$ language plpgsql;
+
+create or replace function teacher_routine_check() returns trigger as $teacher_routine_validation$
+declare
+    sec_no integer;
+    start_time time;
+    end_time time;
+    weekday integer;
+begin
+    if (new.class_id is null or new.instructor_id is null) then
+        raise exception 'Invalid data insertion or update from line 9';
+    end if;
+    select section_no,start,_end,day into sec_no,start_time,end_time,weekday from course_routine
+    where class_id=new.class_id;
+    if (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null)) then
+        raise exception 'Invalid data insertion or update from line 12';
+    end if;
+    if (class_class_conflict_teacher(start_time,end_time,weekday,new.instructor_id)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (class_event_conflict_teacher(start_time,end_time,weekday,new.instructor_id)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    return new;
+end;
+$teacher_routine_validation$ language plpgsql;
+
+create trigger teacher_routine_validation before insert or update on teacher_routine
+     for each row execute function teacher_routine_check();
+
+create or replace function course_routine_check() returns trigger as $course_routine_validation$
+declare
+begin
+    if (class_class_conflict_student(new.start,new._end,new.day,new.section_no)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    if (class_event_conflict_student(new.start,new._end,new.day,new.section_no)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    return new;
+end;
+$course_routine_validation$ language plpgsql;
+
+create trigger course_routine_validation before insert or update on course_routine
+     for each row execute function course_routine_check();
+
+create or replace function get_current_course_teacher (teacher_username varchar)
+    returns table (id integer,term varchar,_year integer,dept_shortname varchar,course_code integer,course_name varchar) as $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+    return query
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name
+    from current_courses cc join instructor i on cc._id=i.course_id join teacher t on i.teacher_id = t.teacher_id
+    where t.teacher_id=tid;
+    end
+$$ language plpgsql;
+
+-- drop function get_current_course_teacher(teacher_username varchar);
+-- drop trigger course_routine_validation on course_routine;
+-- drop function course_routine_check();
+-- drop trigger teacher_routine_validation on teacher_routine;
+-- drop function teacher_routine_check();
+-- drop function class_event_conflict_student(start_time time, end_time time, weekday integer, sec_id integer);
+-- drop function class_class_conflict_student(start_time time, end_time time, weekday integer, sec_id integer);
+-- drop function class_event_conflict_teacher(start_time time, end_time time, weekday integer, ins_id integer);
+-- drop function class_class_conflict_teacher(start_time time, end_time time, weekday integer, ins_id integer);
+-- drop function event_event_conflict(start_timestamp timestamp, end_timestamp timestamp, sec_id integer, ins_id integer);
+-- drop function event_class_conflict(start_time time,end_time time,curr_date date,sec_id integer,ins_id integer);
+-- drop function instructor_to_teacher(ins_id integer);
+-- drop function get_teacher_id(teacher_uname varchar);
 -- drop trigger post_check on course_post;
 -- drop function poster_check();
 -- drop trigger cancel_class_validation on canceled_class;
@@ -779,8 +1023,6 @@ create trigger post_check before insert or update on course_post
 -- drop function evaluation_check();
 -- drop trigger extra_class_validation on extra_class;
 -- drop function extra_class_check();
--- drop trigger teacher_routine_validation on teacher_routine;
--- drop function teacher_routine_check();
 -- drop trigger cr_assignment on section;
 -- drop function cr_assignment_check();
 -- drop function instructor_section_compare(new_ins_id integer, new_sec_no integer, old_ins_id integer, old_sec_no integer);

@@ -7,6 +7,7 @@ const studentRoutes = require("./routes/student-routes");
 const sharedRoutes = require("./routes/shared-routes");
 const adminRoutes = require("./routes/admin-routes");
 const loginRoutes = require("./routes/login-routes");
+const teacherRoutes = require("./routes/teacher-routes");
 const HttpError = require("./models/http-error");
 
 const pool = require("./models/db_connect");
@@ -30,6 +31,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/student", studentRoutes);
+app.use("/api/teacher", teacherRoutes);
 app.use("/api/course", sharedRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/login", loginRoutes);

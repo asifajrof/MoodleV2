@@ -10,6 +10,12 @@ import {
 import StudentMenuBar from "./student/components/menu_bar";
 import StudentHome from "./student/pages/student_home";
 import StudentCourseHome from "./student/pages/course_home";
+import StudentCourseEvents from "./student/pages/course_events";
+
+import TeacherMenuBar from "./teacher/components/menu_bar";
+import TeacherHome from "./teacher/pages/teacher_home";
+import TeacherCourseHome from "./teacher/pages/course_home";
+import TeacherCourseEvents from "./teacher/pages/course_events";
 
 import AdminMenuBar from "./admin/components/menu_bar";
 import AdminHome from "./admin/pages/AdminHome";
@@ -23,7 +29,6 @@ import "./App.css";
 
 import { course_events_link, course_link, home_link } from "./links";
 import CourseAddForm from "./admin/components/add_course";
-import StudentCourseEvents from "./student/pages/course_events";
 import useToken from "./shared/pages/useToken";
 
 const App = () => {
@@ -147,11 +152,30 @@ const App = () => {
   } else if (token.type === "Teacher") {
     return (
       <Router>
-        <h1>teacher menu bar here</h1>
+        <TeacherMenuBar userName={token.id} />
         <main>
-          {/* <Routes>
-            <Route path='/' element={something} />
-          </Routes> */}
+          <Routes>
+            <Route
+              path={home_link}
+              element={<TeacherHome userName={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId" + course_link}
+              element={<TeacherCourseHome userName={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId" + course_events_link}
+              element={<TeacherCourseEvents userName={token.id} />}
+            />
+            <Route
+              path="*"
+              element={
+                <div>
+                  <h2>404 Page not found</h2>
+                </div>
+              }
+            />
+          </Routes>
         </main>
       </Router>
     );

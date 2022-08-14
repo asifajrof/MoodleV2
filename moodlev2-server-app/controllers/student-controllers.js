@@ -81,7 +81,7 @@ const getUpcomingEventsByStudentId = async (req, res, next) => {
       [studentId]
     );
     const upcomingEvents = result.rows[0].json_agg;
-    // console.log(upcomingEvents)
+    // console.log(upcomingEvents);
     if (!upcomingEvents) {
       // next(new HttpError('Upcoming Events not found', 404));
       res.json({ message: "getUpcomingEventsByStudentId", data: [] });
