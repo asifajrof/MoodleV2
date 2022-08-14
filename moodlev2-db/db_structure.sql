@@ -545,14 +545,18 @@ create trigger extra_class_validation before insert or update on extra_class
 
 create or replace function evaluation_check() returns trigger as $evaluation_validation$
 declare
+    b boolean;
 begin
-    if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
+    b:=true;
+    select et.notification_time_type into b from evaluation e join evaluation_type et on (e.type_id=et.typt_id and et.notification_time_type=false)
+    where et.typt_id=new.type_id;
+    if (b=true) then
+        return new;
+    elsif (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
         raise exception 'Invalid data insertion or update';
-    end if;
-    if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
+    elsif (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
-    end if;
-    if (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
+    elsif (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -565,13 +569,20 @@ create trigger evaluation_validation before insert or update on evaluation
 create or replace function extra_teacher_check() returns trigger as $extra_teacher_validation$
 declare
     sec_no integer;
+    ins_id integer;
+    start_timestamp timestamp;
+    end_timestamp timestamp;
 begin
     if (new.extra_class_id is null or new.instructor_id is null) then
         raise exception 'Invalid data insertion or update';
     end if;
-    select section_no into sec_no from extra_class
+    select section_no,instructor_id,start,_end into sec_no,ins_id,start_timestamp,end_timestamp from extra_class
     where extra_class_id=new.extra_class_id;
-    if (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null)) then
+    if (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null) or ins_id=new.instructor_id) then
+        raise exception 'Invalid data insertion or update';
+    elsif (event_event_conflict(start_timestamp,end_timestamp,sec_no,ins_id)) then
+        raise exception 'Invalid data insertion or update';
+    elsif (event_class_conflict(start_timestamp::time,end_timestamp::time,start_timestamp::date,sec_no,ins_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -837,12 +848,12 @@ where iss.first_section=sec_id and overlapped_timestamp(ec.start,ec._end,start_t
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.typt_id = ec.type_id and et.notification_time_type = false)
 where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.typt_id = ec.type_id and et.notification_time_type = false)
 where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
         if (ans>0) then
             return true;
@@ -884,12 +895,12 @@ where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.typt_id = ec.type_id and et.notification_time_type = false)
 where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.typt_id = ec.type_id and et.notification_time_type = false)
 where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
         if (ans>0) then
             return true;
@@ -922,7 +933,7 @@ where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and o
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section
+select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section join evaluation_type et on (et.typt_id = ec.type_id and et.notification_time_type = false)
 where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
         if (ans>0) then
             return true;
@@ -988,6 +999,81 @@ create or replace function get_current_course_teacher (teacher_username varchar)
     end
 $$ language plpgsql;
 
+create or replace function extra_evaluation_instructor_check() returns trigger as $extra_evaluation_instructor_validation$
+declare
+    sec_no integer;
+    ins_id integer;
+    start_timestamp timestamp;
+    end_timestamp timestamp;
+    b boolean;
+begin
+    if (new.evaluation_id is null or new.instructor_id is null) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    b:=true;
+    select section_no,instructor_id,start,_end into sec_no,ins_id,start_timestamp,end_timestamp from evaluation join evaluation_type et on et.typt_id = evaluation.type_id
+    where evaluation_id=new.evaluation_id;
+    if (b=true) then
+        return new;
+    elsif (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null) or ins_id=new.instructor_id) then
+        raise exception 'Invalid data insertion or update';
+    elsif (event_event_conflict(start_timestamp,end_timestamp,sec_no,ins_id)) then
+        raise exception 'Invalid data insertion or update';
+    elsif (event_class_conflict(start_timestamp::time,end_timestamp::time,start_timestamp::date,sec_no,ins_id)) then
+        raise exception 'Invalid data insertion or update';
+    end if;
+    return new;
+end;
+$extra_evaluation_instructor_validation$ language plpgsql;
+
+create trigger extra_evaluation_instructor_validation before insert or update on extra_evaluation_instructor
+     for each row execute function extra_evaluation_instructor_check();
+
+create or replace function get_upcoming_events_teacher (teacher_username varchar)
+    returns table (id integer,dept_shortname varchar,course_code integer, lookup_time time,event_type varchar) as $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+    return query
+    select cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
+                                                  ((select section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type, tr.instructor_id as instructor_id
+                                                    from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
+                                                    where day = extract(isodow from current_date) - 1
+                                                      and not exists(
+                                                            select class_id
+                                                            from canceled_class cc
+                                                            where cc.class_id = cr.class_id and _date = current_date and start::time>current_time
+                                                        ))
+                                                   union
+                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,instructor_id as instructor_id
+                                                    from extra_class
+                                                    where start::date = current_date and start::time>current_time)
+                                                   union
+                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,ect.instructor_id as instructor_id
+                                                    from extra_class join extra_class_teacher ect on extra_class.extra_class_id = ect.extra_class_id
+                                                    where start::date = current_date and start::time>current_time)
+                                                   union
+                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type, e.instructor_id as instructor_id
+                                                    from evaluation e
+                                                             join evaluation_type et
+                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                      and start::date = current_date and start::time>current_time)
+                                                   union
+                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type,eet.instructor_id
+                                                    from evaluation e join extra_evaluation_instructor eet on e.evaluation_id = eet.evaluation_id
+                                                             join evaluation_type et
+                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                      and _end::date = current_date and _end::time>current_time))) ut join
+    instructor i on i.instructor_id=ut.instructor_id join current_courses cc on (i.course_id=cc._id)
+    where i.teacher_id=tid
+    order by _lookup_time;
+end
+$$ language plpgsql;
+
+--drop function get_upcoming_events_teacher(teacher_username varchar);
+-- drop trigger extra_evaluation_instructor_validation on extra_evaluation_instructor;
+-- drop function extra_evaluation_instructor_check();
 -- drop function get_current_course_teacher(teacher_username varchar);
 -- drop trigger course_routine_validation on course_routine;
 -- drop function course_routine_check();

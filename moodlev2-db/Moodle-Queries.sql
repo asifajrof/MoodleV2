@@ -109,3 +109,5 @@ values (1,1);
 insert into course_routine(section_no, alternation, start, _end, day) values (1,7,'8:00','10:00',0);
 insert into instructor(instructor_id, teacher_id, course_id) values (default,1,1);
 insert into teacher_routine(teacher_class_id, instructor_id, class_id) values(default,1,1);
+insert into topic(topic_num, topic_name, instructor_id, finished, description)
+values (default,'State-Space Modeling',1,false,'We learn making markov model here');
