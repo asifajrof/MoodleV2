@@ -27,9 +27,15 @@ import Login from "./shared/pages/login";
 
 import "./App.css";
 
-import { course_events_link, course_link, home_link } from "./links";
+import {
+  course_events_link,
+  course_link,
+  home_link,
+  timeline_link,
+} from "./links";
 import CourseAddForm from "./admin/components/add_course";
 import useToken from "./shared/pages/useToken";
+import StudentTimeline from "./student/pages/student_timeline";
 
 const App = () => {
   // const [backendData,setBackendData] = useState([{}])
@@ -135,6 +141,10 @@ const App = () => {
             <Route
               path={"/course/:courseId" + course_events_link}
               element={<StudentCourseEvents studentNo={token.id} />}
+            />
+            <Route
+              path={timeline_link}
+              element={<StudentTimeline studentNo={token.id} />}
             />
             <Route
               path="*"

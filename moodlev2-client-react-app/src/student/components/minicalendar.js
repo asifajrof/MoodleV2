@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Calendar from "react-calendar";
 import moment from "moment";
-import "../../shared/components/Calendar.css";
+import "../../shared/components/calendar/Calendar.css";
 // import "react-calendar/dist/Calendar.css";
 
 const mark = ["15-08-2022", "16-08-2022", "17-08-2022"];
