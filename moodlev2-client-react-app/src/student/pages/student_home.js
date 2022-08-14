@@ -1,5 +1,5 @@
 import React from "react";
-import Calendar from "../components/calendar";
+import MiniCalendar from "../components/minicalendar";
 import RegisteredCourses from "../components/registered_courses";
 
 import "./student_home.css";
@@ -11,7 +11,7 @@ const StudentHome = ({ studentNo }) => {
       <UpcomingEvents studentNo={studentNo} />
       <div className="home__container__divider">
         <RegisteredCourses studentNo={studentNo} />
-        <Calendar studentNo={studentNo} />
+        <MiniCalendar studentNo={studentNo} />
       </div>
     </div>
   );
