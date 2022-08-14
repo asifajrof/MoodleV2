@@ -6,7 +6,7 @@ import { notification_link } from "../../../links";
 import Notification from "../Notification";
 import Backdrop from "../UIElements/Backdrop";
 
-const NotificationLogo = ({ studentNo }) => {
+const NotificationLogo = ({ uId }) => {
   const [notificationShow, setNotificationShow] = useState(false);
   const onClickHandler = () => {
     // console.log(event);
@@ -18,7 +18,7 @@ const NotificationLogo = ({ studentNo }) => {
       {notificationShow && (
         <>
           <Backdrop show={notificationShow} onClick={onClickHandler} />{" "}
-          <Notification onClick={onClickHandler} />
+          <Notification onClick={onClickHandler} uId={uId} />
         </>
       )}
       <NavLink to={notification_link} onClick={onClickHandler}>

@@ -8,9 +8,11 @@ const sharedRoutes = require("./routes/shared-routes");
 const adminRoutes = require("./routes/admin-routes");
 const loginRoutes = require("./routes/login-routes");
 const teacherRoutes = require("./routes/teacher-routes");
+const notificationRoutes = require("./routes/notification-routes");
 const HttpError = require("./models/http-error");
 
 const pool = require("./models/db_connect");
+const notificationRoutes = require("./routes/notification-routes");
 
 const app = express();
 app.use(bodyParser.json());
@@ -35,6 +37,7 @@ app.use("/api/teacher", teacherRoutes);
 app.use("/api/course", sharedRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/login", loginRoutes);
+app.use("/api/notification", notificationRoutes);
 
 // app.use("/api/login", (req, res) => {
 //   res.send({
