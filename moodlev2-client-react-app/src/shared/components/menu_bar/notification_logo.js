@@ -16,7 +16,7 @@ const NotificationLogo = ({ studentNo }) => {
   };
   useEffect(() => {
     let interval = setInterval(async () => {
-      const res = await fetch(`api/notification/${studentNo}`);
+      const res = await fetch(`/api/notification/${studentNo}`);
       const jsonData = await res.json();
       if (res.status == 200) {
         setnotificationList(jsonData.data);
