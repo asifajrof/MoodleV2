@@ -2,12 +2,18 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 
-import { logout_link } from "../../../links";
+import { home_link, logout_link } from "../../../links";
 
-const LogoutLogo = ({ studentNo }) => {
+const LogoutLogo = ({ uId }) => {
+  const onClickHandler = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "/";
+  };
+
   return (
     <>
-      <NavLink to={logout_link}>
+      <NavLink onClick={onClickHandler} to={logout_link}>
         <FiLogOut />
       </NavLink>
     </>

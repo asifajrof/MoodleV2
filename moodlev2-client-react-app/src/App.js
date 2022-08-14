@@ -90,6 +90,7 @@ const App = () => {
   if (!token) {
     return loginElement;
   } else if (token.type === "Admin") {
+    console.log("Admin ", token);
     return (
       <Router>
         <AdminMenuBar adminNo={token.id} />
@@ -125,6 +126,7 @@ const App = () => {
       </Router>
     );
   } else if (token.type === "Student") {
+    console.log("Student ", token);
     return (
       <Router>
         <StudentMenuBar studentNo={token.id} />
@@ -160,6 +162,7 @@ const App = () => {
       </Router>
     );
   } else if (token.type === "Teacher") {
+    console.log("Teacher ", token);
     return (
       <Router>
         <TeacherMenuBar userName={token.id} />
