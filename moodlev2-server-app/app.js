@@ -12,7 +12,7 @@ const notificationRoutes = require("./routes/notification-routes");
 const HttpError = require("./models/http-error");
 
 const pool = require("./models/db_connect");
-const notificationRoutes = require("./routes/notification-routes");
+// const notificationRoutes = require("./routes/notification-routes");
 
 const app = express();
 app.use(bodyParser.json());
