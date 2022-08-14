@@ -19,7 +19,13 @@ const Login = ({ onLogin }) => {
       });
       const data = await res.json();
       console.log(data);
-      setToken({ type: data.type, id: credentials.uName });
+      console.log(res.status);
+      if (res.status === 200) {
+        setToken({ type: data.type, id: credentials.uName });
+      } else {
+        alert(data.message);
+      }
+
       // setToken({ type: data.type, id: data.id });
       // return { type: data.type, id: data.id };
     } catch (err) {

@@ -11,7 +11,7 @@ const getCourseById = async (req, res, next) => {
     const course = result.rows[0];
     // console.log()
     if (!course) {
-      next(new HttpError("Course not found", 404));
+      res.json({ message: "No course like that!", data: [] });
     } else {
       res.json({ message: "getCourseById", data: course });
     }
@@ -30,7 +30,7 @@ const getCourseTopicsById = async (req, res, next) => {
     const courseTopics = result.rows[0].json_agg;
     // console.log()
     if (!courseTopics) {
-      next(new HttpError("Course not found", 404));
+      res.json({ message: "No course topics given yet!", data: [] });
     } else {
       res.json({ message: "getCourseTopicsById", data: courseTopics });
     }

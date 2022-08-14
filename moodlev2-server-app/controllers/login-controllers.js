@@ -17,11 +17,11 @@ const loginAuthenticate = async (req, res, next) => {
       console.log("user not found");
       next(new HttpError("User not found", 404));
     } else {
-      // console.log(password, user[0].hashed_password);
+      console.log(password, user[0].hashed_password);
       const validPassword = await compare(password, user[0].hashed_password);
-      // console.log(validPassword);
+      console.log(validPassword);
       if (!validPassword) {
-        next(new HttpError("wrong password", 404));
+        return next(new HttpError("wrong password", 404));
       }
 
       res.json({
