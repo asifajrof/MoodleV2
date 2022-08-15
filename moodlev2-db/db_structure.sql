@@ -548,14 +548,14 @@ declare
     b boolean;
 begin
     b:=true;
-    select et.notification_time_type into b from evaluation e join evaluation_type et on (e.type_id=et.type_id and et.notification_time_type=false)
+    select et.notification_time_type into b from evaluation_type et
     where et.type_id=new.type_id;
     if (b=true) then
         return new;
     elsif (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Invalid data insertion or update line 11';
     elsif (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Invalid data insertion or update line 16';
     elsif (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
@@ -1172,7 +1172,7 @@ begin
     select type_id into type_no from notification_type where type_name='Updated Declaration';
     update notification_event
     set type_id=type_no,notifucation_time=current_timestamp,_date=new._date
-    where event_no=new.canceled_class_id;
+    where event_no=new.canceled_class_id and event_type=3;
     return null;
 end;
 $cancel_class_notification_update$ language plpgsql;
@@ -1201,7 +1201,7 @@ begin
     select type_id into type_no from notification_type where type_name='Updated Declaration';
     update notification_event
     set type_id=type_no,notifucation_time=current_timestamp,_date=new.start::date
-    where event_no=new.extra_class_id;
+    where event_no=new.extra_class_id and event_type=1;
     return null;
 end;
 $extra_class_notification_update$ language plpgsql;
@@ -1209,6 +1209,39 @@ $extra_class_notification_update$ language plpgsql;
 create trigger extra_class_notification_update after update on extra_class
      for each row execute function notify_extra_class_update();
 
+create or replace function notify_evaluation() returns trigger as $evaluation_notification$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='New Declaration';
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+    values(default,type_no,new.evaluation_id,2,new._date);
+    return null;
+end;
+$evaluation_notification$ language plpgsql;
+
+create trigger evaluation_notification after insert on evaluation
+     for each row execute function notify_evaluation();
+
+create or replace function notify_evaluation_update() returns trigger as $evaluation_notification_update$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+    update notification_event
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new._date
+    where event_no=new.evaluation_id and event_type=2;
+    return null;
+end;
+$evaluation_notification_update$ language plpgsql;
+
+create trigger evaluation_notification_update after update on evaluation
+     for each row execute function notify_evaluation_update();
+
+-- drop trigger evaluation_notification_update on evaluation;
+-- drop function notify_evaluation_update();
+-- drop trigger evaluation_notification on evaluation;
+-- drop function notify_evaluation();
 -- drop trigger extra_class_notification_update on extra_class;
 -- drop function notify_extra_class_update();
 -- drop trigger extra_class_notification on extra_class;

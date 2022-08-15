@@ -145,13 +145,6 @@ $$;
 do
 $$
 begin
-    execute add_course('Computer Security Sessional',6,5,5,2017,2022,4,1);
-end;
-$$;
-
-do
-$$
-begin
     execute add_course('Computer Graphics',9,5,5,2017,2022,4,1);
 end;
 $$;
@@ -160,6 +153,13 @@ do
 $$
 begin
     execute add_course('Computer Graphics Sessional',10,5,5,2017,2022,4,1);
+end;
+$$;
+
+do
+$$
+begin
+    execute add_course('Computer Security Sessional',6,5,5,2017,2022,4,1);
 end;
 $$;
 
@@ -438,5 +438,18 @@ insert into teacher_routine(instructor_id, class_id) values (18,23);
 insert into topic(topic_num, topic_name, instructor_id, finished, description)
 values (default,'State-Space Modeling',1,false,'We learn making markov model here');
 
+insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks)
+values (1,4,9,'20-08-2022 08:00:00','20-08-2022 08:40:00',20);
 
+insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks)
+values (5,6,8,current_timestamp,'20-08-2022 14:20:00',100);
+
+insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks)
+values (1,2,2,'22-08-2022 11:00:00','22-08-2022 11:40:00',20);
+
+insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks)
+values (2,6,8,'27-08-2022 15:00:00','27-08-2022 16:00:00',50);
+
+insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks)
+values (4,7,12,'28-08-2022 14:40:00','28-08-2022 15:40:00',20);
 
