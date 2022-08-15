@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 
 import "./student_timeline.css";
 import MonthlyCalendar from "../../shared/components/monthly_calendar";
+import WeeklyCalendar from "../../shared/components/weekly_calendar";
 
 const StudentTimeline = ({ studentNo, currentView }) => {
   // will show weekly view by default
@@ -31,7 +32,9 @@ const StudentTimeline = ({ studentNo, currentView }) => {
         </div>
 
         {view === "week" && (
-          <div className="timeline__calendar__week">weekly view</div>
+          <div className="timeline__calendar__week">
+            <WeeklyCalendar uId={studentNo} />
+          </div>
         )}
         {view === "month" && (
           <div className="timeline__calendar__month">
