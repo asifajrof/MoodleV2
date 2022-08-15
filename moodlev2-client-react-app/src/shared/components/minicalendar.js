@@ -47,35 +47,23 @@ const MiniCalendar = ({ uId }) => {
 
   // weekend buet
   // 0 -> sunday, 1 -> monday, 2 -> tuesday, 3 -> wednesday, 4 -> thursday, 5 -> friday, 6 -> saturday
-  const getDatesOfDay = (day) => {
-    const dates = [];
-    const date = moment(dateState);
-    const firstDate = date.clone().startOf("month");
-    const month = firstDate.month();
-    while (firstDate.month() === month) {
-      if (firstDate.day() === day) {
-        dates.push(firstDate.clone());
-        firstDate.add(7, "d");
-      } else {
-        firstDate.add(1, "d");
-      }
-    }
-    return dates;
-  };
-  const allThursdays = getDatesOfDay(4);
-  const allFridays = getDatesOfDay(5);
 
   const tileClassName = ({ date, view }) => {
     if (view === "month") {
-      if (markDateList.find((x) => x === moment(date).format("DD-MM-YYYY"))) {
-        return "react-calendar__month-view__highlight";
+      let returnStr = "";
+      const dateMoment = moment(date);
+      if (markDateList.find((x) => x === dateMoment.format("DD-MM-YYYY"))) {
+        returnStr += " react-calendar__month-view__highlight";
       }
-      if (allThursdays.find((x) => x.isSame(date, "day"))) {
-        return "react-calendar__month-view__buet__weekend";
+      const day = dateMoment.day();
+      if (day === 4) {
+        // thursday
+        returnStr += " react-calendar__month-view__buet__weekend";
+      } else if (day === 5) {
+        // friday
+        returnStr += " react-calendar__month-view__buet__weekend";
       }
-      if (allFridays.find((x) => x.isSame(date, "day"))) {
-        return "react-calendar__month-view__buet__weekend";
-      }
+      return returnStr;
     }
   };
 
