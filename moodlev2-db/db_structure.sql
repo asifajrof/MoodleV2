@@ -135,7 +135,7 @@ create table student_file(
 create table canceled_class(
     canceled_class_id SERIAL PRIMARY KEY,
     class_id INTEGER NOT NULL REFERENCES course_routine(class_id),
-    _date DATE NOT NULL,
+    _date DATE NOT NULL DEFAULT CURRENT_DATE,
     unique(class_id,_date)
 );
 create table teacher_routine(
@@ -150,7 +150,7 @@ create table extra_class(
     instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
     start TIMESTAMP with time zone  NOT NULL CHECK(start>=CURRENT_TIMESTAMP),
     _end TIMESTAMP with time zone NOT NULL CHECK(_end>start),
-    _date DATE NOT NULL,
+    _date DATE NOT NULL DEFAULT CURRENT_DATE,
     unique(section_no,instructor_id,start,_end,_date)
 );
 create table extra_class_teacher(
@@ -160,19 +160,19 @@ create table extra_class_teacher(
     unique(extra_class_id,instructor_id)
 );
 create table evaluation_type(
-    typt_id SERIAL PRIMARY KEY ,
+    type_id SERIAL PRIMARY KEY ,
     type_name VARCHAR(64) UNIQUE NOT NULL,
     notification_time_type BOOLEAN NOT NULL DEFAULT TRUE
 );
 create table  evaluation(
     evaluation_id SERIAL PRIMARY KEY ,
-    type_id INTEGER NOT NULL REFERENCES evaluation_type(typt_id),
+    type_id INTEGER NOT NULL REFERENCES evaluation_type(type_id),
     section_no INTEGER NOT NULL REFERENCES section(section_no),
     instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
     caption_extension VARCHAR(32) DEFAULT NULL,
     start TIMESTAMP with time zone  NOT NULL,
     _end TIMESTAMP with time zone NOT NULL CHECK(_end>start),
-    _date DATE NOT NULL,
+    _date DATE NOT NULL DEFAULT CURRENT_DATE,
     total_marks FLOAT NOT NULL CHECK(total_marks>0),
     description VARCHAR(2048),
     unique (_date,type_id,section_no,start,_end)
@@ -194,7 +194,7 @@ create table request_event(
     instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
     start TIMESTAMP with time zone  NOT NULL CHECK(start>=CURRENT_TIMESTAMP),
     _end TIMESTAMP with time zone NOT NULL CHECK(_end>start),
-    _date DATE NOT NULL,
+    _date DATE NOT NULL DEFAULT CURRENT_DATE,
     notifucation_time TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     total_marks FLOAT NOT NULL CHECK(total_marks>0),
     unique (type_id,section_no,instructor_id,start,_end,_date)
@@ -214,7 +214,7 @@ create table notification_event(
     type_id INTEGER NOT NULL REFERENCES notification_type(type_id),
     event_no INTEGER NOT NULL,
     event_type INTEGER NOT NULL,
-    _date DATE NOT NULL,
+    _date DATE NOT NULL DEFAULT CURRENT_DATE,
     notifucation_time TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     unique (type_id,event_no,event_type,_date)
 );
@@ -350,7 +350,7 @@ create or replace function add_course(cname varchar,cnum integer,dept integer,of
         values(default,cname,cnum,dept,offered_dept,offered_batch,offered_year,offered_level,offered_term);
     end;
 $$ language plpgsql;
-create or replace function overlapped_timestamp(first_begin timestamp,first_end timestamp,second_begin timestamp,second_end timestamp) returns boolean as $$
+create or replace function overlapped_timestamp(first_begin timestamp with time zone,first_end timestamp with time zone,second_begin timestamp with time zone,second_end timestamp with time zone) returns boolean as $$
     declare
         ans boolean;
     begin
@@ -429,13 +429,13 @@ begin
                                                    (select section_no, start::time as _lookup_time, et.type_name as _event_type
                                                     from evaluation e
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and start::date = current_date and start::time>current_time)
                                                    union
                                                    (select section_no, _end::time as _lookup_time, et.type_name as _event_type
                                                     from evaluation e
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = true)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = true)
                                                                       and _end::date = current_date and _end::time>current_time))) ut join
     (
         select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
@@ -533,7 +533,7 @@ begin
     if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
-    if (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
+    if (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -548,15 +548,15 @@ declare
     b boolean;
 begin
     b:=true;
-    select et.notification_time_type into b from evaluation e join evaluation_type et on (e.type_id=et.typt_id and et.notification_time_type=false)
-    where et.typt_id=new.type_id;
+    select et.notification_time_type into b from evaluation e join evaluation_type et on (e.type_id=et.type_id and et.notification_time_type=false)
+    where et.type_id=new.type_id;
     if (b=true) then
         return new;
     elsif (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
         raise exception 'Invalid data insertion or update';
     elsif (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
-    elsif (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
+    elsif (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -570,8 +570,8 @@ create or replace function extra_teacher_check() returns trigger as $extra_teach
 declare
     sec_no integer;
     ins_id integer;
-    start_timestamp timestamp;
-    end_timestamp timestamp;
+    start_timestamp timestamp with time zone;
+    end_timestamp timestamp with time zone;
 begin
     if (new.extra_class_id is null or new.instructor_id is null) then
         raise exception 'Invalid data insertion or update';
@@ -601,7 +601,7 @@ begin
     if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
-    if (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
+    if (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -623,6 +623,8 @@ begin
         select count(*) into cnt from extra_class where extra_class_id=new.event_no;
     elsif (new.event_type=2) then
         select count(*) into cnt from evaluation where evaluation_id=new.event_no;
+    elsif (new.event_type=3) then
+        select count(*) into cnt from canceled_class where canceled_class_id=new.event_no;
     else
         raise exception 'Invalid data insertion or update';
     end if;
@@ -821,7 +823,7 @@ where i.teacher_id=tid and i.instructor_id!=ins_id and cr.day=extract(isodow fro
 $$ language plpgsql;
 
 
-create or replace function event_event_conflict(start_timestamp timestamp,end_timestamp timestamp,sec_id integer,ins_id integer) returns boolean as $$
+create or replace function event_event_conflict(start_timestamp timestamp with time zone,end_timestamp timestamp with time zone,sec_id integer,ins_id integer) returns boolean as $$
     declare
         ans integer;
         tid integer;
@@ -848,12 +850,12 @@ where iss.first_section=sec_id and overlapped_timestamp(ec.start,ec._end,start_t
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.typt_id = ec.type_id and et.notification_time_type = false)
+select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
 where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.typt_id = ec.type_id and et.notification_time_type = false)
+select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
 where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
         if (ans>0) then
             return true;
@@ -895,12 +897,12 @@ where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.typt_id = ec.type_id and et.notification_time_type = false)
+select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
 where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.typt_id = ec.type_id and et.notification_time_type = false)
+select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
 where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
         if (ans>0) then
             return true;
@@ -933,7 +935,7 @@ where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and o
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section join evaluation_type et on (et.typt_id = ec.type_id and et.notification_time_type = false)
+select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
 where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
         if (ans>0) then
             return true;
@@ -1003,15 +1005,15 @@ create or replace function extra_evaluation_instructor_check() returns trigger a
 declare
     sec_no integer;
     ins_id integer;
-    start_timestamp timestamp;
-    end_timestamp timestamp;
+    start_timestamp timestamp with time zone;
+    end_timestamp timestamp with time zone;
     b boolean;
 begin
     if (new.evaluation_id is null or new.instructor_id is null) then
         raise exception 'Invalid data insertion or update';
     end if;
     b:=true;
-    select section_no,instructor_id,start,_end into sec_no,ins_id,start_timestamp,end_timestamp from evaluation join evaluation_type et on et.typt_id = evaluation.type_id
+    select section_no,instructor_id,start,_end into sec_no,ins_id,start_timestamp,end_timestamp from evaluation join evaluation_type et on et.type_id = evaluation.type_id
     where evaluation_id=new.evaluation_id;
     if (b=true) then
         return new;
@@ -1057,13 +1059,13 @@ create or replace function get_upcoming_events_teacher (teacher_username varchar
                                                    (select section_no, start::time as _lookup_time, et.type_name as _event_type, e.instructor_id as instructor_id
                                                     from evaluation e
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and start::date = current_date and start::time>current_time)
                                                    union
                                                    (select section_no, start::time as _lookup_time, et.type_name as _event_type,eet.instructor_id
                                                     from evaluation e join extra_evaluation_instructor eet on e.evaluation_id = eet.evaluation_id
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and _end::date = current_date and _end::time>current_time))) ut join
     instructor i on i.instructor_id=ut.instructor_id join current_courses cc on (i.course_id=cc._id)
     where i.teacher_id=tid
@@ -1092,13 +1094,13 @@ begin
                                                    (select section_no, start::time as _lookup_time, et.type_name as _event_type
                                                     from evaluation e
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and start::date = query_date)
                                                    union
                                                    (select section_no, _end::time as _lookup_time, et.type_name as _event_type
                                                     from evaluation e
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = true)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = true)
                                                                       and _end::date = query_date))) ut join
     (
         select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
@@ -1135,13 +1137,13 @@ create or replace function get_day_events_teacher (teacher_username varchar, que
                                                    (select section_no, start::time as _lookup_time, et.type_name as _event_type, e.instructor_id as instructor_id
                                                     from evaluation e
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and start::date = query_date)
                                                    union
                                                    (select section_no, start::time as _lookup_time, et.type_name as _event_type,eet.instructor_id
                                                     from evaluation e join extra_evaluation_instructor eet on e.evaluation_id = eet.evaluation_id
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and _end::date = query_date))) ut join
     instructor i on i.instructor_id=ut.instructor_id join current_courses cc on (i.course_id=cc._id)
     where i.teacher_id=tid
@@ -1149,6 +1151,72 @@ create or replace function get_day_events_teacher (teacher_username varchar, que
 end
 $$ language plpgsql;
 
+create or replace function notify_cancel_class() returns trigger as $cancel_class_notification$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='New Declaration';
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+    values(default,type_no,new.canceled_class_id,3,new._date);
+    return null;
+end;
+$cancel_class_notification$ language plpgsql;
+
+create trigger cancel_class_notification after insert on canceled_class
+     for each row execute function notify_cancel_class();
+
+create or replace function notify_cancel_class_update() returns trigger as $cancel_class_notification_update$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+    update notification_event
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new._date
+    where event_no=new.canceled_class_id;
+    return null;
+end;
+$cancel_class_notification_update$ language plpgsql;
+
+create trigger cancel_class_notification_update after update on canceled_class
+     for each row execute function notify_cancel_class_update();
+
+create or replace function notify_extra_class() returns trigger as $extra_class_notification$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='New Declaration';
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+    values(default,type_no,new.extra_class_id,1,new.start::date);
+    return null;
+end;
+$extra_class_notification$ language plpgsql;
+
+create trigger extra_class_notification after insert on extra_class
+     for each row execute function notify_extra_class();
+
+create or replace function notify_extra_class_update() returns trigger as $extra_class_notification_update$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+    update notification_event
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new.start::date
+    where event_no=new.extra_class_id;
+    return null;
+end;
+$extra_class_notification_update$ language plpgsql;
+
+create trigger extra_class_notification_update after update on extra_class
+     for each row execute function notify_extra_class_update();
+
+-- drop trigger extra_class_notification_update on extra_class;
+-- drop function notify_extra_class_update();
+-- drop trigger extra_class_notification on extra_class;
+-- drop function notify_extra_class();
+-- drop trigger cancel_class_notification_update on canceled_class;
+-- drop function notify_cancel_class_update();
+-- drop trigger cancel_class_notification on canceled_class;
+-- drop function notify_cancel_class();
 --drop function get_day_events_teacher(teacher_username varchar, query_date date);
 -- drop function get_day_events(std_id integer, query_date date);
 --drop function get_upcoming_events_teacher(teacher_username varchar);
@@ -1163,7 +1231,7 @@ $$ language plpgsql;
 -- drop function class_class_conflict_student(start_time time, end_time time, weekday integer, sec_id integer);
 -- drop function class_event_conflict_teacher(start_time time, end_time time, weekday integer, ins_id integer);
 -- drop function class_class_conflict_teacher(start_time time, end_time time, weekday integer, ins_id integer);
--- drop function event_event_conflict(start_timestamp timestamp, end_timestamp timestamp, sec_id integer, ins_id integer);
+-- drop function event_event_conflict(start_timestamp timestamp with time zone, end_timestamp timestamp with time zone, sec_id integer, ins_id integer);
 -- drop function event_class_conflict(start_time time,end_time time,curr_date date,sec_id integer,ins_id integer);
 -- drop function instructor_to_teacher(ins_id integer);
 -- drop function get_teacher_id(teacher_uname varchar);
@@ -1199,7 +1267,7 @@ $$ language plpgsql;
 -- drop function get_current_course(std_id integer);
 -- drop function section_to_course(sec_no integer);
 -- drop function overlapped_time(first_begin time,first_end time,second_begin time,second_end time);
--- drop function overlapped_timestamp(first_begin timestamp,first_end timestamp,second_begin timestamp,second_end timestamp);
+-- drop function overlapped_timestamp(first_begin timestamp with time zone, first_end timestamp with time zone, second_begin timestamp with time zone, second_end timestamp with time zone);
 -- drop function add_course(cname varchar, cnum integer, dept integer, offered_dept integer, offered_batch integer, offered_year integer, offered_level integer, offered_term integer);
 -- drop function add_admin(admin_name character varying, uname character varying, hashed_password character varying, email character varying);
 -- drop function add_teacher(name varchar, uname varchar, hashed_password varchar, dept integer, email varchar);

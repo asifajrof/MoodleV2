@@ -184,7 +184,7 @@ where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and o
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section join evaluation_type et on (et.typt_id = ec.type_id and et.notification_time_type = false)
+select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
 where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
         if (ans>0) then
             return true;
@@ -219,12 +219,12 @@ where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.typt_id = ec.type_id and et.notification_time_type = false)
+select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
 where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.typt_id = ec.type_id and et.notification_time_type = false)
+select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
 where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
         if (ans>0) then
             return true;
@@ -315,15 +315,15 @@ declare
     b boolean;
 begin
     b:=true;
-    select et.notification_time_type into b from evaluation e join evaluation_type et on (e.type_id=et.typt_id and et.notification_time_type=false)
-    where et.typt_id=new.type_id;
+    select et.notification_time_type into b from evaluation e join evaluation_type et on (e.type_id=et.type_id and et.notification_time_type=false)
+    where et.type_id=new.type_id;
     if (b=true) then
         return new;
     elsif (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
         raise exception 'Invalid data insertion or update';
     elsif (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
-    elsif (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
+    elsif (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -366,10 +366,10 @@ $$;
 ALTER FUNCTION public.event_class_conflict(start_time time without time zone, end_time time without time zone, curr_date date, sec_id integer, ins_id integer) OWNER TO postgres;
 
 --
--- Name: event_event_conflict(timestamp without time zone, timestamp without time zone, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: event_event_conflict(timestamp with time zone, timestamp with time zone, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.event_event_conflict(start_timestamp timestamp without time zone, end_timestamp timestamp without time zone, sec_id integer, ins_id integer) RETURNS boolean
+CREATE FUNCTION public.event_event_conflict(start_timestamp timestamp with time zone, end_timestamp timestamp with time zone, sec_id integer, ins_id integer) RETURNS boolean
     LANGUAGE plpgsql
     AS $$
     declare
@@ -398,12 +398,12 @@ where iss.first_section=sec_id and overlapped_timestamp(ec.start,ec._end,start_t
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
 where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
 where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
         if (ans>0) then
             return true;
@@ -413,7 +413,7 @@ where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i
 $$;
 
 
-ALTER FUNCTION public.event_event_conflict(start_timestamp timestamp without time zone, end_timestamp timestamp without time zone, sec_id integer, ins_id integer) OWNER TO postgres;
+ALTER FUNCTION public.event_event_conflict(start_timestamp timestamp with time zone, end_timestamp timestamp with time zone, sec_id integer, ins_id integer) OWNER TO postgres;
 
 --
 -- Name: extra_class_check(); Type: FUNCTION; Schema: public; Owner: postgres
@@ -430,7 +430,7 @@ begin
     if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
-    if (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
+    if (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -450,15 +450,15 @@ CREATE FUNCTION public.extra_evaluation_instructor_check() RETURNS trigger
 declare
     sec_no integer;
     ins_id integer;
-    start_timestamp timestamp;
-    end_timestamp timestamp;
+    start_timestamp timestamp with time zone;
+    end_timestamp timestamp with time zone;
     b boolean;
 begin
     if (new.evaluation_id is null or new.instructor_id is null) then
         raise exception 'Invalid data insertion or update';
     end if;
     b:=true;
-    select section_no,instructor_id,start,_end into sec_no,ins_id,start_timestamp,end_timestamp from evaluation join evaluation_type et on et.typt_id = evaluation.type_id
+    select section_no,instructor_id,start,_end into sec_no,ins_id,start_timestamp,end_timestamp from evaluation join evaluation_type et on et.type_id = evaluation.type_id
     where evaluation_id=new.evaluation_id;
     if (b=true) then
         return new;
@@ -486,8 +486,8 @@ CREATE FUNCTION public.extra_teacher_check() RETURNS trigger
 declare
     sec_no integer;
     ins_id integer;
-    start_timestamp timestamp;
-    end_timestamp timestamp;
+    start_timestamp timestamp with time zone;
+    end_timestamp timestamp with time zone;
 begin
     if (new.extra_class_id is null or new.instructor_id is null) then
         raise exception 'Invalid data insertion or update';
@@ -620,13 +620,13 @@ begin
                                                    (select section_no, start::time as _lookup_time, et.type_name as _event_type
                                                     from evaluation e
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and start::date = query_date)
                                                    union
                                                    (select section_no, _end::time as _lookup_time, et.type_name as _event_type
                                                     from evaluation e
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = true)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = true)
                                                                       and _end::date = query_date))) ut join
     (
         select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
@@ -671,13 +671,13 @@ CREATE FUNCTION public.get_day_events_teacher(teacher_username character varying
                                                    (select section_no, start::time as _lookup_time, et.type_name as _event_type, e.instructor_id as instructor_id
                                                     from evaluation e
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and start::date = query_date)
                                                    union
                                                    (select section_no, start::time as _lookup_time, et.type_name as _event_type,eet.instructor_id
                                                     from evaluation e join extra_evaluation_instructor eet on e.evaluation_id = eet.evaluation_id
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and _end::date = query_date))) ut join
     instructor i on i.instructor_id=ut.instructor_id join current_courses cc on (i.course_id=cc._id)
     where i.teacher_id=tid
@@ -749,13 +749,13 @@ begin
                                                    (select section_no, start::time as _lookup_time, et.type_name as _event_type
                                                     from evaluation e
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and start::date = current_date and start::time>current_time)
                                                    union
                                                    (select section_no, _end::time as _lookup_time, et.type_name as _event_type
                                                     from evaluation e
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = true)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = true)
                                                                       and _end::date = current_date and _end::time>current_time))) ut join
     (
         select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
@@ -800,13 +800,13 @@ CREATE FUNCTION public.get_upcoming_events_teacher(teacher_username character va
                                                    (select section_no, start::time as _lookup_time, et.type_name as _event_type, e.instructor_id as instructor_id
                                                     from evaluation e
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and start::date = current_date and start::time>current_time)
                                                    union
                                                    (select section_no, start::time as _lookup_time, et.type_name as _event_type,eet.instructor_id
                                                     from evaluation e join extra_evaluation_instructor eet on e.evaluation_id = eet.evaluation_id
                                                              join evaluation_type et
-                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and _end::date = current_date and _end::time>current_time))) ut join
     instructor i on i.instructor_id=ut.instructor_id join current_courses cc on (i.course_id=cc._id)
     where i.teacher_id=tid
@@ -978,6 +978,8 @@ begin
         select count(*) into cnt from extra_class where extra_class_id=new.event_no;
     elsif (new.event_type=2) then
         select count(*) into cnt from evaluation where evaluation_id=new.event_no;
+    elsif (new.event_type=3) then
+        select count(*) into cnt from canceled_class where canceled_class_id=new.event_no;
     else
         raise exception 'Invalid data insertion or update';
     end if;
@@ -990,6 +992,88 @@ $$;
 
 
 ALTER FUNCTION public.notification_event_check() OWNER TO postgres;
+
+--
+-- Name: notify_cancel_class(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.notify_cancel_class() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='New Declaration';
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+    values(default,type_no,new.canceled_class_id,3,new._date);
+    return null;
+end;
+$$;
+
+
+ALTER FUNCTION public.notify_cancel_class() OWNER TO postgres;
+
+--
+-- Name: notify_cancel_class_update(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.notify_cancel_class_update() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+    update notification_event
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new._date
+    where event_no=new.canceled_class_id;
+    return null;
+end;
+$$;
+
+
+ALTER FUNCTION public.notify_cancel_class_update() OWNER TO postgres;
+
+--
+-- Name: notify_extra_class(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.notify_extra_class() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='New Declaration';
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+    values(default,type_no,new.extra_class_id,1,new.start::date);
+    return null;
+end;
+$$;
+
+
+ALTER FUNCTION public.notify_extra_class() OWNER TO postgres;
+
+--
+-- Name: notify_extra_class_update(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.notify_extra_class_update() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+    update notification_event
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new.start::date
+    where event_no=new.extra_class_id;
+    return null;
+end;
+$$;
+
+
+ALTER FUNCTION public.notify_extra_class_update() OWNER TO postgres;
 
 --
 -- Name: overlapped_time(time without time zone, time without time zone, time without time zone, time without time zone); Type: FUNCTION; Schema: public; Owner: postgres
@@ -1019,10 +1103,10 @@ $$;
 ALTER FUNCTION public.overlapped_time(first_begin time without time zone, first_end time without time zone, second_begin time without time zone, second_end time without time zone) OWNER TO postgres;
 
 --
--- Name: overlapped_timestamp(timestamp without time zone, timestamp without time zone, timestamp without time zone, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: overlapped_timestamp(timestamp with time zone, timestamp with time zone, timestamp with time zone, timestamp with time zone); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.overlapped_timestamp(first_begin timestamp without time zone, first_end timestamp without time zone, second_begin timestamp without time zone, second_end timestamp without time zone) RETURNS boolean
+CREATE FUNCTION public.overlapped_timestamp(first_begin timestamp with time zone, first_end timestamp with time zone, second_begin timestamp with time zone, second_end timestamp with time zone) RETURNS boolean
     LANGUAGE plpgsql
     AS $$
     declare
@@ -1043,7 +1127,7 @@ CREATE FUNCTION public.overlapped_timestamp(first_begin timestamp without time z
 $$;
 
 
-ALTER FUNCTION public.overlapped_timestamp(first_begin timestamp without time zone, first_end timestamp without time zone, second_begin timestamp without time zone, second_end timestamp without time zone) OWNER TO postgres;
+ALTER FUNCTION public.overlapped_timestamp(first_begin timestamp with time zone, first_end timestamp with time zone, second_begin timestamp with time zone, second_end timestamp with time zone) OWNER TO postgres;
 
 --
 -- Name: poster_check(); Type: FUNCTION; Schema: public; Owner: postgres
@@ -1094,7 +1178,7 @@ begin
     if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
-    if (event_event_conflict(new.start::time,new._end::time,new.section_no,new.instructor_id)) then
+    if (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
         raise exception 'Invalid data insertion or update';
     end if;
     return new;
@@ -1264,7 +1348,7 @@ ALTER SEQUENCE public.admins_admin_id_seq OWNED BY public.admins.admin_id;
 CREATE TABLE public.canceled_class (
     canceled_class_id integer NOT NULL,
     class_id integer NOT NULL,
-    _date date NOT NULL
+    _date date DEFAULT CURRENT_DATE NOT NULL
 );
 
 
@@ -1537,7 +1621,7 @@ CREATE TABLE public.evaluation (
     caption_extension character varying(32) DEFAULT NULL::character varying,
     start timestamp with time zone NOT NULL,
     _end timestamp with time zone NOT NULL,
-    _date date NOT NULL,
+    _date date DEFAULT CURRENT_DATE NOT NULL,
     total_marks double precision NOT NULL,
     description character varying(2048),
     CONSTRAINT evaluation_check CHECK ((_end > start)),
@@ -1574,7 +1658,7 @@ ALTER SEQUENCE public.evaluation_evaluation_id_seq OWNED BY public.evaluation.ev
 --
 
 CREATE TABLE public.evaluation_type (
-    typt_id integer NOT NULL,
+    type_id integer NOT NULL,
     type_name character varying(64) NOT NULL,
     notification_time_type boolean DEFAULT true NOT NULL
 );
@@ -1583,10 +1667,10 @@ CREATE TABLE public.evaluation_type (
 ALTER TABLE public.evaluation_type OWNER TO postgres;
 
 --
--- Name: evaluation_type_typt_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: evaluation_type_type_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.evaluation_type_typt_id_seq
+CREATE SEQUENCE public.evaluation_type_type_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -1595,13 +1679,13 @@ CREATE SEQUENCE public.evaluation_type_typt_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.evaluation_type_typt_id_seq OWNER TO postgres;
+ALTER TABLE public.evaluation_type_type_id_seq OWNER TO postgres;
 
 --
--- Name: evaluation_type_typt_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: evaluation_type_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.evaluation_type_typt_id_seq OWNED BY public.evaluation_type.typt_id;
+ALTER SEQUENCE public.evaluation_type_type_id_seq OWNED BY public.evaluation_type.type_id;
 
 
 --
@@ -1614,7 +1698,7 @@ CREATE TABLE public.extra_class (
     instructor_id integer NOT NULL,
     start timestamp with time zone NOT NULL,
     _end timestamp with time zone NOT NULL,
-    _date date NOT NULL,
+    _date date DEFAULT CURRENT_DATE NOT NULL,
     CONSTRAINT extra_class_check CHECK ((_end > start)),
     CONSTRAINT extra_class_start_check CHECK ((start >= CURRENT_TIMESTAMP))
 );
@@ -1966,7 +2050,7 @@ CREATE TABLE public.notification_event (
     type_id integer NOT NULL,
     event_no integer NOT NULL,
     event_type integer NOT NULL,
-    _date date NOT NULL,
+    _date date DEFAULT CURRENT_DATE NOT NULL,
     notifucation_time timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -2116,7 +2200,7 @@ CREATE TABLE public.request_event (
     instructor_id integer NOT NULL,
     start timestamp with time zone NOT NULL,
     _end timestamp with time zone NOT NULL,
-    _date date NOT NULL,
+    _date date DEFAULT CURRENT_DATE NOT NULL,
     notifucation_time timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     total_marks double precision NOT NULL,
     CONSTRAINT request_event_check CHECK ((_end > start)),
@@ -2520,10 +2604,10 @@ ALTER TABLE ONLY public.evaluation ALTER COLUMN evaluation_id SET DEFAULT nextva
 
 
 --
--- Name: evaluation_type typt_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: evaluation_type type_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.evaluation_type ALTER COLUMN typt_id SET DEFAULT nextval('public.evaluation_type_typt_id_seq'::regclass);
+ALTER TABLE ONLY public.evaluation_type ALTER COLUMN type_id SET DEFAULT nextval('public.evaluation_type_type_id_seq'::regclass);
 
 
 --
@@ -2720,6 +2804,14 @@ INSERT INTO public.admins (admin_id, name, user_no) VALUES (1, 'Nazmul Haque', 1
 
 INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (1, 'Fault Tolerant Systems', 23, 5, 5, 2017, 2022, 4, 1);
 INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (2, 'High Performance Database System', 53, 5, 5, 2017, 2022, 4, 1);
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (3, 'Engineering Economics', 75, 7, 5, 2017, 2022, 4, 1);
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (4, 'Computer Security', 5, 5, 5, 2017, 2022, 4, 1);
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (5, 'Computer Security Sessional', 6, 5, 5, 2017, 2022, 4, 1);
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (6, 'Computer Graphics', 9, 5, 5, 2017, 2022, 4, 1);
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (7, 'Computer Graphics Sessional', 10, 5, 5, 2017, 2022, 4, 1);
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (8, 'Basic Graph Theory', 21, 5, 5, 2017, 2022, 4, 1);
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (9, 'Introduction to Bioinformatics', 63, 5, 5, 2017, 2022, 4, 1);
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (10, 'Software Development Sessional', 8, 5, 5, 2017, 2022, 4, 1);
 
 
 --
@@ -2739,6 +2831,28 @@ INSERT INTO public.course (course_id, course_name, course_num, dept_code, offere
 --
 
 INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (1, 1, 7, '08:00:00', '10:00:00', 0);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (2, 1, 7, '10:00:00', '11:00:00', 6);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (3, 2, 7, '09:00:00', '10:00:00', 5);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (4, 2, 7, '11:00:00', '12:00:00', 6);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (5, 2, 7, '11:00:00', '12:00:00', 0);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (6, 9, 7, '12:00:00', '13:00:00', 5);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (7, 9, 7, '12:00:00', '13:00:00', 6);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (8, 9, 7, '12:00:00', '13:00:00', 0);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (9, 3, 7, '10:00:00', '11:00:00', 5);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (10, 3, 7, '08:00:00', '09:00:00', 6);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (11, 3, 7, '09:00:00', '10:00:00', 2);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (12, 4, 7, '09:00:00', '10:00:00', 6);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (13, 4, 7, '09:00:00', '10:00:00', 1);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (14, 4, 7, '08:00:00', '09:00:00', 2);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (15, 5, 7, '11:00:00', '12:00:00', 5);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (16, 5, 7, '08:00:00', '09:00:00', 1);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (17, 5, 7, '10:00:00', '11:00:00', 2);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (18, 8, 7, '10:00:00', '11:00:00', 0);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (19, 8, 7, '10:00:00', '11:00:00', 1);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (20, 8, 7, '11:00:00', '12:00:00', 2);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (21, 6, 14, '14:00:00', '17:00:00', 5);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (22, 7, 14, '14:00:00', '17:00:00', 6);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (23, 10, 7, '14:00:00', '17:00:00', 0);
 
 
 --
@@ -2750,6 +2864,7 @@ INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (2, 
 INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (4, 'Civil Engineering', 'CE');
 INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (5, 'Computer Science and Engineering', 'CSE');
 INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (6, 'Electrical and Electronic Engineering', 'EEE');
+INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (7, 'Humanities', 'HUM');
 INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (8, 'Industrial and Production Engineering', 'IPE');
 INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (10, 'Mechanical Engineering', 'ME');
 INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (11, 'Materials and Metallurgical Engineering', 'MME');
@@ -2761,7 +2876,54 @@ INSERT INTO public.department (dept_code, dept_name, dept_shortname) VALUES (18,
 -- Data for Name: enrolment; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1, 1, 1, '2022-08-14');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1, 1, 1, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (2, 1, 2, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (3, 1, 3, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (4, 1, 4, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (5, 1, 5, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (6, 1, 6, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (7, 1, 7, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (8, 5, 1, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (9, 5, 2, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (10, 5, 3, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (11, 5, 4, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (12, 5, 5, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (13, 5, 6, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (14, 5, 7, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (15, 2, 2, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (16, 2, 9, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (17, 2, 3, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (18, 2, 4, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (19, 2, 5, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (20, 2, 6, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (21, 2, 7, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (22, 6, 1, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (23, 6, 2, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (24, 6, 3, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (25, 6, 4, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (26, 6, 5, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (27, 6, 6, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (28, 6, 7, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (29, 3, 1, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (30, 3, 8, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (31, 3, 3, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (32, 3, 4, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (33, 3, 5, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (34, 3, 6, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (35, 3, 7, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (36, 4, 1, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (37, 4, 9, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (38, 4, 3, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (39, 4, 4, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (40, 4, 5, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (41, 4, 6, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (42, 4, 7, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (43, 1, 10, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (44, 2, 10, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (45, 3, 10, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (46, 4, 10, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (47, 5, 10, '2022-08-15');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (48, 6, 10, '2022-08-15');
 
 
 --
@@ -2774,6 +2936,11 @@ INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1
 -- Data for Name: evaluation_type; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.evaluation_type (type_id, type_name, notification_time_type) VALUES (1, 'Class Test', false);
+INSERT INTO public.evaluation_type (type_id, type_name, notification_time_type) VALUES (2, 'Lab Quiz', false);
+INSERT INTO public.evaluation_type (type_id, type_name, notification_time_type) VALUES (3, 'Lab Test', false);
+INSERT INTO public.evaluation_type (type_id, type_name, notification_time_type) VALUES (4, 'Online Evaluation', false);
+INSERT INTO public.evaluation_type (type_id, type_name, notification_time_type) VALUES (5, 'Assignment', true);
 
 
 --
@@ -2816,7 +2983,24 @@ INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (1
 -- Data for Name: instructor; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (1, 1, 1, '2022-08-14');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (1, 1, 1, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (2, 2, 2, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (3, 10, 3, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (4, 11, 3, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (5, 6, 5, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (6, 7, 5, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (7, 6, 6, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (8, 7, 6, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (9, 8, 4, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (10, 9, 4, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (11, 8, 7, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (12, 9, 7, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (13, 4, 9, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (14, 5, 9, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (15, 3, 8, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (16, 12, 10, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (17, 13, 10, '2022-08-15');
+INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALUES (18, 14, 10, '2022-08-15');
 
 
 --
@@ -2835,6 +3019,12 @@ INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALU
 -- Data for Name: notification_type; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.notification_type (type_id, type_name, visibility) VALUES (1, 'New Declaration', 2);
+INSERT INTO public.notification_type (type_id, type_name, visibility) VALUES (2, 'Updated Declaration', 2);
+INSERT INTO public.notification_type (type_id, type_name, visibility) VALUES (3, 'New Schedule Request', 4);
+INSERT INTO public.notification_type (type_id, type_name, visibility) VALUES (4, 'Updated Schedule Request', 4);
+INSERT INTO public.notification_type (type_id, type_name, visibility) VALUES (5, 'New Reschedule Request', 3);
+INSERT INTO public.notification_type (type_id, type_name, visibility) VALUES (6, 'Updated Reschedule Request', 3);
 
 
 --
@@ -2843,6 +3033,19 @@ INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALU
 
 INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (1, 'nazmuladmin', '$2a$12$a3sA/qgphlpSnjZl2EkaW.EvlHrTbsrX8ZjD1iqJzqZgYLdkPXmAy', NULL);
 INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (2, 'alimrazi', '$2a$12$vJa9O6JwQkfILdYj5bSsCuVbeSC863/MIe7x1UZM0qU7iPcwfewB2', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (3, 'aadnan', '$2y$10$L6jbTLAvrMo385LUib9Kuuq/1WICpx8DeedZxIksHLpgFofFghvN6', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (4, 'saidur', '$2y$10$ZkKqecSnPUJgjSUXXcOSx..O6qtR0pLz0oCg/meyB4p095aZIW046', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (5, 'saifur', '$2y$10$sq9aDXP6AjBqLScZXDNLLeXlBO/ZFwdACr/dKkkNr8nkaQt7WersW', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (6, 'bayzid', '$2y$10$rjCuLnyfxwa.G0T25nYAEOaT9PtycCHCQkbHfyB2.CKYT.weLhOKi', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (7, 'nitripto', '$2y$10$dF1UOgEjzsJp5OrEOA2iX.HYfNkymt6u4iRrGB3djf3UCB86Yokzm', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (8, 'ssaquib', '$2y$10$ad4lVnOcqGx8KErwAC8rAOmEp1k1lscWbN8GK2EJyrJ3/wRFYjye.', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (9, 'shohrab', '$2y$10$SVVpQ96Dt5INs5hYsKGV9.eubbFqVcZfYacJUkKfYOmZHhjo.K/D6', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (10, 'mukit', '$2y$10$gOihrq.ujsthj3e/F2zYHeLOvWQ9ttsGXPF7y6cWKeDcV.YZqEcn2', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (11, 'munshi', '$2y$10$xDzSGa1czBolnsKuxRR03uh351f3IXVwiolW6MFWHLcIb3Mc.bxT2', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (12, 'rony', '$2y$10$mmpvLgBk3iH/sVzzraCFSud8K13vxxhcKTs6bbUlryqUFsIyoTK5O', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (13, 'rayhan', '$2y$10$/lW3WMDdlJjlaE/0OKDQuO/2pVDuyPzbokm661Jnt/1n6gmLdw1dm', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (14, 'htahmid', '$2y$10$tkSap6H/ofZrQotGQXNJ9uFvLjms/UoYgTEyIvDkhERxUudQieY/u', NULL);
+INSERT INTO public.official_users (user_no, username, password, email_address) VALUES (15, 'thbhuiyan', '$2y$10$8SPbFCvBQC9j8gsuQ.GKxOGfyNW/.Pchhs87L6k8PUu9oS0NZa/Li', NULL);
 
 
 --
@@ -2861,6 +3064,8 @@ INSERT INTO public.official_users (user_no, username, password, email_address) V
 -- Data for Name: request_type; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.request_type (type_id, type_name) VALUES (1, 'Extra Class');
+INSERT INTO public.request_type (type_id, type_name) VALUES (2, 'Class Test');
 
 
 --
@@ -2874,18 +3079,27 @@ INSERT INTO public.official_users (user_no, username, password, email_address) V
 --
 
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (1, 'CSE-2017-B2-CSE423-2022', 1, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (2, 'CSE-2017-B2-CSE453-2022', 2, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (3, 'CSE-2017-B2-HUM475-2022', 3, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (4, 'CSE-2017-B2-CSE405-2022', 4, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (5, 'CSE-2017-B2-CSE409-2022', 5, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (6, 'CSE-2017-B2-CSE410-2022', 6, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (7, 'CSE-2017-B2-CSE406-2022', 7, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (8, 'CSE-2017-B2-CSE421-2022', 8, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (9, 'CSE-2017-B2-CSE463-2022', 9, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (10, 'CSE-2017-B2-CSE408-2022', 10, NULL);
 
 
 --
 -- Data for Name: student; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful', '$2a$12$BjvAnEmgjQsjLxPmFsD8Peh7H0DV49ZiXZisriA/IZ92ySlPJc1p.', 2017, 119, 5, '2022-08-14 20:43:58.549871+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (2, 'Fatima Nawmi', '$2y$10$/q5rPYxPDEDi14Hp33AgfOjhuF8mglmjqBnyN58zN17L4hJ4Oclpu', 2017, 93, 5, '2022-08-14 20:43:58.563509+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (3, 'Asif Ajrof', '$2y$10$pYUj/gnwUYpkBdWQiXi3buA8rVAE3EFSJbd2FSQuWkAEAF3SZqGPW', 2017, 92, 5, '2022-08-14 20:43:58.576829+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (4, 'Saif Ahmed Khan', '$2y$10$nCoBIjkAYSLLwLW8tDe4Ku3Ud.TkJvViq62cGQ.dkfmpl3XqavsvW', 2017, 110, 5, '2022-08-14 20:43:58.592679+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (5, 'Nazmul Takbir', '$2y$10$iVzkVjUWBYUKA2rcPz83BubHExrrr0guL5nEZHrK4GdZj8PzRZQd.', 2017, 103, 5, '2022-08-14 20:43:58.605065+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (6, 'Sihat Afnan', '$2y$10$WoVLtw9ux4j13piNbC3df.UKBJwO7wFVmLzfbqzZeNBc8NE3ierLO', 2017, 98, 5, '2022-08-14 20:43:58.617231+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful', '$2a$12$BjvAnEmgjQsjLxPmFsD8Peh7H0DV49ZiXZisriA/IZ92ySlPJc1p.', 2017, 119, 5, '2022-08-15 15:55:26.860146+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (2, 'Fatima Nawmi', '$2y$10$/q5rPYxPDEDi14Hp33AgfOjhuF8mglmjqBnyN58zN17L4hJ4Oclpu', 2017, 93, 5, '2022-08-15 15:55:26.88631+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (3, 'Asif Ajrof', '$2y$10$pYUj/gnwUYpkBdWQiXi3buA8rVAE3EFSJbd2FSQuWkAEAF3SZqGPW', 2017, 92, 5, '2022-08-15 15:55:26.897278+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (4, 'Saif Ahmed Khan', '$2y$10$nCoBIjkAYSLLwLW8tDe4Ku3Ud.TkJvViq62cGQ.dkfmpl3XqavsvW', 2017, 110, 5, '2022-08-15 15:55:26.916683+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (5, 'Nazmul Takbir', '$2y$10$iVzkVjUWBYUKA2rcPz83BubHExrrr0guL5nEZHrK4GdZj8PzRZQd.', 2017, 103, 5, '2022-08-15 15:55:26.929783+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (6, 'Sihat Afnan', '$2y$10$WoVLtw9ux4j13piNbC3df.UKBJwO7wFVmLzfbqzZeNBc8NE3ierLO', 2017, 98, 5, '2022-08-15 15:55:26.9412+06', NULL);
 
 
 --
@@ -2910,7 +3124,20 @@ INSERT INTO public.student (student_id, student_name, password, _year, roll_num,
 -- Data for Name: teacher; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (1, 'A.B.M. Alim Al Islam', 2, 5, '2022-08-14 20:43:58.769793+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (1, 'A.B.M. Alim Al Islam', 2, 5, '2022-08-15 15:55:27.26102+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (2, 'Abdullah Adnan', 3, 5, '2022-08-15 15:55:27.276625+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (3, 'Saidur Rahman', 4, 5, '2022-08-15 15:55:27.291656+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (4, 'Saifur Rahman', 5, 5, '2022-08-15 15:55:27.30412+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (5, 'Shasuzzoha Bayzid', 6, 5, '2022-08-15 15:55:27.314739+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (6, 'Nafiz Irtiza Tripto', 7, 5, '2022-08-15 15:55:27.344701+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (7, 'Shadman Saquib Eusuf', 8, 5, '2022-08-15 15:55:27.357693+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (8, 'Shohrab Hossain', 9, 5, '2022-08-15 15:55:27.375587+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (9, 'Syed Md. Mukit Rashid', 10, 5, '2022-08-15 15:55:27.387907+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (10, 'Munshi Abdur Rauf', 11, 7, '2022-08-15 15:55:27.402789+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (11, 'Rony Hossain', 12, 7, '2022-08-15 15:55:27.427159+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (12, 'Rayhan Rashed', 13, 5, '2022-08-15 15:55:27.464013+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (13, 'Tahmid Hasan', 14, 5, '2022-08-15 15:55:27.679646+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (14, 'Mohammad Tawhidul Hasan Bhuiyan', 15, 5, '2022-08-15 15:55:27.701395+06');
 
 
 --
@@ -2924,19 +3151,49 @@ INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notifi
 --
 
 INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (1, 1, 1);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (2, 1, 2);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (3, 2, 3);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (4, 2, 4);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (5, 2, 5);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (6, 3, 9);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (7, 4, 10);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (8, 3, 11);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (9, 9, 12);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (10, 9, 13);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (11, 9, 14);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (12, 6, 15);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (13, 6, 16);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (14, 6, 17);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (15, 8, 21);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (16, 7, 21);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (17, 11, 22);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (18, 12, 22);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (19, 15, 18);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (20, 15, 19);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (21, 15, 20);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (22, 14, 6);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (23, 14, 7);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (24, 14, 8);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (25, 16, 23);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (26, 17, 23);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (27, 18, 23);
 
 
 --
 -- Data for Name: topic; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (1, 'State-Space Modeling', 1, false, 'We learn making markov model here', '2022-08-14 21:13:10.411638+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (1, 'State-Space Modeling', 1, false, 'We learn making markov model here', '2022-08-15 15:55:30.905398+06');
 
 
 --
 -- Data for Name: visibility; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.visibility (type_id, type_name) VALUES (1, 'All');
+INSERT INTO public.visibility (type_id, type_name) VALUES (2, 'Only Student');
+INSERT INTO public.visibility (type_id, type_name) VALUES (3, 'Only Teacher');
+INSERT INTO public.visibility (type_id, type_name) VALUES (4, 'Only CR');
 
 
 --
@@ -2957,7 +3214,7 @@ SELECT pg_catalog.setval('public.canceled_class_canceled_class_id_seq', 1, false
 -- Name: course_course_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_course_id_seq', 2, true);
+SELECT pg_catalog.setval('public.course_course_id_seq', 10, true);
 
 
 --
@@ -2978,14 +3235,14 @@ SELECT pg_catalog.setval('public.course_post_post_id_seq', 1, false);
 -- Name: course_routine_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_routine_class_id_seq', 1, true);
+SELECT pg_catalog.setval('public.course_routine_class_id_seq', 23, true);
 
 
 --
 -- Name: enrolment_enrol_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 1, true);
+SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 48, true);
 
 
 --
@@ -2996,10 +3253,10 @@ SELECT pg_catalog.setval('public.evaluation_evaluation_id_seq', 1, false);
 
 
 --
--- Name: evaluation_type_typt_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: evaluation_type_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.evaluation_type_typt_id_seq', 1, false);
+SELECT pg_catalog.setval('public.evaluation_type_type_id_seq', 1, false);
 
 
 --
@@ -3048,7 +3305,7 @@ SELECT pg_catalog.setval('public.grading_grading_id_seq', 1, false);
 -- Name: instructor_instructor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 1, true);
+SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 18, true);
 
 
 --
@@ -3069,7 +3326,7 @@ SELECT pg_catalog.setval('public.notification_type_type_id_seq', 1, false);
 -- Name: official_users_user_no_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.official_users_user_no_seq', 2, true);
+SELECT pg_catalog.setval('public.official_users_user_no_seq', 15, true);
 
 
 --
@@ -3104,7 +3361,7 @@ SELECT pg_catalog.setval('public.resource_res_id_seq', 1, false);
 -- Name: section_section_no_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.section_section_no_seq', 1, true);
+SELECT pg_catalog.setval('public.section_section_no_seq', 10, true);
 
 
 --
@@ -3125,14 +3382,14 @@ SELECT pg_catalog.setval('public.submission_sub_id_seq', 1, false);
 -- Name: teacher_routine_teacher_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.teacher_routine_teacher_class_id_seq', 1, true);
+SELECT pg_catalog.setval('public.teacher_routine_teacher_class_id_seq', 27, true);
 
 
 --
 -- Name: teacher_teacher_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.teacher_teacher_id_seq', 1, true);
+SELECT pg_catalog.setval('public.teacher_teacher_id_seq', 14, true);
 
 
 --
@@ -3306,7 +3563,7 @@ ALTER TABLE ONLY public.evaluation
 --
 
 ALTER TABLE ONLY public.evaluation_type
-    ADD CONSTRAINT evaluation_type_pkey PRIMARY KEY (typt_id);
+    ADD CONSTRAINT evaluation_type_pkey PRIMARY KEY (type_id);
 
 
 --
@@ -3710,6 +3967,20 @@ ALTER TABLE ONLY public.visibility
 
 
 --
+-- Name: canceled_class cancel_class_notification; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER cancel_class_notification AFTER INSERT ON public.canceled_class FOR EACH ROW EXECUTE FUNCTION public.notify_cancel_class();
+
+
+--
+-- Name: canceled_class cancel_class_notification_update; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER cancel_class_notification_update AFTER UPDATE ON public.canceled_class FOR EACH ROW EXECUTE FUNCTION public.notify_cancel_class_update();
+
+
+--
 -- Name: canceled_class cancel_class_validation; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -3742,6 +4013,20 @@ CREATE TRIGGER curr_course_validation AFTER INSERT OR DELETE OR UPDATE ON public
 --
 
 CREATE TRIGGER evaluation_validation BEFORE INSERT OR UPDATE ON public.evaluation FOR EACH ROW EXECUTE FUNCTION public.evaluation_check();
+
+
+--
+-- Name: extra_class extra_class_notification; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER extra_class_notification AFTER INSERT ON public.extra_class FOR EACH ROW EXECUTE FUNCTION public.notify_extra_class();
+
+
+--
+-- Name: extra_class extra_class_notification_update; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER extra_class_notification_update AFTER UPDATE ON public.extra_class FOR EACH ROW EXECUTE FUNCTION public.notify_extra_class_update();
 
 
 --
@@ -3914,7 +4199,7 @@ ALTER TABLE ONLY public.evaluation
 --
 
 ALTER TABLE ONLY public.evaluation
-    ADD CONSTRAINT evaluation_type_id_fkey FOREIGN KEY (type_id) REFERENCES public.evaluation_type(typt_id);
+    ADD CONSTRAINT evaluation_type_id_fkey FOREIGN KEY (type_id) REFERENCES public.evaluation_type(type_id);
 
 
 --
