@@ -3,8 +3,8 @@ import React from "react";
 import "./upcoming_event.css";
 
 const UpcomingEvent = ({ event }) => {
-  console.log("upcoming event");
-  console.log(event);
+  // console.log("upcoming event");
+  // console.log(event);
   return (
     <div className="event__container__item">
       <div className="event__container__item__1">
