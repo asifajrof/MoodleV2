@@ -43,8 +43,8 @@ const addNewCourse = async (req, res, next) => {
     //   ]
     // );
     let result = await pool.query(
-      // "do $$ begin execute add_course($1,$2,$3,$4,$5,$6,$7,$8); end; $$;",
-      "insert into course (course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) values($1,$2,$3,$4,$5,$6,$7,$8);",
+      "select add_course($1,$2,$3,$4,$5,$6,$7,$8);",
+      // "insert into course (course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) values($1,$2,$3,$4,$5,$6,$7,$8);",
       [
         courseName,
         courseNum,

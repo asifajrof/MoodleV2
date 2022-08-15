@@ -89,13 +89,15 @@ const CourseAddForm = ({ adminNo }) => {
       console.log(res.status);
 
       if (res.status === 200) {
-        alert("Course added successfully!");
+        // alert("Course added successfully!");
+        console.log("Course added successfully!");
       } else {
-        alert(data.message);
+        // alert(data.message);
+        console.log(data.message);
       }
     } catch (err) {
       console.log(err);
-      alert(err);
+      // alert(err);
     }
   };
   const onSubmitAction = (event) => {
@@ -112,14 +114,14 @@ const CourseAddForm = ({ adminNo }) => {
     };
     console.log(courseObj);
 
-    setCourseName("");
-    setCourseNum(0);
-    setCourseLevel(0);
-    setCourseTerm(0);
-    setCourseBatch(0);
-    setCourseYear(0);
-    setDeptOffered(0);
-    setDeptOffering(0);
+    // setCourseName("");
+    // setCourseNum(0);
+    // setCourseLevel(0);
+    // setCourseTerm(0);
+    // setCourseBatch(0);
+    // setCourseYear(0);
+    // setDeptOffered(0);
+    // setDeptOffering(0);
 
     addCourse(courseObj);
 
