@@ -27,6 +27,13 @@
   /* cursor: pointer; */
   padding-left: 1rem;
 }
+.course__home__container__event__title {
+  display: flex;
+  font-size: 1.5rem;
+  font-weight: bold;
+  /* cursor: pointer; */
+  padding-left: 1rem;
+}
 .course__home__container__item__2 {
   width: 100%;
   margin-top: 1rem;

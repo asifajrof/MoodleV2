@@ -5,12 +5,26 @@ import { useParams } from "react-router-dom";
 import CourseMenuBar from "../components/course_menu_bar";
 import CourseEvaluationEvents from "../components/course_evaluation_events";
 import FileUpload from "../components/file_upload/FileUpload";
-import "./course_home.css";
+// import "./course_home.css";
 
-const StudentCourseEvents = ({ studentNo }) => {
+const courseEvalueationEventInfoInit = {
+  id: 1,
+  title: "HW 1",
+  description: "Homework on Chapter 1",
+  isFinished: false,
+};
+
+const StudentCourseEvent = ({ studentNo }) => {
   const [courseInfo, setcourseInfo] = useState([]);
+  // const [courseEvalueationEventInfo, setCourseEvalueationEventInfo] = useState(
+  //   {}
+  // );
+  const [courseEvalueationEventInfo, setCourseEvalueationEventInfo] = useState(
+    courseEvalueationEventInfoInit
+  );
   const params = useParams();
   const courseId = params.courseId;
+  const eventId = params.eventId;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,9 +48,13 @@ const StudentCourseEvents = ({ studentNo }) => {
           {courseInfo._term} {courseInfo.__year} {courseInfo._dept_shortname}{" "}
           {courseInfo._course_code}: {courseInfo._course_name}
         </div>
+        <div className="course__home__container__event__title">
+          {courseEvalueationEventInfo.title}
+        </div>
         <div className="course__home__container__divider">
-          {/* <FileUpload /> */}
-          <CourseEvaluationEvents studentNo={studentNo} courseId={courseId} />
+          {courseEvalueationEventInfo.description}
+          <FileUpload />
+
           <div>Upcoming/Latest post</div>
         </div>
       </div>
@@ -44,4 +62,4 @@ const StudentCourseEvents = ({ studentNo }) => {
   );
 };
 
-export default StudentCourseEvents;
+export default StudentCourseEvent;

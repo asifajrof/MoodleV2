@@ -12,6 +12,7 @@ import StudentHome from "./student/pages/student_home";
 import StudentCourseHome from "./student/pages/course_home";
 import StudentCourseEvents from "./student/pages/course_events";
 import StudentTimeline from "./student/pages/student_timeline";
+import StudentCourseEvent from "./student/pages/course_event";
 
 import TeacherMenuBar from "./teacher/components/menu_bar";
 import TeacherHome from "./teacher/pages/teacher_home";
@@ -148,6 +149,10 @@ const App = () => {
             <Route
               path={"/course/:courseId" + course_events_link}
               element={<StudentCourseEvents studentNo={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId/event/:eventId"}
+              element={<StudentCourseEvent studentNo={token.id} />}
             />
             <Route
               path={timeline_link}
