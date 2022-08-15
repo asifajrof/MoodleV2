@@ -74,6 +74,30 @@ const CourseAddForm = ({ adminNo }) => {
   //   termList.push({ value: i, label: i });
   // }
 
+  const addCourse = async (courseObj) => {
+    try {
+      const res = await fetch(`/api/admin/addNewCourse`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(courseObj),
+      });
+      const data = await res.json();
+
+      console.log(data);
+      console.log(res.status);
+
+      if (res.status === 200) {
+        alert("Course added successfully!");
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.log(err);
+      alert(err);
+    }
+  };
   const onSubmitAction = (event) => {
     event.preventDefault();
     const courseObj = {
@@ -88,7 +112,18 @@ const CourseAddForm = ({ adminNo }) => {
     };
     console.log(courseObj);
 
-    console.log("onSubmitAction");
+    setCourseName("");
+    setCourseNum(0);
+    setCourseLevel(0);
+    setCourseTerm(0);
+    setCourseBatch(0);
+    setCourseYear(0);
+    setDeptOffered(0);
+    setDeptOffering(0);
+
+    addCourse(courseObj);
+
+    console.log("onSubmitActionc of add new course by admin");
     return;
   };
   const onChangeHandlerSelectDeptOffering = (selectedDept) => {
@@ -114,7 +149,7 @@ const CourseAddForm = ({ adminNo }) => {
   };
   const onChangeHandlerSelectCourseTerm = (selectedTerm) => {
     console.log("onChangeHandlerSelectCourseTerm", selectedTerm);
-    setCourseLevel(selectedTerm.value);
+    setCourseTerm(selectedTerm.value);
   };
 
   return (
@@ -141,7 +176,7 @@ const CourseAddForm = ({ adminNo }) => {
             variant="outlined"
             // InputProps={{ inputProps: { min: min_num, max: max_num } }}
             value={courseNum}
-            onChange={(e) => setCourseNum(e.target.value)}
+            onChange={(e) => setCourseNum(parseInt(e.target.value))}
             required
           />
           <br />

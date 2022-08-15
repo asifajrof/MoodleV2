@@ -145,7 +145,7 @@ const getEventListMonthView = async (req, res, next) => {
       }
     }
 
-    console.log(eventList);
+    // console.log(eventList);
 
     res.json({
       message: "getEventListMonthView",

@@ -3,6 +3,66 @@ const { v4: uuid } = require("uuid");
 const pool = require("../models/db_connect");
 const HttpError = require("../models/http-error");
 
+const addNewCourse = async (req, res, next) => {
+  try {
+    console.log("POST api/admin/addNewCourse");
+
+    const {
+      courseName,
+      courseNum,
+      courseLevel,
+      courseTerm,
+      courseBatch,
+      courseYear,
+      deptOffered,
+      deptOffering,
+    } = req.body;
+
+    console.log(
+      typeof courseName,
+      typeof courseNum,
+      typeof courseLevel,
+      typeof courseTerm,
+      typeof courseBatch,
+      typeof courseYear,
+      typeof deptOffered,
+      typeof deptOffering
+    );
+
+    // console.log(
+    //   "do $$ begin execute add_course($1,$2,$3,$4,$5,$6,$7,$8); end; $$;",
+    //   [
+    //     courseName,
+    //     courseNum,
+    //     deptOffering,
+    //     deptOffered,
+    //     courseBatch,
+    //     courseYear,
+    //     courseLevel,
+    //     courseTerm,
+    //   ]
+    // );
+    let result = await pool.query(
+      // "do $$ begin execute add_course($1,$2,$3,$4,$5,$6,$7,$8); end; $$;",
+      "insert into course (course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) values($1,$2,$3,$4,$5,$6,$7,$8);",
+      [
+        courseName,
+        courseNum,
+        deptOffering,
+        deptOffered,
+        courseBatch,
+        courseYear,
+        courseLevel,
+        courseTerm,
+      ]
+    );
+
+    res.json({ message: "new course added" });
+  } catch (err) {
+    console.log(err);
+    return next(new HttpError(err.message, 500));
+  }
+};
 const getAllCourses = async (req, res, next) => {
   try {
     console.log("GET api/admin/courses/all");
@@ -68,3 +128,4 @@ exports.getAllCourses = getAllCourses;
 exports.getDeptList = getDeptList;
 exports.postCourseAdd = postCourseAdd;
 exports.postDeptAdd = postDeptAdd;
+exports.addNewCourse = addNewCourse;
