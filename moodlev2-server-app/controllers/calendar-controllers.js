@@ -72,7 +72,7 @@ const getMarkDateList = async (req, res, next) => {
       // console.log(result);
       if (result) {
         for (let e of result) {
-          console.log(e.event_type);
+          // console.log(e.event_type);
           if (e.event_type !== "Class") {
             markList.push(moment(date).format("DD-MM-YYYY"));
             break;
@@ -86,7 +86,7 @@ const getMarkDateList = async (req, res, next) => {
       markDateList: markList,
     });
   } catch (error) {
-    console.log("getMarkDateList error");
+    // console.log("getMarkDateList error");
     return next(new HttpError(error.message, 500));
   }
 };
@@ -105,16 +105,16 @@ const events = [
 ];
 
 const getEventListMonthView = async (req, res, next) => {
-  console.log("getEventListMonthView");
+  // console.log("getEventListMonthView");
   try {
     const { uId, date, month, year } = req.body;
-    console.log("uid " + uId, "date " + date, "month " + month, "year " + year);
+    // console.log("uid " + uId, "date " + date, "month " + month, "year " + year);
     res.json({
       message: "getEventListMonthView",
       eventList: events,
     });
   } catch (error) {
-    console.log("getEventListMonthView error");
+    // console.log("getEventListMonthView error");
     return next(new HttpError(error.message, 500));
   }
 };

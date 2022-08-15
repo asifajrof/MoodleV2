@@ -2,11 +2,11 @@ import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import React, { Fragment, useState } from "react";
 import PropTypes from "prop-types";
 
-import "./student_timeline.css";
+// import "./student_timeline.css";
 import MonthlyCalendar from "../../shared/components/monthly_calendar";
 import WeeklyCalendar from "../../shared/components/weekly_calendar";
 
-const StudentTimeline = ({ studentNo, currentView }) => {
+const TeacherTimeline = ({ userName, currentView }) => {
   // will show weekly view by default
   const [view, setView] = useState(currentView);
   const handleToggleChange = (event, newView) => {
@@ -33,12 +33,12 @@ const StudentTimeline = ({ studentNo, currentView }) => {
 
         {view === "week" && (
           <div className="timeline__calendar__week">
-            <WeeklyCalendar uId={studentNo} />
+            <WeeklyCalendar uId={userName} />
           </div>
         )}
         {view === "month" && (
           <div className="timeline__calendar__month">
-            <MonthlyCalendar uId={studentNo} />
+            <MonthlyCalendar uId={userName} />
           </div>
         )}
       </div>
@@ -46,13 +46,13 @@ const StudentTimeline = ({ studentNo, currentView }) => {
   );
 };
 
-export default StudentTimeline;
+export default TeacherTimeline;
 
-StudentTimeline.protoTypes = {
-  studentNo: PropTypes.string.isRequired,
+TeacherTimeline.protoTypes = {
+  userName: PropTypes.string.isRequired,
   currentView: PropTypes.string,
 };
 
-StudentTimeline.defaultProps = {
+TeacherTimeline.defaultProps = {
   currentView: "month",
 };

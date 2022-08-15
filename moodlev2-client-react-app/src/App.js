@@ -11,11 +11,13 @@ import StudentMenuBar from "./student/components/menu_bar";
 import StudentHome from "./student/pages/student_home";
 import StudentCourseHome from "./student/pages/course_home";
 import StudentCourseEvents from "./student/pages/course_events";
+import StudentTimeline from "./student/pages/student_timeline";
 
 import TeacherMenuBar from "./teacher/components/menu_bar";
 import TeacherHome from "./teacher/pages/teacher_home";
 import TeacherCourseHome from "./teacher/pages/course_home";
 import TeacherCourseEvents from "./teacher/pages/course_events";
+import TeacherTimeline from "./teacher/pages/teacher_timeline";
 
 import AdminMenuBar from "./admin/components/menu_bar";
 import AdminHome from "./admin/pages/AdminHome";
@@ -35,7 +37,6 @@ import {
 } from "./links";
 import CourseAddForm from "./admin/components/add_course";
 import useToken from "./shared/pages/useToken";
-import StudentTimeline from "./student/pages/student_timeline";
 
 const App = () => {
   // const [backendData,setBackendData] = useState([{}])
@@ -167,12 +168,12 @@ const App = () => {
     console.log("Teacher ", token);
     return (
       <Router>
-        <TeacherMenuBar userName={token.id} />
+        <TeacherMenuBar userName={token.id} uType={token.type} />
         <main>
           <Routes>
             <Route
               path={home_link}
-              element={<TeacherHome userName={token.id} />}
+              element={<TeacherHome userName={token.id} uType={token.type} />}
             />
             <Route
               path={"/course/:courseId" + course_link}
@@ -181,6 +182,12 @@ const App = () => {
             <Route
               path={"/course/:courseId" + course_events_link}
               element={<TeacherCourseEvents userName={token.id} />}
+            />
+            <Route
+              path={timeline_link}
+              element={
+                <TeacherTimeline userName={token.id} uType={token.type} />
+              }
             />
             <Route
               path="*"
