@@ -11,7 +11,7 @@ const StudentHome = ({ studentNo }) => {
       <UpcomingEvents studentNo={studentNo} />
       <div className="home__container__divider">
         <RegisteredCourses studentNo={studentNo} />
-        <MiniCalendar studentNo={studentNo} />
+        <MiniCalendar uId={studentNo} />
       </div>
     </div>
   );

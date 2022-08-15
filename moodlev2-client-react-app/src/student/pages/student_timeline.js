@@ -3,7 +3,7 @@ import React, { Fragment, useState } from "react";
 import PropTypes from "prop-types";
 
 import "./student_timeline.css";
-import MonthlyCalendar from "../../shared/components/calendar/monthly_calendar";
+import MonthlyCalendar from "../../shared/components/monthly_calendar";
 
 const StudentTimeline = ({ studentNo, currentView }) => {
   // will show weekly view by default
