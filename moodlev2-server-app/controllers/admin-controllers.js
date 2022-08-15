@@ -2,6 +2,7 @@ const { v4: uuid } = require("uuid");
 
 const pool = require("../models/db_connect");
 const HttpError = require("../models/http-error");
+const { hash } = require("bcryptjs");
 
 const addNewCourse = async (req, res, next) => {
   try {
@@ -63,6 +64,52 @@ const addNewCourse = async (req, res, next) => {
     return next(new HttpError(err.message, 500));
   }
 };
+
+const addNewTeacher = async (req, res, next) => {
+  try {
+    console.log("POST api/admin/addNewTeacher");
+
+    const { name, uName, password, dept, email } = req.body;
+
+    const hashedPassword = await hash(password, 10);
+    let result = await pool.query("select add_teacher($1,$2,$3,$4,$5);", [
+      name,
+      uName,
+      hashedPassword,
+      dept,
+      email,
+    ]);
+
+    res.json({ message: "new teacher added" });
+  } catch (err) {
+    console.log(err);
+    return next(new HttpError(err.message, 500));
+  }
+};
+
+const addNewStudent = async (req, res, next) => {
+  try {
+    console.log("POST api/admin/addNewStudent");
+
+    const { name, password, dept, email, roll, batch } = req.body;
+
+    const hashedPassword = await hash(password, 10);
+    let result = await pool.query("select add_student($1,$2,$3,$4,$5,$6);", [
+      name,
+      hashedPassword,
+      roll,
+      dept,
+      batch,
+      email,
+    ]);
+
+    res.json({ message: "new student added" });
+  } catch (err) {
+    console.log(err);
+    return next(new HttpError(err.message, 500));
+  }
+};
+
 const getAllCourses = async (req, res, next) => {
   try {
     console.log("GET api/admin/courses/all");
@@ -129,3 +176,5 @@ exports.getDeptList = getDeptList;
 exports.postCourseAdd = postCourseAdd;
 exports.postDeptAdd = postDeptAdd;
 exports.addNewCourse = addNewCourse;
+exports.addNewTeacher = addNewTeacher;
+exports.addNewStudent = addNewStudent;

@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CourseEvaluationEventTableRow from "./course_evaluation_events/course_evaluation_event_table_row";
 
 const courseEvaluationEventListInit = [
@@ -45,6 +45,7 @@ const CourseEvaluationEvents = ({ studentNo, courseId }) => {
   //     try {
   //       const response = await fetch(`/api/course/events/${courseId}`);
   //       const jsonData = await response.json();
+  //       console.log(jsonData.data);
   //       setCourseEvaluationEventList(jsonData.data);
   //     } catch (err) {
   //       console.log(err);

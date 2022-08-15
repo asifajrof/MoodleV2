@@ -17,5 +17,7 @@ adminRoutes.get("/dept_list", adminControllers.getDeptList);
 adminRoutes.post("/addcourse", adminControllers.postCourseAdd);
 adminRoutes.post("/adddept", adminControllers.postDeptAdd);
 adminRoutes.post("/addNewCourse", adminControllers.addNewCourse);
+adminRoutes.post("/addNewTeacher", adminControllers.addNewTeacher);
+adminRoutes.post("/addNewStudent", adminControllers.addNewStudent);
 
 module.exports = adminRoutes;

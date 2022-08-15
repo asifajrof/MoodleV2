@@ -25,6 +25,7 @@ import AdminHome from "./admin/pages/AdminHome";
 import AddNewCourse from "./admin/pages/AddNewCourse";
 import DeptAddForm from "./admin/components/add_dept";
 import AddNewTeacher from "./admin/pages/AddNewTeacher";
+import AddNewStudent from "./admin/pages/AddNewStudent";
 
 import BlankMenuBar from "./shared/components/BlankMenuBar";
 import Login from "./shared/pages/login";
@@ -114,6 +115,10 @@ const App = () => {
             <Route
               path={"/teachers/addnew"}
               element={<AddNewTeacher adminNo={token.id} />}
+            />
+            <Route
+              path={"/students/addnew"}
+              element={<AddNewStudent adminNo={token.id} />}
             />
             <Route
               path={"/dept/addnew"}

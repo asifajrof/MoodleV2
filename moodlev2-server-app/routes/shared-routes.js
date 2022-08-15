@@ -13,5 +13,6 @@ sharedRoutes.get("/", (req, res, next) => {
 
 sharedRoutes.get("/topics/:course_id", sharedControllers.getCourseTopicsById);
 sharedRoutes.get("/:course_id", sharedControllers.getCourseById);
+sharedRoutes.get("/events/:course_id", sharedControllers.getCourseEvents);
 
 module.exports = sharedRoutes;

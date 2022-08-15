@@ -16,17 +16,17 @@ const term_list = [
   },
 ];
 
-const TeacherAddForm = ({ adminNo }) => {
+const StudentAddForm = ({ adminNo }) => {
   // name character varying,
-  // uname character varying,
   // hashed_password character varying,
   // dept integer,
   // email character varying)
   const [name, setName] = useState("");
-  const [uName, setUName] = useState("");
   const [password, setPassword] = useState("");
   const [dept, setDept] = useState(0);
   const [email, setEmail] = useState("");
+  const [roll, setRoll] = useState(0);
+  const [batch, setBatch] = useState(0);
 
   const [deptList, setDeptList] = useState([]);
   const makeDeptList = (data) => {
@@ -50,14 +50,14 @@ const TeacherAddForm = ({ adminNo }) => {
     fetchData();
   }, []);
 
-  const addTeacher = async (teacherObj) => {
+  const addStudent = async (studentObj) => {
     try {
-      const res = await fetch(`/api/admin/addNewTeacher`, {
+      const res = await fetch(`/api/admin/addNewStudent`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
         },
-        body: JSON.stringify(teacherObj),
+        body: JSON.stringify(studentObj),
       });
       const data = await res.json();
 
@@ -66,7 +66,7 @@ const TeacherAddForm = ({ adminNo }) => {
 
       if (res.status === 200) {
         // alert("teacger added successfully!");
-        console.log("teacher added successfully!");
+        console.log("student added successfully!");
       } else {
         // alert(data.message);
         console.log(data.message);
@@ -78,24 +78,26 @@ const TeacherAddForm = ({ adminNo }) => {
   };
   const onSubmitAction = (event) => {
     event.preventDefault();
-    const teacherObj = {
+    const studentObj = {
       name: name,
-      uName: uName,
       password: password,
       dept: dept,
       email: email,
+      roll: roll,
+      batch: batch,
     };
-    console.log(teacherObj);
+    console.log(studentObj);
 
-    addTeacher(teacherObj);
+    addStudent(studentObj);
 
     setName("");
-    setUName("");
     setPassword("");
     setDept(0);
     setEmail("");
+    setRoll(0);
+    setBatch(0);
 
-    console.log("onSubmitAction of add new teacher by admin");
+    console.log("onSubmitAction of add new student by admin");
     return;
   };
   const onChangeHandlerSelectDept = (selectedDept) => {
@@ -110,7 +112,7 @@ const TeacherAddForm = ({ adminNo }) => {
           <TextField
             fullWidth
             type="text"
-            id="addteacher__name"
+            id="addstudent__name"
             label="Full Name"
             variant="outlined"
             value={name}
@@ -121,20 +123,8 @@ const TeacherAddForm = ({ adminNo }) => {
           <br />
           <TextField
             fullWidth
-            type="text"
-            id="addteacher__u__name"
-            label="Username"
-            variant="outlined"
-            value={uName}
-            onChange={(e) => setUName(e.target.value)}
-            required
-          />
-          <br />
-          <br />
-          <TextField
-            fullWidth
             type="password"
-            id="addteacher__password"
+            id="addstudent__password"
             label="Password"
             variant="outlined"
             value={password}
@@ -146,7 +136,7 @@ const TeacherAddForm = ({ adminNo }) => {
           <TextField
             fullWidth
             type="email"
-            id="addteacher__email"
+            id="addstudent__email"
             label="E-mail"
             variant="outlined"
             value={email}
@@ -155,11 +145,35 @@ const TeacherAddForm = ({ adminNo }) => {
           />
           <br />
           <br />
-          <InputLabel id="addteacher__select__dept__label">
+          <TextField
+            fullWidth
+            type="roll"
+            id="addstudent__roll"
+            label="Roll"
+            variant="outlined"
+            value={roll}
+            onChange={(e) => setRoll(e.target.value)}
+            required
+          />
+          <br />
+          <br />
+          <TextField
+            fullWidth
+            type="batch"
+            id="addstudent__batch"
+            label="batch"
+            variant="outlined"
+            value={batch}
+            onChange={(e) => setBatch(e.target.value)}
+            required
+          />
+          <br />
+          <br />
+          <InputLabel id="addstudent__select__dept__label">
             Select Department
           </InputLabel>
           <Select
-            id="addteacher__select__dept"
+            id="addstudent__select__dept"
             options={deptList}
             onChange={onChangeHandlerSelectDept}
             required
@@ -174,4 +188,4 @@ const TeacherAddForm = ({ adminNo }) => {
   );
 };
 
-export default TeacherAddForm;
+export default StudentAddForm;
