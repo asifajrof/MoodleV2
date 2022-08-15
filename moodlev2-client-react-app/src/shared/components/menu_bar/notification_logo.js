@@ -18,7 +18,7 @@ const NotificationLogo = ({ uId }) => {
     let interval = setInterval(async () => {
       const res = await fetch(`/api/notification/${uId}`);
       const jsonData = await res.json();
-      if (res.status == 200) {
+      if (res.status === 200) {
         setnotificationList(jsonData.data);
       } else {
         alert(jsonData.message);
