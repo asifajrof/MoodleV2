@@ -43,4 +43,34 @@ const getMarkDateList = async (req, res, next) => {
     return next(new HttpError(error.message, 500));
   }
 };
+
+const events = [
+  {
+    date: "18-08-2022",
+    title: "CSE409 Class",
+    type: 0,
+  },
+  {
+    date: "01-08-2022",
+    title: "CSE423 CT",
+    type: 1,
+  },
+];
+
+const getEventListMonthView = async (req, res, next) => {
+  console.log("getEventListMonthView");
+  try {
+    const { uId, date, month, year } = req.body;
+    console.log("uid " + uId, "date " + date, "month " + month, "year " + year);
+    res.json({
+      message: "getEventListMonthView",
+      eventList: events,
+    });
+  } catch (error) {
+    console.log("getEventListMonthView error");
+    return next(new HttpError(error.message, 500));
+  }
+};
+
 exports.getMarkDateList = getMarkDateList;
+exports.getEventListMonthView = getEventListMonthView;
