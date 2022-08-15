@@ -6,7 +6,7 @@ import "../../shared/components/calendar/Calendar.css";
 
 const mark = ["15-08-2022", "16-08-2022", "17-08-2022"];
 
-const MiniCalendar = ({ studentNo }) => {
+const MiniCalendar = ({ uId }) => {
   const [dateState, setDateState] = useState(new Date());
 
   const changeDate = (e) => {

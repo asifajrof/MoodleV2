@@ -1,5 +1,5 @@
 import React from "react";
-import MiniCalendar from "../components/minicalendar";
+import MiniCalendar from "../../shared/components/minicalendar";
 import RegisteredCourses from "../components/registered_courses";
 
 import "./student_home.css";
