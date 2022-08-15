@@ -93,7 +93,7 @@ const App = () => {
     console.log("Admin ", token);
     return (
       <Router>
-        <AdminMenuBar adminNo={token.id} />
+        <AdminMenuBar adminNo={token.id} uType={token.type} />
         <main>
           <Routes>
             <Route
@@ -129,12 +129,12 @@ const App = () => {
     console.log("Student ", token);
     return (
       <Router>
-        <StudentMenuBar studentNo={token.id} />
+        <StudentMenuBar studentNo={token.id} uType={token.type} />
         <main>
           <Routes>
             <Route
               path={home_link}
-              element={<StudentHome studentNo={token.id} />}
+              element={<StudentHome studentNo={token.id} uType={token.type} />}
             />
             <Route
               path={"/course/:courseId" + course_link}
@@ -146,7 +146,9 @@ const App = () => {
             />
             <Route
               path={timeline_link}
-              element={<StudentTimeline studentNo={token.id} />}
+              element={
+                <StudentTimeline studentNo={token.id} uType={token.type} />
+              }
             />
             <Route
               path="*"

@@ -4,14 +4,14 @@ import Calendar from "react-calendar";
 // import TheCalendar from "./calendar/TheCalendar";
 import "./calendar/Calendar.css";
 
-const MiniCalendar = ({ uId }) => {
+const MiniCalendar = ({ uId, uType }) => {
   const [dateState, setDateState] = useState(new Date());
   const [markDateList, setMarkDateList] = useState([]);
   const changeDate = (e) => {
     setDateState(e);
   };
 
-  const month = dateState.getMonth() + 1; // aug -> 8
+  const month = dateState.getMonth(); // aug -> 8
   const year = dateState.getFullYear(); // 2022
 
   // query here
@@ -28,7 +28,7 @@ const MiniCalendar = ({ uId }) => {
           body: JSON.stringify(calendarPostBody),
         });
         const jsonData = await res.json();
-        console.log(jsonData);
+        // console.log(jsonData);
         // console.log(res.status);
         if (res.status === 200) {
           setMarkDateList(jsonData.markDateList);
@@ -40,8 +40,8 @@ const MiniCalendar = ({ uId }) => {
         alert(err);
       }
     };
-    fetchData({ uId, month, year });
-  }, []);
+    fetchData({ uId, uType, month, year });
+  }, [dateState]);
 
   // const markDateList = markPerMonth(month, year);
 

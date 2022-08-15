@@ -23,7 +23,7 @@ const TileContent = ({ uId, date, view }) => {
 
   const dateMoment = moment(date);
   const dateOnly = dateMoment.date();
-  const monthOnly = dateMoment.month() + 1;
+  const monthOnly = dateMoment.month();
   const yearOnly = dateMoment.year();
   //   console.log("date " + dateOnly, "month " + monthOnly, "year " + yearOnly);
 

@@ -5,13 +5,13 @@ import RegisteredCourses from "../components/registered_courses";
 import "./student_home.css";
 import UpcomingEvents from "../components/upcoming_events";
 
-const StudentHome = ({ studentNo }) => {
+const StudentHome = ({ studentNo, uType }) => {
   return (
     <div className="home__container">
       <UpcomingEvents studentNo={studentNo} />
       <div className="home__container__divider">
         <RegisteredCourses studentNo={studentNo} />
-        <MiniCalendar uId={studentNo} />
+        <MiniCalendar uId={studentNo} uType={uType} />
       </div>
     </div>
   );
