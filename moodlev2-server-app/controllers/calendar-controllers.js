@@ -26,6 +26,15 @@ const HttpError = require("../models/http-error");
 // };
 
 // const markList = ["01-08-2022", "02-08-2022"];
+function getIdEvent(event) {
+  if (event == "Class") return 1;
+  else if (event == "Extra Class") return 2;
+  else if (event == "Assignment") return 3;
+  else if (event == "Lab Test") return 4;
+  else if (event == "Lab Quiz") return 5;
+  else if (event == "Class Test") return 6;
+  else if (event == "Online Evaluation") return 7;
+}
 
 const getAllDaysInMonth = (year, month) => {
   const dateList = [];
@@ -91,27 +100,56 @@ const getMarkDateList = async (req, res, next) => {
   }
 };
 
-const events = [
-  {
-    date: "18-08-2022",
-    title: "CSE409 Class",
-    type: 0,
-  },
-  {
-    date: "01-08-2022",
-    title: "CSE423 CT",
-    type: 1,
-  },
-];
+// const events = [
+//   {
+//     date: "18-08-2022",
+//     title: "CSE409 Class",
+//     type: 0,
+//   },
+//   {
+//     date: "01-08-2022",
+//     title: "CSE423 CT",
+//     type: 1,
+//   },
+// ];
 
 const getEventListMonthView = async (req, res, next) => {
   // console.log("getEventListMonthView");
   try {
-    const { uId, date, month, year } = req.body;
-    // console.log("uid " + uId, "date " + date, "month " + month, "year " + year);
+    const { uId, date, month, year, uType } = req.body;
+
+    let result = null;
+    const givenDate = moment(new Date(year, month, date));
+
+    if (uType === "Student") {
+      result = await pool.query(
+        "SELECT json_agg(t) FROM get_day_events($1,$2) as t",
+        [uId, givenDate.format("MM-DD-YYYY")]
+      );
+    } else if (uType === "Teacher") {
+      result = await pool.query(
+        "SELECT json_agg(t) FROM get_day_events_teacher($1,$2) as t",
+        [uId, givenDate.format("MM-DD-YYYY")]
+      );
+    }
+    //console.log("uid " + uId, "date " + date, "month " + month, "year " + year);
+    const events = result.rows[0].json_agg;
+    const eventList = [];
+
+    if (events) {
+      for (const e of events) {
+        e.event_id = getIdEvent(e.event_type);
+        if (e.event_type !== "Class") {
+          eventList.push(e);
+        }
+      }
+    }
+
+    console.log(eventList);
+
     res.json({
       message: "getEventListMonthView",
-      eventList: events,
+      eventList: eventList,
     });
   } catch (error) {
     // console.log("getEventListMonthView error");

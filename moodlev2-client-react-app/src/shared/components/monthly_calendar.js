@@ -6,7 +6,7 @@ import "./monthly_calendar.css";
 import "./calendar/Calendar.css";
 import TileContent from "./calendar/TileContent";
 
-const MonthlyCalendar = ({ uId }) => {
+const MonthlyCalendar = ({ uId, uType }) => {
   const [dateState, setDateState] = useState(new Date());
   const markDateList = [];
   const changeDate = (e) => {
@@ -15,7 +15,7 @@ const MonthlyCalendar = ({ uId }) => {
   const tileContent = ({ date, view }) => {
     return (
       <div className="calendar__monthly__event__container">
-        <TileContent uId={uId} date={date} view={view} />
+        <TileContent uId={uId} date={date} view={view} uType={uType} />
       </div>
     );
   };

@@ -15,8 +15,16 @@ import ReactDOM from "react-dom";
 //   },
 // ];
 
-const eventColors = ["#e6ffe5", "#ffe5e5"];
-const TileContent = ({ uId, date, view }) => {
+const eventColors = [
+  "#e6ffe5",
+  "#ffe5e5",
+  "#e5ffe5",
+  "#e5e5ff",
+  "#fae5e5",
+  "#e5f5e5",
+  "#e5e5e5",
+];
+const TileContent = ({ uId, date, view, uType }) => {
   const maxEventCount = 3;
   const [eventList, setEventList] = useState([]);
   //   const [eventList, setEventList] = useState(events);
@@ -52,7 +60,7 @@ const TileContent = ({ uId, date, view }) => {
         // alert(err);
       }
     };
-    fetchData({ uId, date: dateOnly, month: monthOnly, year: yearOnly });
+    fetchData({ uId, date: dateOnly, month: monthOnly, year: yearOnly, uType });
   }, []);
 
   const tileElement = [];
@@ -76,14 +84,17 @@ const TileContent = ({ uId, date, view }) => {
         <div
           className="calendar__monthly__event"
           style={{
-            backgroundColor: eventColors[eventList[i - eventCountAfterBr].type],
+            backgroundColor:
+              eventColors[eventList[i - eventCountAfterBr].event_id - 1],
           }}
           key={eventCount}
         >
           <div className="event__title">
-            {eventList[i - eventCountAfterBr].title}
+            {eventList[i - eventCountAfterBr].dept_shortname}{" "}
+            {eventList[i - eventCountAfterBr].course_code}{" "}
+            {eventList[i - eventCountAfterBr].event_type}
           </div>
-          <div className="event__type">:aro kisu lekha</div>
+          {/* <div className="event__type"> </div> */}
         </div>
       );
     }

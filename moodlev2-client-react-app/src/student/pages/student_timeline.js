@@ -6,7 +6,7 @@ import "./student_timeline.css";
 import MonthlyCalendar from "../../shared/components/monthly_calendar";
 import WeeklyCalendar from "../../shared/components/weekly_calendar";
 
-const StudentTimeline = ({ studentNo, currentView }) => {
+const StudentTimeline = ({ studentNo, currentView, uType }) => {
   // will show weekly view by default
   const [view, setView] = useState(currentView);
   const handleToggleChange = (event, newView) => {
@@ -38,7 +38,7 @@ const StudentTimeline = ({ studentNo, currentView }) => {
         )}
         {view === "month" && (
           <div className="timeline__calendar__month">
-            <MonthlyCalendar uId={studentNo} />
+            <MonthlyCalendar uId={studentNo} uType={uType} />
           </div>
         )}
       </div>
