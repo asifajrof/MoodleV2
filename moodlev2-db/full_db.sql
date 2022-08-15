@@ -595,6 +595,100 @@ $$;
 ALTER FUNCTION public.get_current_course_teacher(teacher_username character varying) OWNER TO postgres;
 
 --
+-- Name: get_day_events(integer, date); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_day_events(std_id integer, query_date date) RETURNS TABLE(id integer, dept_shortname character varying, course_code integer, lookup_time time without time zone, event_type character varying)
+    LANGUAGE plpgsql
+    AS $$
+begin
+    return query
+    select cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
+                                                  ((select section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type
+                                                    from course_routine cr
+                                                    where day = extract(isodow from query_date) - 1
+                                                      and not exists(
+                                                            select class_id
+                                                            from canceled_class cc
+                                                            where cc.class_id = cr.class_id and _date = query_date
+                                                        ))
+                                                   union
+                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type
+                                                    from extra_class
+                                                    where start::date = query_date)
+                                                   union
+                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type
+                                                    from evaluation e
+                                                             join evaluation_type et
+                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                      and start::date = query_date)
+                                                   union
+                                                   (select section_no, _end::time as _lookup_time, et.type_name as _event_type
+                                                    from evaluation e
+                                                             join evaluation_type et
+                                                                  on (et.typt_id = e.type_id and et.notification_time_type = true)
+                                                                      and _end::date = query_date))) ut join
+    (
+        select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
+    ) ss on (ut.section_no=ss.section_id) join section s on (ss.section_id=s.section_no) join current_courses cc on (s.course_id=cc._id)
+    order by _lookup_time;
+end
+$$;
+
+
+ALTER FUNCTION public.get_day_events(std_id integer, query_date date) OWNER TO postgres;
+
+--
+-- Name: get_day_events_teacher(character varying, date); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_day_events_teacher(teacher_username character varying, query_date date) RETURNS TABLE(id integer, dept_shortname character varying, course_code integer, lookup_time time without time zone, event_type character varying)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+    return query
+    select cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
+                                                  ((select section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type, tr.instructor_id as instructor_id
+                                                    from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
+                                                    where day = extract(isodow from query_date) - 1
+                                                      and not exists(
+                                                            select class_id
+                                                            from canceled_class cc
+                                                            where cc.class_id = cr.class_id and _date = query_date
+                                                        ))
+                                                   union
+                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,instructor_id as instructor_id
+                                                    from extra_class
+                                                    where start::date = query_date)
+                                                   union
+                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,ect.instructor_id as instructor_id
+                                                    from extra_class join extra_class_teacher ect on extra_class.extra_class_id = ect.extra_class_id
+                                                    where start::date = query_date)
+                                                   union
+                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type, e.instructor_id as instructor_id
+                                                    from evaluation e
+                                                             join evaluation_type et
+                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                      and start::date = query_date)
+                                                   union
+                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type,eet.instructor_id
+                                                    from evaluation e join extra_evaluation_instructor eet on e.evaluation_id = eet.evaluation_id
+                                                             join evaluation_type et
+                                                                  on (et.typt_id = e.type_id and et.notification_time_type = false)
+                                                                      and _end::date = query_date))) ut join
+    instructor i on i.instructor_id=ut.instructor_id join current_courses cc on (i.course_id=cc._id)
+    where i.teacher_id=tid
+    order by _lookup_time;
+end
+$$;
+
+
+ALTER FUNCTION public.get_day_events_teacher(teacher_username character varying, query_date date) OWNER TO postgres;
+
+--
 -- Name: get_dept_list(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
