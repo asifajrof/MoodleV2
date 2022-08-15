@@ -19,6 +19,7 @@
   border-radius: 0.25rem;
   font-size: small;
   font-weight: bold;
+  color: black;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;

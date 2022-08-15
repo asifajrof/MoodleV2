@@ -46,7 +46,7 @@ const StudentTimeline = ({ studentNo, currentView }) => {
 export default StudentTimeline;
 
 StudentTimeline.protoTypes = {
-  studentNo: PropTypes.number.isRequired,
+  studentNo: PropTypes.string.isRequired,
   currentView: PropTypes.string,
 };
 

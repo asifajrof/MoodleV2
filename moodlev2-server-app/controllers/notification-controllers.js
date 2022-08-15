@@ -2,10 +2,10 @@ const pool = require("../models/db_connect");
 const HttpError = require("../models/http-error");
 
 const getNotificationsByUserName = async (req, res, next) => {
-  console.log("getNotificationsByUserName");
+  // console.log("getNotificationsByUserName");
   try {
     const uId = req.params.uId;
-    console.log("uid " + uId);
+    // console.log("uid " + uId);
     // let result = await pool.query(
     //   "SELECT json_agg(t) FROM get_course_topics($1) as t",
     //   [uId]
