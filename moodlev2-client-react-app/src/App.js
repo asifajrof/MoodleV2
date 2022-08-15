@@ -21,7 +21,7 @@ import TeacherTimeline from "./teacher/pages/teacher_timeline";
 
 import AdminMenuBar from "./admin/components/menu_bar";
 import AdminHome from "./admin/pages/AdminHome";
-// import AddNewCourse from "./admin/pages/AddNewCourse";
+import AddNewCourse from "./admin/pages/AddNewCourse";
 import DeptAddForm from "./admin/components/add_dept";
 
 import BlankMenuBar from "./shared/components/BlankMenuBar";
@@ -35,7 +35,6 @@ import {
   home_link,
   timeline_link,
 } from "./links";
-import CourseAddForm from "./admin/components/add_course";
 import useToken from "./shared/pages/useToken";
 
 const App = () => {
@@ -108,7 +107,7 @@ const App = () => {
             />
             <Route
               path={"/courses/addnew"}
-              element={<CourseAddForm adminNo={token.id} />}
+              element={<AddNewCourse adminNo={token.id} />}
             />
             <Route
               path={"/dept/addnew"}

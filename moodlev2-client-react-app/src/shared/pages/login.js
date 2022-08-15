@@ -18,8 +18,8 @@ const Login = ({ onLogin }) => {
         body: JSON.stringify(credentials),
       });
       const data = await res.json();
-      console.log(data);
-      console.log(res.status);
+      // console.log(data);
+      // console.log(res.status);
       if (res.status === 200) {
         setToken({ type: data.type, id: credentials.uName });
       } else {

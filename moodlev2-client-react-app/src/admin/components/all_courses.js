@@ -25,7 +25,7 @@ const AllCourses = ({ adminNo }) => {
   }, []);
 
   return (
-    <div className="course__container">
+    <div className="course__container" style={{ width: "100%" }}>
       <div className="course__container__add">
         <Link to="/courses/addnew">
           <Button variant="contained">
