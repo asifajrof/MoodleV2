@@ -1,0 +1,3 @@
+1. events for a course --> from teacher side
+
+2. notifications --> for student, teacher 

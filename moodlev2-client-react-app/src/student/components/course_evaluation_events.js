@@ -40,19 +40,41 @@ const CourseEvaluationEvents = ({ studentNo, courseId }) => {
     courseEvaluationEventListInit
   );
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch(`/api/course/events/${courseId}`);
-  //       const jsonData = await response.json();
-  //       console.log(jsonData.data);
-  //       setCourseEvaluationEventList(jsonData.data);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/course/events`, {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({ studentNo, courseId }),
+        });
+        const jsonData = await res.json();
+        // console.log(data);
+        // console.log(res.status);
+        if (res.status === 200) {
+          setCourseEvaluationEventList(jsonData.data);
+          console.log(jsonData.data);
+        } else {
+          // alert(data.message);
+          console.log(jsonData.message);
+        }
+      } catch (err) {
+        console.log(err);
+        // alert(err);
+      }
+      // try {
+      //   const response = await fetch(`/api/course/events/${courseId}`);
+      //   const jsonData = await response.json();
+      //   console.log(jsonData.data);
+      //   setCourseEvaluationEventList(jsonData.data);
+      // } catch (err) {
+      //   console.log(err);
+      // }
+    };
+    fetchData();
+  }, []);
 
   const onClickHandler = (id) => {
     console.log("click na hoitei?");
@@ -66,7 +88,7 @@ const CourseEvaluationEvents = ({ studentNo, courseId }) => {
           <TableHead>
             <TableRow>
               <StyledTableCell align="center"> </StyledTableCell>
-              <StyledTableCell align="center">Topic Name</StyledTableCell>
+              <StyledTableCell align="center">Event Type</StyledTableCell>
               <StyledTableCell align="center">Description</StyledTableCell>
             </TableRow>
           </TableHead>

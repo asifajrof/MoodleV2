@@ -38,7 +38,7 @@ export default function CourseEvaluationEventTableRow({
   onClickHandler,
 }) {
   let dataIndex = 0;
-  function createData(isfinished, title, description, id) {
+  function createData(isfinished, title, description, id, date) {
     dataIndex = dataIndex + 1;
 
     return {
@@ -46,13 +46,15 @@ export default function CourseEvaluationEventTableRow({
       title,
       description,
       id,
+      date,
     };
   }
   const row = createData(
-    courseEvaluationEvent.isFinished,
-    courseEvaluationEvent.title,
-    courseEvaluationEvent.description,
-    courseEvaluationEvent.id
+    courseEvaluationEvent.completed,
+    courseEvaluationEvent.event_type,
+    courseEvaluationEvent.event_description,
+    courseEvaluationEvent.id,
+    courseEvaluationEvent.event_date
   );
   // console.log(row);
   const linkto = `/course/${courseId}/event/${row.id}`;
@@ -63,7 +65,9 @@ export default function CourseEvaluationEventTableRow({
       <StyledTableCell align="center">{row.dataIndex}</StyledTableCell>
       <StyledTableCell align="center" component="th" scope="row">
         {/* <div onClick={onClickHandler(row.id)}>{row.title}</div> */}
-        <Link to={linkto}>{row.title}</Link>
+        <Link to={linkto}>
+          {row.title} <br></br> {row.date}
+        </Link>
         {/* {row.title} */}
       </StyledTableCell>
       <StyledTableCell align="center">
