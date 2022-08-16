@@ -531,6 +531,28 @@ $$;
 ALTER FUNCTION public.get_account_type(uname character varying) OWNER TO postgres;
 
 --
+-- Name: get_course_evaluations(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_course_evaluations(std_id integer, crs_id integer) RETURNS TABLE(id integer, event_type character varying, event_date date, event_description character varying, published boolean, completed boolean)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    begin
+    return query
+    select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp) from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join current_courses cc on cc._id=s.course_id
+where cc._id=crs_id and et.notification_time_type=false and mod(_year,100)*100000+dept_code*1000+roll_num=std_id
+union
+select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp) from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join current_courses cc on cc._id=s.course_id
+where cc._id=crs_id and et.notification_time_type=true and mod(_year,100)*100000+dept_code*1000+roll_num=std_id
+order by _date;
+end
+$$;
+
+
+ALTER FUNCTION public.get_course_evaluations(std_id integer, crs_id integer) OWNER TO postgres;
+
+--
 -- Name: get_course_topics(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -2853,6 +2875,7 @@ INSERT INTO public.course (course_id, course_name, course_num, dept_code, offere
 INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (8, 'Basic Graph Theory', 21, 5, 5, 2017, 2022, 4, 1);
 INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (9, 'Introduction to Bioinformatics', 63, 5, 5, 2017, 2022, 4, 1);
 INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (10, 'Software Development Sessional', 8, 5, 5, 2017, 2022, 4, 1);
+INSERT INTO public.course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term) VALUES (11, 'Introduction to Electronic Engineering', 63, 6, 5, 2017, 2022, 2, 1);
 
 
 --
@@ -2972,7 +2995,7 @@ INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (4
 --
 
 INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description) VALUES (1, 1, 4, 9, NULL, '2022-08-20 14:00:00+06', '2022-08-20 14:40:00+06', '2022-08-15', 20, NULL);
-INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description) VALUES (2, 5, 6, 8, NULL, '2022-08-15 17:21:23.768648+06', '2022-08-20 20:20:00+06', '2022-08-15', 100, NULL);
+INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description) VALUES (2, 5, 6, 8, NULL, '2022-08-15 19:26:38.349804+06', '2022-08-20 20:20:00+06', '2022-08-15', 100, NULL);
 INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description) VALUES (3, 1, 2, 2, NULL, '2022-08-22 17:00:00+06', '2022-08-22 17:40:00+06', '2022-08-15', 20, NULL);
 INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description) VALUES (4, 2, 6, 8, NULL, '2022-08-27 21:00:00+06', '2022-08-27 22:00:00+06', '2022-08-15', 50, NULL);
 INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description) VALUES (5, 4, 7, 12, NULL, '2022-08-28 20:40:00+06', '2022-08-28 21:40:00+06', '2022-08-15', 20, NULL);
@@ -3059,11 +3082,11 @@ INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALU
 -- Data for Name: notification_event; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (1, 1, 1, 2, '2022-08-15', '2022-08-15 17:21:23.733826+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (2, 1, 2, 2, '2022-08-15', '2022-08-15 17:21:23.768648+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (3, 1, 3, 2, '2022-08-15', '2022-08-15 17:21:23.777372+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (4, 1, 4, 2, '2022-08-15', '2022-08-15 17:21:23.790398+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (5, 1, 5, 2, '2022-08-15', '2022-08-15 17:21:23.804393+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (1, 1, 1, 2, '2022-08-15', '2022-08-15 19:26:38.289016+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (2, 1, 2, 2, '2022-08-15', '2022-08-15 19:26:38.349804+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (3, 1, 3, 2, '2022-08-15', '2022-08-15 19:26:38.365015+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (4, 1, 4, 2, '2022-08-15', '2022-08-15 19:26:38.465136+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (5, 1, 5, 2, '2022-08-15', '2022-08-15 19:26:38.504745+06');
 
 
 --
@@ -3145,12 +3168,12 @@ INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (
 -- Data for Name: student; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful', '$2a$12$BjvAnEmgjQsjLxPmFsD8Peh7H0DV49ZiXZisriA/IZ92ySlPJc1p.', 2017, 119, 5, '2022-08-15 17:21:19.979501+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (2, 'Fatima Nawmi', '$2y$10$/q5rPYxPDEDi14Hp33AgfOjhuF8mglmjqBnyN58zN17L4hJ4Oclpu', 2017, 93, 5, '2022-08-15 17:21:19.991802+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (3, 'Asif Ajrof', '$2y$10$pYUj/gnwUYpkBdWQiXi3buA8rVAE3EFSJbd2FSQuWkAEAF3SZqGPW', 2017, 92, 5, '2022-08-15 17:21:20.00145+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (4, 'Saif Ahmed Khan', '$2y$10$nCoBIjkAYSLLwLW8tDe4Ku3Ud.TkJvViq62cGQ.dkfmpl3XqavsvW', 2017, 110, 5, '2022-08-15 17:21:20.010839+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (5, 'Nazmul Takbir', '$2y$10$iVzkVjUWBYUKA2rcPz83BubHExrrr0guL5nEZHrK4GdZj8PzRZQd.', 2017, 103, 5, '2022-08-15 17:21:20.019933+06', NULL);
-INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (6, 'Sihat Afnan', '$2y$10$WoVLtw9ux4j13piNbC3df.UKBJwO7wFVmLzfbqzZeNBc8NE3ierLO', 2017, 98, 5, '2022-08-15 17:21:20.036+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (1, 'Md. Shariful', '$2a$12$BjvAnEmgjQsjLxPmFsD8Peh7H0DV49ZiXZisriA/IZ92ySlPJc1p.', 2017, 119, 5, '2022-08-15 19:26:31.128222+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (2, 'Fatima Nawmi', '$2y$10$/q5rPYxPDEDi14Hp33AgfOjhuF8mglmjqBnyN58zN17L4hJ4Oclpu', 2017, 93, 5, '2022-08-15 19:26:31.16447+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (3, 'Asif Ajrof', '$2y$10$pYUj/gnwUYpkBdWQiXi3buA8rVAE3EFSJbd2FSQuWkAEAF3SZqGPW', 2017, 92, 5, '2022-08-15 19:26:31.239906+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (4, 'Saif Ahmed Khan', '$2y$10$nCoBIjkAYSLLwLW8tDe4Ku3Ud.TkJvViq62cGQ.dkfmpl3XqavsvW', 2017, 110, 5, '2022-08-15 19:26:31.272379+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (5, 'Nazmul Takbir', '$2y$10$iVzkVjUWBYUKA2rcPz83BubHExrrr0guL5nEZHrK4GdZj8PzRZQd.', 2017, 103, 5, '2022-08-15 19:26:31.329327+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (6, 'Sihat Afnan', '$2y$10$WoVLtw9ux4j13piNbC3df.UKBJwO7wFVmLzfbqzZeNBc8NE3ierLO', 2017, 98, 5, '2022-08-15 19:26:31.37396+06', NULL);
 
 
 --
@@ -3175,20 +3198,20 @@ INSERT INTO public.student (student_id, student_name, password, _year, roll_num,
 -- Data for Name: teacher; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (1, 'A.B.M. Alim Al Islam', 2, 5, '2022-08-15 17:21:20.33839+06');
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (2, 'Abdullah Adnan', 3, 5, '2022-08-15 17:21:20.354553+06');
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (3, 'Saidur Rahman', 4, 5, '2022-08-15 17:21:20.384205+06');
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (4, 'Saifur Rahman', 5, 5, '2022-08-15 17:21:20.393544+06');
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (5, 'Shasuzzoha Bayzid', 6, 5, '2022-08-15 17:21:20.404914+06');
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (6, 'Nafiz Irtiza Tripto', 7, 5, '2022-08-15 17:21:20.415642+06');
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (7, 'Shadman Saquib Eusuf', 8, 5, '2022-08-15 17:21:20.424768+06');
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (8, 'Shohrab Hossain', 9, 5, '2022-08-15 17:21:20.451004+06');
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (9, 'Syed Md. Mukit Rashid', 10, 5, '2022-08-15 17:21:20.461163+06');
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (10, 'Munshi Abdur Rauf', 11, 7, '2022-08-15 17:21:20.47011+06');
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (11, 'Rony Hossain', 12, 7, '2022-08-15 17:21:20.480414+06');
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (12, 'Rayhan Rashed', 13, 5, '2022-08-15 17:21:20.48839+06');
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (13, 'Tahmid Hasan', 14, 5, '2022-08-15 17:21:20.499615+06');
-INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (14, 'Mohammad Tawhidul Hasan Bhuiyan', 15, 5, '2022-08-15 17:21:20.51071+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (1, 'A.B.M. Alim Al Islam', 2, 5, '2022-08-15 19:26:32.399295+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (2, 'Abdullah Adnan', 3, 5, '2022-08-15 19:26:32.454654+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (3, 'Saidur Rahman', 4, 5, '2022-08-15 19:26:32.503542+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (4, 'Saifur Rahman', 5, 5, '2022-08-15 19:26:32.573833+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (5, 'Shasuzzoha Bayzid', 6, 5, '2022-08-15 19:26:32.630813+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (6, 'Nafiz Irtiza Tripto', 7, 5, '2022-08-15 19:26:32.657897+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (7, 'Shadman Saquib Eusuf', 8, 5, '2022-08-15 19:26:32.68188+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (8, 'Shohrab Hossain', 9, 5, '2022-08-15 19:26:32.703603+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (9, 'Syed Md. Mukit Rashid', 10, 5, '2022-08-15 19:26:32.739052+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (10, 'Munshi Abdur Rauf', 11, 7, '2022-08-15 19:26:32.762229+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (11, 'Rony Hossain', 12, 7, '2022-08-15 19:26:32.793837+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (12, 'Rayhan Rashed', 13, 5, '2022-08-15 19:26:32.824729+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (13, 'Tahmid Hasan', 14, 5, '2022-08-15 19:26:32.861772+06');
+INSERT INTO public.teacher (teacher_id, teacher_name, user_no, dept_code, notification_last_seen) VALUES (14, 'Mohammad Tawhidul Hasan Bhuiyan', 15, 5, '2022-08-15 19:26:32.888648+06');
 
 
 --
@@ -3234,7 +3257,7 @@ INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) V
 -- Data for Name: topic; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (1, 'State-Space Modeling', 1, false, 'We learn making markov model here', '2022-08-15 17:21:23.706567+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (1, 'State-Space Modeling', 1, false, 'We learn making markov model here', '2022-08-15 19:26:38.272389+06');
 
 
 --
@@ -3265,7 +3288,7 @@ SELECT pg_catalog.setval('public.canceled_class_canceled_class_id_seq', 1, false
 -- Name: course_course_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_course_id_seq', 10, true);
+SELECT pg_catalog.setval('public.course_course_id_seq', 11, true);
 
 
 --
