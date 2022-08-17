@@ -3,8 +3,9 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import CourseMenuBar from "../components/course_menu_bar";
+import CourseEvaluationEvents from "../components/course_evaluation_events";
 import FileUpload from "../components/file_upload/FileUpload";
-import "./course_home.css";
+// import "./course_home.css";
 
 const TeacherCourseEvents = ({ userName }) => {
   const [courseInfo, setcourseInfo] = useState([]);
@@ -34,6 +35,7 @@ const TeacherCourseEvents = ({ userName }) => {
         </div>
         <div className="course__home__container__divider">
           {/* <FileUpload /> */}
+          <CourseEvaluationEvents userName={userName} courseId={courseId} />
           <div>Upcoming/Latest post</div>
         </div>
       </div>
