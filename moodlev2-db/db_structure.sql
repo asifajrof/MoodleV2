@@ -278,6 +278,12 @@ where not exists(
     where cc._year>c._year or (cc._year=c._year and cc.term>c.term)
 ) with data;
 
+create materialized view all_courses as
+select c.course_id as _id,term_name(term) as _term,_year as __year,dept_shortname as _dept_shortname,(level*100+course_num) as _course_code, course_name as _course_name from course c join department d on c.dept_code = d.dept_code
+where not exists(
+    select course_id from course cc
+) with data;
+
 create materialized view intersected_sections as
 select e.section_id first_section, f.section_id second_section, count(*) common_students
 from
@@ -406,6 +412,21 @@ from ((
      ) s join (
          select enrol_id,student_id,section_id from enrolment
     ) e on s.student_id=e.student_id join section sec on e.section_id=sec.section_no join current_courses cc on sec.course_id=cc._id)
+left outer join evaluation ev on (ev.section_no=e.section_id and ev._end<current_timestamp)) left outer join submission s2 on (s2.enrol_id=e.enrol_id)
+group by _id,_term,__year,_dept_shortname,_course_code,_course_name;
+end
+$$ language plpgsql;
+create or replace function get_all_course (std_id integer)
+    returns table (id integer,term varchar,_year integer,dept_shortname varchar,course_code integer,course_name varchar,submitted integer) as $$
+begin
+    return query
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name,count(ev.evaluation_id)::integer
+from ((
+    (select student_id from student
+    where (mod(student._year,100)*100000+dept_code*1000+roll_num)=std_id
+     ) s join (
+         select enrol_id,student_id,section_id from enrolment
+    ) e on s.student_id=e.student_id join section sec on e.section_id=sec.section_no join all_courses cc on sec.course_id=cc._id)
 left outer join evaluation ev on (ev.section_no=e.section_id and ev._end<current_timestamp)) left outer join submission s2 on (s2.enrol_id=e.enrol_id)
 group by _id,_term,__year,_dept_shortname,_course_code,_course_name;
 end
@@ -580,7 +601,9 @@ begin
     end if;
     select section_no,instructor_id,start,_end into sec_no,ins_id,start_timestamp,end_timestamp from extra_class
     where extra_class_id=new.extra_class_id;
-    if (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null) or ins_id=new.instructor_id) then
+    if (ins_id=new.instructor_id) then
+        raise exception 'Invalid data insertion or update';
+    elsif (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null) or ins_id=new.instructor_id) then
         raise exception 'Invalid data insertion or update';
     elsif (event_event_conflict(start_timestamp,end_timestamp,sec_no,ins_id)) then
         raise exception 'Invalid data insertion or update';
@@ -730,6 +753,7 @@ create or replace function curr_course_update () returns trigger as $curr_course
 declare
 begin
     refresh materialized view current_courses;
+	refresh materialized view all_courses;
     return null;
 end;
 $curr_course_validation$ language plpgsql;
@@ -1015,22 +1039,33 @@ create or replace function get_current_course_teacher (teacher_username varchar)
     end
 $$ language plpgsql;
 
+create or replace function get_all_course_teacher (teacher_username varchar)
+    returns table (id integer,term varchar,_year integer,dept_shortname varchar,course_code integer,course_name varchar) as $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+    return query
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name
+    from all_courses cc join instructor i on cc._id=i.course_id join teacher t on i.teacher_id = t.teacher_id
+    where t.teacher_id=tid;
+    end
+$$ language plpgsql;
+
 create or replace function extra_evaluation_instructor_check() returns trigger as $extra_evaluation_instructor_validation$
 declare
     sec_no integer;
     ins_id integer;
     start_timestamp timestamp with time zone;
     end_timestamp timestamp with time zone;
-    b boolean;
 begin
     if (new.evaluation_id is null or new.instructor_id is null) then
         raise exception 'Invalid data insertion or update';
     end if;
-    b:=true;
     select section_no,instructor_id,start,_end into sec_no,ins_id,start_timestamp,end_timestamp from evaluation join evaluation_type et on et.type_id = evaluation.type_id
     where evaluation_id=new.evaluation_id;
-    if (b=true) then
-        return new;
+    if (ins_id=new.instructor_id) then
+        raise exception 'Invalid data insertion or update';
     elsif (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null) or ins_id=new.instructor_id) then
         raise exception 'Invalid data insertion or update';
     elsif (event_event_conflict(start_timestamp,end_timestamp,sec_no,ins_id)) then
@@ -1569,6 +1604,32 @@ order by _date;
 end
 $$ language plpgsql;
 
+create or replace function get_evaluation_notifications_teacher (teacher_username varchar)
+    returns table (eventType integer,eventNo integer,courseID integer,teacherID integer,dept_shortname varchar,course_code integer,eventTypeName varchar,teacherNamr varchar, notificationTime timestamp with time zone,scheduledDate date) as $$
+    declare
+    begin
+    return query
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,et.type_name,t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join evaluation ec on ne.event_no=ec.evaluation_id join evaluation_type et on ec.type_id = et.type_id
+   join extra_evaluation_instructor eei on ec.evaluation_id = eei.evaluation_id join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on eei.instructor_id = i.instructor_id join instructor j on j.instructor_id=ec.instructor_id join teacher t on j.teacher_id = t.teacher_id join teacher t2 on t2.teacher_id=i.teacher_id join official_users ou on t2.user_no = ou.user_no
+where ne.event_type=2 and ou.username=teacher_username and t2.notification_last_seen<ne.notifucation_time
+order by ne.notifucation_time desc;
+end
+$$ language plpgsql;
+
+create or replace function get_evaluation_notifications (std_id integer)
+    returns table (eventType integer,eventNo integer,courseID integer,teacherID integer,dept_shortname varchar,course_code integer,eventTypeName varchar,teacherNamr varchar, notificationTime timestamp with time zone,scheduledDate date) as $$
+    declare
+    begin
+    return query
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,et.type_name,t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join evaluation ec on ne.event_no=ec.evaluation_id join evaluation_type et on ec.type_id = et.type_id
+    join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ec.instructor_id = i.instructor_id join teacher t on i.teacher_id = t.teacher_id join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
+where ne.event_type=2 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and s2.notification_last_seen<ne.notifucation_time
+order by ne.notifucation_time desc;
+end
+$$ language plpgsql;
+
+-- drop function get_evaluation_notifications(std_id integer);
+--drop function get_evaluation_notifications_teacher(teacher_username varchar);
 -- drop function get_course_evaluations_teacher(uname varchar, crs_id integer);
 --drop function add_course_topic(tname varchar, courseID integer, username varchar, topicDescription varchar, ended boolean);
 -- drop function get_course_posts(userID integer);
@@ -1623,6 +1684,7 @@ $$ language plpgsql;
 -- drop function get_upcoming_events_teacher(teacher_username varchar);
 -- drop trigger extra_evaluation_instructor_validation on extra_evaluation_instructor;
 -- drop function extra_evaluation_instructor_check();
+-- drop function get_all_course_teacher(teacher_username varchar);
 -- drop function get_current_course_teacher(teacher_username varchar);
 -- drop trigger course_routine_validation on course_routine;
 -- drop function course_routine_check();
@@ -1665,6 +1727,7 @@ $$ language plpgsql;
 -- drop function instructor_check();
 -- drop function get_course_topics(courseID integer);
 -- drop function get_upcoming_events(std_id integer);
+-- drop function get_all_course(std_id integer);
 -- drop function get_current_course(std_id integer);
 -- drop function section_to_course(sec_no integer);
 -- drop function overlapped_time(first_begin time,first_end time,second_begin time,second_end time);
@@ -1676,6 +1739,7 @@ $$ language plpgsql;
 -- drop function get_account_type(uname varchar);
 -- drop function get_dept_list();
 -- drop materialized view intersected_sections;
+-- drop materialized view all_courses;
 -- drop materialized view current_courses;
 -- drop function term_name(term_num integer);
 -- drop table forum_post_files;
