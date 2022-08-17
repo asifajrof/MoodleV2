@@ -1,32 +1,26 @@
-import Select from "react-select";
-// import Select from "@mui/material/Select";
+import { Select as SelectMui } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import { FormHelperText, TextField, Button, InputLabel } from "@mui/material";
+import {
+  FormHelperText,
+  TextField,
+  Button,
+  InputLabel,
+  MenuItem,
+} from "@mui/material";
 // import { Button } from "@mui/material";
 // import "./add_course.css";
-
-const term_list = [
-  {
-    label: "January",
-    value: 1,
-  },
-  {
-    label: "July",
-    value: 2,
-  },
-];
 
 const CourseAddForm = ({ adminNo }) => {
   // var offering, offered, _year, batch, level, term, course_num;
   // var course_name;
   const [courseName, setCourseName] = useState("");
-  const [courseNum, setCourseNum] = useState(0);
-  const [courseLevel, setCourseLevel] = useState(0);
-  const [courseTerm, setCourseTerm] = useState(0);
-  const [courseBatch, setCourseBatch] = useState(0);
-  const [courseYear, setCourseYear] = useState(0);
-  const [deptOffered, setDeptOffered] = useState(0);
-  const [deptOffering, setDeptOffering] = useState(0);
+  const [courseNum, setCourseNum] = useState("");
+  const [courseLevel, setCourseLevel] = useState("");
+  const [courseTerm, setCourseTerm] = useState("");
+  const [courseBatch, setCourseBatch] = useState("");
+  const [courseYear, setCourseYear] = useState("");
+  const [deptOffered, setDeptOffered] = useState("");
+  const [deptOffering, setDeptOffering] = useState("");
 
   const [deptList, setDeptList] = useState([]);
   const makeDeptList = (data) => {
@@ -53,7 +47,7 @@ const CourseAddForm = ({ adminNo }) => {
   const current_year = 2022;
   const min_year = 2000;
   const yearList = [];
-  for (var i = current_year + 1; i >= min_year; i--) {
+  for (var i = current_year; i >= min_year; i--) {
     yearList.push({ value: i, label: i });
   }
 
@@ -63,6 +57,16 @@ const CourseAddForm = ({ adminNo }) => {
   for (var i = max_level; i >= min_level; i--) {
     levelList.push({ value: i, label: i });
   }
+  const termList = [
+    {
+      label: "January",
+      value: 1,
+    },
+    {
+      label: "July",
+      value: 2,
+    },
+  ];
 
   const max_num = 0;
   const min_num = 99;
@@ -114,44 +118,19 @@ const CourseAddForm = ({ adminNo }) => {
     };
     console.log(courseObj);
 
-    // setCourseName("");
-    // setCourseNum(0);
-    // setCourseLevel(0);
-    // setCourseTerm(0);
-    // setCourseBatch(0);
-    // setCourseYear(0);
-    // setDeptOffered(0);
-    // setDeptOffering(0);
+    setCourseName("");
+    setCourseNum("");
+    setCourseLevel("");
+    setCourseTerm("");
+    setCourseBatch("");
+    setCourseYear("");
+    setDeptOffered("");
+    setDeptOffering("");
 
     addCourse(courseObj);
 
     console.log("onSubmitActionc of add new course by admin");
     return;
-  };
-  const onChangeHandlerSelectDeptOffering = (selectedDept) => {
-    console.log("onChangeHandlerSelectDeptOffering", selectedDept);
-    // console.log(courseNum);
-    setDeptOffering(selectedDept.value);
-  };
-  const onChangeHandlerSelectDeptOffered = (selectedDept) => {
-    console.log("onChangeHandlerSelectDeptOffered", selectedDept);
-    setDeptOffered(selectedDept.value);
-  };
-  const onChangeHandlerSelectCourseYear = (selectedYear) => {
-    console.log("onChangeHandlerSelectCourseYear", selectedYear);
-    setCourseYear(selectedYear.value);
-  };
-  const onChangeHandlerSelectCourseBatch = (selectedYear) => {
-    console.log("onChangeHandlerSelectCourseBatch", selectedYear);
-    setCourseBatch(selectedYear.value);
-  };
-  const onChangeHandlerSelectCourseLevel = (selectedLevel) => {
-    console.log("onChangeHandlerSelectCourseLevel", selectedLevel);
-    setCourseLevel(selectedLevel.value);
-  };
-  const onChangeHandlerSelectCourseTerm = (selectedTerm) => {
-    console.log("onChangeHandlerSelectCourseTerm", selectedTerm);
-    setCourseTerm(selectedTerm.value);
   };
 
   return (
@@ -186,62 +165,140 @@ const CourseAddForm = ({ adminNo }) => {
           <InputLabel id="addcourse__select__dept__offering__label">
             Select Offering Department
           </InputLabel>
-          <Select
+          <SelectMui
+            fullWidth
             id="addcourse__select__dept__offering"
-            options={deptList}
-            onChange={onChangeHandlerSelectDeptOffering}
+            label="Select Offering Department"
+            value={deptOffering}
+            // options={deptList}
+            // onChange={onChangeHandlerSelectDeptOffering}
+            onChange={(e) => setDeptOffering(e.target.value)}
             required
-          ></Select>
+          >
+            {deptList.map((dept, index) => {
+              return (
+                <MenuItem key={index} value={dept.value}>
+                  {dept.label}
+                </MenuItem>
+              );
+            })}
+          </SelectMui>
+          <br />
           <br />
           <InputLabel id="addcourse__select__dept__offered__label">
             Select Offered Department
           </InputLabel>
-          <Select
+          <SelectMui
+            fullWidth
             id="addcourse__select__dept__offered"
-            options={deptList}
-            onChange={onChangeHandlerSelectDeptOffered}
+            label="Select Offered Department"
+            value={deptOffered}
+            // options={deptList}
+            // onChange={onChangeHandlerSelectDeptOffered}
+            onChange={(e) => setDeptOffered(e.target.value)}
             required
-          ></Select>
+          >
+            {deptList.map((dept, index) => {
+              return (
+                <MenuItem key={index} value={dept.value}>
+                  {dept.label}
+                </MenuItem>
+              );
+            })}
+          </SelectMui>
+          <br />
           <br />
           <InputLabel id="addcourse__select__course__year__label">
             Select Course Year
           </InputLabel>
-          <Select
+          <SelectMui
+            fullWidth
             id="addcourse__select__course__year"
-            options={yearList}
-            onChange={onChangeHandlerSelectCourseYear}
+            label="Select Course Year"
+            value={courseYear}
+            // options={yearList}
+            // onChange={onChangeHandlerSelectCourseYear}
+            onChange={(e) => setCourseYear(e.target.value)}
             required
-          ></Select>
+          >
+            {yearList.map((year, index) => {
+              return (
+                <MenuItem key={index} value={year.value}>
+                  {year.label}
+                </MenuItem>
+              );
+            })}
+          </SelectMui>
+          <br />
           <br />
           <InputLabel id="addcourse__select__course__batch__label">
             Select Course Batch
           </InputLabel>
-          <Select
+          <SelectMui
+            fullWidth
             id="addcourse__select__course__batch__year"
-            options={yearList}
-            onChange={onChangeHandlerSelectCourseBatch}
+            label="Select Course Batch"
+            value={courseBatch}
+            // options={yearList}
+            // onChange={onChangeHandlerSelectCourseBatch}
+            onChange={(e) => setCourseBatch(e.target.value)}
             required
-          ></Select>
+          >
+            {yearList.map((year, index) => {
+              return (
+                <MenuItem key={index} value={year.value}>
+                  {year.label}
+                </MenuItem>
+              );
+            })}
+          </SelectMui>
+          <br />
           <br />
           <InputLabel id="addcourse__select__course__level__label">
             Select Course Level
           </InputLabel>
-          <Select
+          <SelectMui
+            fullWidth
             id="addcourse__select__course__level"
-            options={levelList}
-            onChange={onChangeHandlerSelectCourseLevel}
+            label="Select Course Level"
+            value={courseLevel}
+            // options={levelList}
+            // onChange={onChangeHandlerSelectCourseLevel}
+            onChange={(e) => setCourseLevel(e.target.value)}
             required
-          ></Select>
+          >
+            {levelList.map((level, index) => {
+              return (
+                <MenuItem key={index} value={level.value}>
+                  {level.label}
+                </MenuItem>
+              );
+            })}
+          </SelectMui>
+          <br />
           <br />
           <InputLabel id="addcourse__select__course__term__label">
             Select Course Term
           </InputLabel>
-          <Select
+          <SelectMui
+            fullWidth
             id="addcourse__select__course__term"
-            options={term_list}
-            onChange={onChangeHandlerSelectCourseTerm}
+            label="Select Course Term"
+            value={courseTerm}
+            // options={term_list}
+            // onChange={onChangeHandlerSelectCourseTerm}
+            onChange={(e) => setCourseTerm(e.target.value)}
             required
-          ></Select>
+          >
+            {termList.map((term, index) => {
+              return (
+                <MenuItem key={index} value={term.value}>
+                  {term.label}
+                </MenuItem>
+              );
+            })}
+          </SelectMui>
+          <br />
           <br />
           <Button type="submit" variant="outlined">
             Submit
