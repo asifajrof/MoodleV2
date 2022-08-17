@@ -45,8 +45,10 @@ const HttpError = require("../models/http-error");
 // ];
 const getCurrentCoursesByUsername = async (req, res, next) => {
   try {
-    // console.log('GET api/student/courses/current/:student_id');
+    console.log("GET api/teacher/courses/current/:username");
+
     const userName = req.params.userName;
+    console.log(typeof userName);
     let result = await pool.query(
       "select json_agg(t) from get_current_course_teacher($1) as t",
       [userName]
@@ -64,23 +66,24 @@ const getCurrentCoursesByUsername = async (req, res, next) => {
 
 const getUpcomingEventsByUsername = async (req, res, next) => {
   try {
-    // console.log('GET api/student/upcoming/:student_id');
-    // const studentId = req.params.userName;
-    // let result = await pool.query(
-    //   "SELECT json_agg(t) FROM get_upcoming_events($1) as t",
-    //   [userName]
-    // );
-    // const upcomingEvents = result.rows[0].json_agg;
-    // // console.log(upcomingEvents)
-    // if (!upcomingEvents) {
-    //   // next(new HttpError('Upcoming Events not found', 404));
-    res.json({ message: "No upcoming events yet!", data: [] });
-    // } else {
-    //   res.json({
-    //     message: "getUpcomingEventsByStudentId",
-    //     data: upcomingEvents,
-    //   });
-    // }
+    console.log("GET api/teacher/upcoming/:username");
+    const userName = req.params.userName;
+    console.log(typeof userName);
+    let result = await pool.query(
+      "SELECT json_agg(t) FROM get_upcoming_events_teacher($1) as t",
+      [userName]
+    );
+    const upcomingEvents = result.rows[0].json_agg;
+    console.log(upcomingEvents);
+    if (!upcomingEvents) {
+      // next(new HttpError('Upcoming Events not found', 404));
+      res.json({ message: "No upcoming events yet!", data: [] });
+    } else {
+      res.json({
+        message: "getUpcomingEventsByUsername",
+        data: upcomingEvents,
+      });
+    }
   } catch (error) {
     next(new HttpError(error.message, 500));
   }

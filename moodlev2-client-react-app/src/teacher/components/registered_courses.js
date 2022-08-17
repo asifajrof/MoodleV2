@@ -61,7 +61,8 @@ const RegisteredCourses = ({ userName }) => {
           `/api/teacher/courses/current/${userName}`
         );
         const jsonData = await response.json();
-        console.log(jsonData);
+        console.log(jsonData.data);
+        console.log(jsonData.message);
         setCurrentCoursesList(jsonData.data);
       } catch (err) {
         console.log(err);

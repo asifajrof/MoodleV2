@@ -58,6 +58,31 @@ const getCourseEvents = async (req, res, next) => {
   }
 };
 
+const addNewCourseTopic = async (req, res, next) => {
+  try {
+    const { topicName, topicDescription, teacherUserName, courseId } = req.body;
+    console.log(
+      topicName,
+      topicDescription,
+      teacherUserName.userName,
+      courseId
+    );
+    let result = await pool.query("select add_course_topic($1,$2,$3,$4,$5);", [
+      topicName,
+      courseId,
+      teacherUserName.userName,
+      topicDescription,
+      false,
+    ]);
+
+    res.json({ message: "new course topic added" });
+  } catch (err) {
+    console.log(err);
+    return next(new HttpError(err.message, 500));
+  }
+};
+
 exports.getCourseById = getCourseById;
 exports.getCourseTopicsById = getCourseTopicsById;
 exports.getCourseEvents = getCourseEvents;
+exports.addNewCourseTopic = addNewCourseTopic;

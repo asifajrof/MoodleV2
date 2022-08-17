@@ -28,7 +28,7 @@ const StudentTimeline = ({ studentNo, currentView, uType }) => {
             <ToggleButton value="week">Week</ToggleButton>
             <ToggleButton value="month">Month</ToggleButton>
           </ToggleButtonGroup>
-          <div>filter idk :/</div>
+          <div></div>
         </div>
 
         {view === "week" && (

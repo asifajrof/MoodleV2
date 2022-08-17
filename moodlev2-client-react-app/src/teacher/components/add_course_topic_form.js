@@ -8,30 +8,30 @@ const CourseTopicAddForm = ({ userName, courseId }) => {
   const [topicDescription, setTopicDescription] = useState("");
 
   const addCourseTopic = async (courseTopicObj) => {
-    // post method here
-    // courseId, userName (for teacher info) available. other stuffs are input from form
-    // try {
-    //   const res = await fetch(`/api/admin/addNewCourse`, {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-type": "application/json",
-    //     },
-    //     body: JSON.stringify(courseObj),
-    //   });
-    //   const data = await res.json();
-    //   console.log(data);
-    //   console.log(res.status);
-    //   if (res.status === 200) {
-    //     // alert("Course added successfully!");
-    //     console.log("Course added successfully!");
-    //   } else {
-    //     // alert(data.message);
-    //     console.log(data.message);
-    //   }
-    // } catch (err) {
-    //   console.log(err);
-    //   // alert(err);
-    // }
+    //post method here
+    //courseId, userName (for teacher info) available. other stuffs are input from form
+    try {
+      const res = await fetch(`/api/course/addNewCourseTopic`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(courseTopicObj),
+      });
+      const data = await res.json();
+      console.log(data);
+      console.log(res.status);
+      if (res.status === 200) {
+        // alert("Course added successfully!");
+        console.log("Course topic added successfully!");
+      } else {
+        // alert(data.message);
+        console.log(data.message);
+      }
+    } catch (err) {
+      console.log(err);
+      // alert(err);
+    }
   };
   const onSubmitAction = (event) => {
     event.preventDefault();
