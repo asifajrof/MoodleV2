@@ -1,17 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { Button } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 import CourseMenuBar from "../components/course_menu_bar";
-import CourseTopics from "../components/course_topics";
-// import "./course_home.css";
+import CourseTopicAddForm from "../components/add_course_topic_form";
 
-const TeacherCourseHome = ({ userName }) => {
+const TeacherAddNewCourseTopic = (userName) => {
   const [courseInfo, setcourseInfo] = useState([]);
   const params = useParams();
   const courseId = params.courseId;
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -24,8 +20,6 @@ const TeacherCourseHome = ({ userName }) => {
     };
     fetchData();
   }, []);
-  const addNewTopicLink = `/course/${courseId}/topics/addnew`;
-
   return (
     <React.Fragment>
       <CourseMenuBar userName={userName} courseId={courseId} />
@@ -35,19 +29,19 @@ const TeacherCourseHome = ({ userName }) => {
           {courseInfo._course_code}: {courseInfo._course_name}
         </div>
         <div className="course__home__container__divider">
-          <div className="course__home__item__left">
-            <div
-              className="course__container__add"
-              style={{ paddingRight: "4rem" }}
-            >
-              <Link to={addNewTopicLink}>
-                <Button variant="contained">
-                  Add New
-                  <AddIcon />
-                </Button>
-              </Link>
+          <div
+            className="addcourse__container"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "1rem",
+              alignItems: "flex-start",
+            }}
+          >
+            <div className="addcourse__title">Add New Course Topic</div>
+            <div className="addcourse__form__container">
+              <CourseTopicAddForm userName={userName} courseId={courseId} />
             </div>
-            <CourseTopics userName={userName} courseId={courseId} />
           </div>
           <div>Upcoming/Latest post</div>
         </div>
@@ -56,4 +50,4 @@ const TeacherCourseHome = ({ userName }) => {
   );
 };
 
-export default TeacherCourseHome;
+export default TeacherAddNewCourseTopic;

@@ -39,6 +39,7 @@ import {
   timeline_link,
 } from "./links";
 import useToken from "./shared/pages/useToken";
+import TeacherAddNewCourseTopic from "./teacher/pages/course_add_new_topic";
 
 const App = () => {
   // const [backendData,setBackendData] = useState([{}])
@@ -192,6 +193,10 @@ const App = () => {
             <Route
               path={"/course/:courseId" + course_link}
               element={<TeacherCourseHome userName={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId/topics/addnew" + course_link}
+              element={<TeacherAddNewCourseTopic userName={token.id} />}
             />
             <Route
               path={"/course/:courseId" + course_events_link}

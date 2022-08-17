@@ -20,6 +20,16 @@
   justify-content: space-between;
   align-items: flex-start;
 }
+.course__home__item__left {
+  width: 100%;
+  /* margin-top: 1rem; */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  /* flex-wrap: nowrap; */
+  /* justify-content: space-evenly; */
+  /* font-size: 1rem; */
+}
 .course__home__container__item__1 {
   display: flex;
   font-size: 2rem;
