@@ -132,17 +132,19 @@ create table student_file(
     FOREIGN KEY (owner_id) REFERENCES student(student_id),
     unique(file_link)
 ) inherits (private_file);
-create table canceled_class(
-    canceled_class_id SERIAL PRIMARY KEY,
-    class_id INTEGER NOT NULL REFERENCES course_routine(class_id),
-    _date DATE NOT NULL DEFAULT CURRENT_DATE,
-    unique(class_id,_date)
-);
 create table teacher_routine(
     teacher_class_id SERIAL PRIMARY KEY,
     instructor_id INTEGER NOT NULL REFERENCES instructor(instructor_id),
     class_id INTEGER NOT NULL REFERENCES course_routine(class_id),
     unique (instructor_id,class_id)
+);
+create table canceled_class(
+    canceled_class_id SERIAL PRIMARY KEY,
+    class_id INTEGER NOT NULL,
+    _date DATE NOT NULL DEFAULT CURRENT_DATE,
+    instructor_id INTEGER NOT NULL,
+    FOREIGN KEY (class_id,instructor_id) REFERENCES teacher_routine(class_id,instructor_id),
+    unique(class_id,_date)
 );
 create table extra_class(
     extra_class_id SERIAL PRIMARY KEY ,
@@ -616,7 +618,7 @@ create or replace function notification_event_check() returns trigger as $notifi
 declare
     cnt integer;
 begin
-    cnt:=0;
+cnt:=0;
     if (new.event_type=0) then
         select count(*) into cnt from request_event where req_id=new.event_no;
     elsif (new.event_type=1) then
@@ -625,6 +627,18 @@ begin
         select count(*) into cnt from evaluation where evaluation_id=new.event_no;
     elsif (new.event_type=3) then
         select count(*) into cnt from canceled_class where canceled_class_id=new.event_no;
+    elsif (new.event_type=4) then
+        select count(*) into cnt from course_post where post_id=new.event_no;
+    elsif (new.event_type=5) then
+        select count(*) into cnt from instructor_resource where res_id=new.event_no;
+    elsif (new.event_type=6) then
+        select count(*) into cnt from student_resource where res_id=new.event_no;
+    elsif (new.event_type=7) then
+        select count(*) into cnt from grading where grading_id=new.event_no;
+    elsif (new.event_type=8) then
+        select count(*) into cnt from forum_post where post_id=new.event_no;
+    elsif (new.event_type=9) then
+        select count(*) into cnt from topic where topic_num=new.event_no;
     else
         raise exception 'Invalid data insertion or update';
     end if;
@@ -1215,7 +1229,7 @@ declare
 begin
     select type_id into type_no from notification_type where type_name='New Declaration';
     insert into notification_event(not_id, type_id, event_no, event_type, _date)
-    values(default,type_no,new.evaluation_id,2,new._date);
+    values(default,type_no,new.evaluation_id,2,new.start::date);
     return null;
 end;
 $evaluation_notification$ language plpgsql;
@@ -1229,7 +1243,7 @@ declare
 begin
     select type_id into type_no from notification_type where type_name='Updated Declaration';
     update notification_event
-    set type_id=type_no,notifucation_time=current_timestamp,_date=new._date
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new.start::date
     where event_no=new.evaluation_id and event_type=2;
     return null;
 end;
@@ -1252,7 +1266,329 @@ order by _date;
 end
 $$ language plpgsql;
 
---drop function get_course_evaluations(std_id integer, crs_id integer);
+create or replace function notify_topic_added() returns trigger as $topic_notification$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='New Declaration';
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+    values(default,type_no,new.topic_num,9,new.started::date);
+    return null;
+end;
+$topic_notification$ language plpgsql;
+
+create trigger topic_notification after insert on topic
+     for each row execute function notify_topic_added();
+
+
+create or replace function notify_topic_updated() returns trigger as $topic_update_notification_update$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+    update notification_event
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new.started::date
+    where event_no=new.topic_num and event_type=9;
+    return null;
+end;
+$topic_update_notification_update$ language plpgsql;
+
+create trigger topic_update_notification_update after update on topic
+     for each row execute function notify_topic_updated();
+
+create or replace function notify_course_post_added() returns trigger as $course_post_notification$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='New Declaration';
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+    values(default,type_no,new.post_id,4,new.post_time::date);
+    return null;
+end;
+$course_post_notification$ language plpgsql;
+
+create trigger course_post_notification after insert on course_post
+     for each row execute function notify_course_post_added();
+
+create or replace function notify_course_post_updated() returns trigger as $course_post_notification_update$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+    update notification_event
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new.post_time::date
+    where event_no=new.post_id and event_type=4;
+    return null;
+end;
+$course_post_notification_update$ language plpgsql;
+
+create trigger course_post_notification_update after update on course_post
+     for each row execute function notify_course_post_updated();
+
+create or replace function notify_instructor_resource_added() returns trigger as $instructor_resource_notification$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='New Declaration';
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+    values(default,type_no,new.res_id,5,current_timestamp::date);
+    return null;
+end;
+$instructor_resource_notification$ language plpgsql;
+
+create trigger instructor_resource_notification after insert on instructor_resource
+     for each row execute function notify_instructor_resource_added();
+
+create or replace function notify_instructor_resource_updated() returns trigger as $instructor_resource_notification_update$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+    update notification_event
+    set type_id=type_no,notifucation_time=current_timestamp,_date=current_timestamp::date
+    where event_no=new.res_id and event_type=5;
+    return null;
+end;
+$instructor_resource_notification_update$ language plpgsql;
+
+create trigger instructor_resource_notification_update after update on instructor_resource
+     for each row execute function notify_instructor_resource_updated();
+
+create or replace function notify_student_resource_added() returns trigger as $student_resource_notification$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='New Declaration';
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+    values(default,type_no,new.res_id,6,current_timestamp::date);
+    return null;
+end;
+$student_resource_notification$ language plpgsql;
+
+create trigger student_resource_notification after insert on student_resource
+     for each row execute function notify_student_resource_added();
+
+create or replace function notify_student_resource_updated() returns trigger as $student_resource_notification_update$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+    update notification_event
+    set type_id=type_no,notifucation_time=current_timestamp,_date=current_timestamp::date
+    where event_no=new.res_id and event_type=6;
+    return null;
+end;
+$student_resource_notification_update$ language plpgsql;
+
+create trigger student_resource_notification_update after update on student_resource
+     for each row execute function notify_student_resource_updated();
+
+create or replace function notify_forum_post_added() returns trigger as $forum_post_notification$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='New Declaration';
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+    values(default,type_no,new.post_id,8,new.post_time::date);
+    return null;
+end;
+$forum_post_notification$ language plpgsql;
+
+create trigger forum_post_notification after insert on forum_post
+     for each row execute function notify_forum_post_added();
+
+create or replace function notify_forum_post_updated() returns trigger as $forum_post_notification_update$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+    update notification_event
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new.post_time::date
+    where event_no=new.post_id and event_type=8;
+    return null;
+end;
+$forum_post_notification_update$ language plpgsql;
+
+create trigger forum_post_notification_update after update on forum_post
+     for each row execute function notify_forum_post_updated();
+
+create or replace function notify_grading() returns trigger as $grading_notification$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='New Declaration';
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+    values(default,type_no,new.grading_id,7,new._date);
+    return null;
+end;
+$grading_notification$ language plpgsql;
+
+create trigger grading_notification after insert on grading
+     for each row execute function notify_grading();
+
+create or replace function notify_grading_update() returns trigger as $grading_notification_update$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+    update notification_event
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new._date
+    where event_no=new.grading_id and event_type=7;
+    return null;
+end;
+$grading_notification_update$ language plpgsql;
+
+create trigger grading_notification_update after update on grading
+     for each row execute function notify_grading_update();
+
+create or replace function notify_request_event() returns trigger as $request_event_notification$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='New Declaration';
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+    values(default,type_no,new.req_id,0,new.start::date);
+    return null;
+end;
+$request_event_notification$ language plpgsql;
+
+create trigger request_event_notification after insert on request_event
+     for each row execute function notify_request_event();
+
+create or replace function notify_request_event_update() returns trigger as $request_event_notification_update$
+declare
+    type_no integer;
+begin
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+    update notification_event
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new.start::date
+    where event_no=new.req_id and event_type=0;
+    return null;
+end;
+$request_event_notification_update$ language plpgsql;
+
+create trigger request_event_notification_update after update on request_event
+     for each row execute function notify_request_event_update();
+
+create or replace function get_forum_posts_teacher (uname varchar)
+    returns table (id integer,teacher boolean,name varchar,postID integer,postName varchar,postContent varchar,postTime timestamp with time zone) as $$
+begin
+    return query
+    select t.teacher_id,cast(true as boolean) as isTeacher,t.teacher_name,fp.post_id,fp.post_name,fp.post_content,fp.post_time from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+where ou.username!=uname and fp.parent_post is null
+union
+select a.admin_id,cast(false as boolean) as isTeacher,a.name,fp.post_id,fp.post_name,fp.post_content,fp.post_time from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+where  fp.parent_post is null;
+end
+$$ language plpgsql;
+
+create or replace function get_course_posts_teacher (uname varchar)
+    returns table (teacherID integer,courseID integer,courseDept varchar,courseNum integer,courseTerm varchar,courseYear integer,name varchar,postID integer,postName varchar,postContent varchar,postTime timestamp with time zone) as $$
+begin
+    return query
+    select t.teacher_id,c._id,c._dept_shortname,c._course_code,c._term,c.__year,t.teacher_name,cp.post_id,cp.post_name,cp.post_content,cp.post_time from course_post cp join instructor i on i.instructor_id=cp.poster_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no join current_courses c on i.course_id = c._id
+where ou.username!=uname and cp.parent_post is null;
+end
+$$ language plpgsql;
+
+create or replace function get_my_marks (userID integer,eID integer)
+    returns table (eventID integer,event_type varchar,event_desc varchar,term varchar,year integer,deptCode varchar,courseNum integer,event_date date,totalMarks float,obtainedMarks float) as $$
+begin
+    return query
+    (select e.evaluation_id, et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks,e.total_marks*(sum(g.obtained_marks)/sum(g.total_marks)) from evaluation e join evaluation_type et on et.type_id = e.type_id join submission s on e.evaluation_id = s.event_id join grading g on s.sub_id = g.sub_id join enrolment e2 on s.enrol_id = e2.enrol_id join student s2 on e2.student_id = s2.student_id join section s3 on e.section_no = s3.section_no join current_courses c on c._id=s3.course_id
+where (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=userID and e.evaluation_id=eID and et.notification_time_type=false
+group by e.evaluation_id, et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks)
+    union
+    (select e.evaluation_id, et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e._end::date,e.total_marks,e.total_marks*(sum(g.obtained_marks)/sum(g.total_marks)) from evaluation e join evaluation_type et on et.type_id = e.type_id join submission s on e.evaluation_id = s.event_id join grading g on s.sub_id = g.sub_id join enrolment e2 on s.enrol_id = e2.enrol_id join student s2 on e2.student_id = s2.student_id join section s3 on e.section_no = s3.section_no join current_courses c on c._id=s3.course_id
+where (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=userID and e.evaluation_id=eID and et.notification_time_type=true
+group by e.evaluation_id, et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks)
+    ;
+end
+$$ language plpgsql;
+
+create or replace function get_course_marks (uname varchar,eID integer)
+    returns table (eventID integer,userID integer,studentName varchar,event_type varchar,event_desc varchar,term varchar,year integer,deptCode varchar,courseNum integer,event_date date,totalMarks float,obtainedMarks float) as $$
+begin
+    return query
+    select e.evaluation_id, (mod(s2._year,100)*100000+s2.dept_code*1000+roll_num) as uid,s2.student_name,et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks,e.total_marks*(sum(g.obtained_marks)/sum(g.total_marks)) from evaluation e join evaluation_type et on et.type_id = e.type_id join submission s on e.evaluation_id = s.event_id join grading g on s.sub_id = g.sub_id join enrolment e2 on s.enrol_id = e2.enrol_id join student s2 on e2.student_id = s2.student_id join section s3 on e.section_no = s3.section_no join current_courses c on c._id=s3.course_id join instructor i on c._id = i.course_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no
+where et.notification_time_type=false and ou.username=uname and e.evaluation_id=eID
+group by e.evaluation_id,  (mod(s2._year,100)*100000+s2.dept_code*1000+roll_num),s2.student_name,et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks
+union
+    select e.evaluation_id, (mod(s2._year,100)*100000+s2.dept_code*1000+roll_num) as uid,s2.student_name,et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e._end::date,e.total_marks,e.total_marks*(sum(g.obtained_marks)/sum(g.total_marks)) from evaluation e join evaluation_type et on et.type_id = e.type_id join submission s on e.evaluation_id = s.event_id join grading g on s.sub_id = g.sub_id join enrolment e2 on s.enrol_id = e2.enrol_id join student s2 on e2.student_id = s2.student_id join section s3 on e.section_no = s3.section_no join current_courses c on c._id=s3.course_id join instructor i on c._id = i.course_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no
+where et.notification_time_type=true and ou.username=uname and e.evaluation_id=eID
+group by e.evaluation_id,  (mod(s2._year,100)*100000+s2.dept_code*1000+roll_num),s2.student_name,et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks;
+end
+$$ language plpgsql;
+
+create or replace function get_forum_posts ()
+    returns table (id integer,teacher boolean,name varchar,postID integer,postName varchar,postContent varchar,postTime timestamp with time zone) as $$
+begin
+    return query
+    select t.teacher_id,cast(true as boolean) as isTeacher,t.teacher_name,fp.post_id,fp.post_name,fp.post_content,fp.post_time from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+where fp.parent_post is null
+union
+select a.admin_id,cast(false as boolean) as isTeacher,a.name,fp.post_id,fp.post_name,fp.post_content,fp.post_time from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+where  fp.parent_post is null;
+end
+$$ language plpgsql;
+
+create or replace function get_course_posts(userID integer)
+    returns table (teacherID integer,courseID integer,courseDept varchar,courseNum integer,courseTerm varchar,courseYear integer,name varchar,postID integer,postName varchar,postContent varchar,postTime timestamp with time zone) as $$
+begin
+    return query
+    select t.teacher_id,c._id,c._dept_shortname,c._course_code,c._term,c.__year,t.teacher_name,cp.post_id,cp.post_name,cp.post_content,cp.post_time from course_post cp join instructor i on i.instructor_id=cp.poster_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no join current_courses c on i.course_id = c._id join section s on i.course_id = s.course_id join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
+where cp.parent_post is null and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=userID;
+end
+$$ language plpgsql;
+
+create or replace function add_course_topic(tname varchar,courseID integer,username varchar,topicDescription varchar,ended boolean) returns void as $$
+declare
+    tid integer;
+    ins_id integer;
+begin
+    tid = get_teacher_id(username);
+    select instructor_id into ins_id from instructor where teacher_id=tid and course_id=courseID;
+    insert into topic(topic_num, topic_name, instructor_id, finished, description)
+    values (default,tname,ins_id,ended,topicDescription);
+end;
+$$ language plpgsql;
+
+--drop function add_course_topic(tname varchar, courseID integer, username varchar, topicDescription varchar, ended boolean);
+-- drop function get_course_posts(userID integer);
+-- drop function get_forum_posts();
+-- drop function get_course_marks(uname varchar, eID integer);
+--drop function get_my_marks(userID integer, eID integer);
+-- drop function get_course_posts_teacher(uname varchar);
+--drop function get_forum_posts_teacher(uname varchar);
+-- drop trigger request_event_notification_update on request_event;
+-- drop function notify_request_event_update();
+-- drop trigger request_event_notification on request_event;
+-- drop function notify_request_event();
+-- drop trigger grading_notification_update on grading;
+-- drop function notify_grading_update();
+-- drop trigger grading_notification on grading;
+-- drop function notify_grading();
+-- drop trigger forum_post_notification_update on forum_post;
+-- drop function notify_forum_post_updated();
+-- drop trigger forum_post_notification on forum_post;
+-- drop function notify_forum_post_added();
+-- drop trigger student_resource_notification_update on student_resource;
+-- drop function notify_student_resource_updated();
+-- drop trigger student_resource_notification on student_resource;
+-- drop function notify_student_resource_added();
+-- drop trigger instructor_resource_notification_update on instructor_resource;
+-- drop function notify_instructor_resource_updated();
+-- drop trigger instructor_resource_notification on instructor_resource;
+-- drop function notify_instructor_resource_added();
+-- drop trigger course_post_notification_update on course_post;
+-- drop function notify_course_post_updated();
+-- drop trigger course_post_notification on course_post;
+-- drop function notify_course_post_added();
+-- drop trigger topic_update_notification_update on topic;
+-- drop function notify_topic_updated();
+-- drop trigger topic_notification on topic;
+-- drop function notify_topic_added();
+-- drop function get_course_evaluations(std_id integer, crs_id integer);
 -- drop trigger evaluation_notification_update on evaluation;
 -- drop function notify_evaluation_update();
 -- drop trigger evaluation_notification on evaluation;
@@ -1265,9 +1601,9 @@ $$ language plpgsql;
 -- drop function notify_cancel_class_update();
 -- drop trigger cancel_class_notification on canceled_class;
 -- drop function notify_cancel_class();
---drop function get_day_events_teacher(teacher_username varchar, query_date date);
+-- drop function get_day_events_teacher(teacher_username varchar, query_date date);
 -- drop function get_day_events(std_id integer, query_date date);
---drop function get_upcoming_events_teacher(teacher_username varchar);
+-- drop function get_upcoming_events_teacher(teacher_username varchar);
 -- drop trigger extra_evaluation_instructor_validation on extra_evaluation_instructor;
 -- drop function extra_evaluation_instructor_check();
 -- drop function get_current_course_teacher(teacher_username varchar);
@@ -1340,8 +1676,8 @@ $$ language plpgsql;
 -- drop table evaluation_type;
 -- drop table extra_class_teacher;
 -- drop table extra_class;
--- drop table teacher_routine;
 -- drop table canceled_class;
+-- drop table teacher_routine;
 -- drop table student_file;
 -- drop table teacher_file;
 -- drop table private_file;
