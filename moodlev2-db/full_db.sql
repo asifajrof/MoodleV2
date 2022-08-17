@@ -574,6 +574,30 @@ $$;
 ALTER FUNCTION public.get_course_evaluations(std_id integer, crs_id integer) OWNER TO postgres;
 
 --
+-- Name: get_course_evaluations_teacher(character varying, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_course_evaluations_teacher(uname character varying, crs_id integer) RETURNS TABLE(id integer, event_type character varying, event_date date, event_description character varying, published boolean, completed boolean, sec_no integer, sec_name character varying)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+    begin
+        tid=get_teacher_id(uname);
+    return query
+    select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),s.section_no,s.section_name from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ev.instructor_id = i.instructor_id
+where cc._id=crs_id and i.teacher_id=tid
+union
+select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),s.section_no,s.section_name from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ev.instructor_id = i.instructor_id
+where cc._id=crs_id and i.teacher_id=tid
+order by _date;
+end
+$$;
+
+
+ALTER FUNCTION public.get_course_evaluations_teacher(uname character varying, crs_id integer) OWNER TO postgres;
+
+--
 -- Name: get_course_marks(character varying, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
