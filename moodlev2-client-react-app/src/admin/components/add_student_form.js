@@ -1,20 +1,14 @@
-import Select from "react-select";
-// import Select from "@mui/material/Select";
+import { Select as SelectMui } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import { FormHelperText, TextField, Button, InputLabel } from "@mui/material";
+import {
+  FormHelperText,
+  TextField,
+  Button,
+  InputLabel,
+  MenuItem,
+} from "@mui/material";
 // import { Button } from "@mui/material";
 // import "./add_course.css";
-
-const term_list = [
-  {
-    label: "January",
-    value: 1,
-  },
-  {
-    label: "July",
-    value: 2,
-  },
-];
 
 const StudentAddForm = ({ adminNo }) => {
   // name character varying,
@@ -23,10 +17,10 @@ const StudentAddForm = ({ adminNo }) => {
   // email character varying)
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [dept, setDept] = useState(0);
+  const [dept, setDept] = useState("");
   const [email, setEmail] = useState("");
-  const [roll, setRoll] = useState(0);
-  const [batch, setBatch] = useState(0);
+  const [roll, setRoll] = useState("");
+  const [batch, setBatch] = useState("");
 
   const [deptList, setDeptList] = useState([]);
   const makeDeptList = (data) => {
@@ -36,6 +30,14 @@ const StudentAddForm = ({ adminNo }) => {
     });
     setDeptList(deptListTemp);
   };
+
+  const current_year = 2022;
+  const min_year = 2000;
+  const yearList = [];
+  for (var i = current_year; i >= min_year; i--) {
+    yearList.push({ value: i, label: i });
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -92,18 +94,13 @@ const StudentAddForm = ({ adminNo }) => {
 
     setName("");
     setPassword("");
-    setDept(0);
+    setDept("");
     setEmail("");
-    setRoll(0);
-    setBatch(0);
+    setRoll("");
+    setBatch("");
 
     console.log("onSubmitAction of add new student by admin");
     return;
-  };
-  const onChangeHandlerSelectDept = (selectedDept) => {
-    console.log("onChangeHandlerSelectDept", selectedDept);
-    // console.log(courseNum);
-    setDept(selectedDept.value);
   };
   return (
     <div className="addcourse__container">
@@ -157,27 +154,47 @@ const StudentAddForm = ({ adminNo }) => {
           />
           <br />
           <br />
-          <TextField
+          <InputLabel id="addstudent__batch__label">Select Batch</InputLabel>
+          <SelectMui
             fullWidth
-            type="batch"
             id="addstudent__batch"
-            label="batch"
-            variant="outlined"
+            label="Batch"
             value={batch}
             onChange={(e) => setBatch(e.target.value)}
             required
-          />
+          >
+            {yearList.map((year, index) => {
+              return (
+                <MenuItem key={index} value={year.value}>
+                  {year.label}
+                </MenuItem>
+              );
+            })}
+          </SelectMui>
           <br />
           <br />
           <InputLabel id="addstudent__select__dept__label">
             Select Department
           </InputLabel>
-          <Select
+          <SelectMui
+            fullWidth
             id="addstudent__select__dept"
-            options={deptList}
-            onChange={onChangeHandlerSelectDept}
+            label="Select Department"
+            value={dept}
+            // options={deptList}
+            // onChange={onChangeHandlerSelectDept}
+            onChange={(e) => setDept(e.target.value)}
             required
-          ></Select>
+          >
+            {deptList.map((dept, index) => {
+              return (
+                <MenuItem key={index} value={dept.value}>
+                  {dept.label}
+                </MenuItem>
+              );
+            })}
+          </SelectMui>
+          <br />
           <br />
           <Button type="submit" variant="outlined">
             Submit

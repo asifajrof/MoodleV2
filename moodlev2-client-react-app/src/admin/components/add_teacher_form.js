@@ -1,20 +1,14 @@
-import Select from "react-select";
-// import Select from "@mui/material/Select";
+import { Select as SelectMui } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import { FormHelperText, TextField, Button, InputLabel } from "@mui/material";
+import {
+  FormHelperText,
+  TextField,
+  Button,
+  InputLabel,
+  MenuItem,
+} from "@mui/material";
 // import { Button } from "@mui/material";
 // import "./add_course.css";
-
-const term_list = [
-  {
-    label: "January",
-    value: 1,
-  },
-  {
-    label: "July",
-    value: 2,
-  },
-];
 
 const TeacherAddForm = ({ adminNo }) => {
   // name character varying,
@@ -25,7 +19,7 @@ const TeacherAddForm = ({ adminNo }) => {
   const [name, setName] = useState("");
   const [uName, setUName] = useState("");
   const [password, setPassword] = useState("");
-  const [dept, setDept] = useState(0);
+  const [dept, setDept] = useState("");
   const [email, setEmail] = useState("");
 
   const [deptList, setDeptList] = useState([]);
@@ -92,16 +86,11 @@ const TeacherAddForm = ({ adminNo }) => {
     setName("");
     setUName("");
     setPassword("");
-    setDept(0);
+    setDept("");
     setEmail("");
 
     console.log("onSubmitAction of add new teacher by admin");
     return;
-  };
-  const onChangeHandlerSelectDept = (selectedDept) => {
-    console.log("onChangeHandlerSelectDept", selectedDept);
-    // console.log(courseNum);
-    setDept(selectedDept.value);
   };
   return (
     <div className="addcourse__container">
@@ -158,12 +147,25 @@ const TeacherAddForm = ({ adminNo }) => {
           <InputLabel id="addteacher__select__dept__label">
             Select Department
           </InputLabel>
-          <Select
+          <SelectMui
+            fullWidth
             id="addteacher__select__dept"
-            options={deptList}
-            onChange={onChangeHandlerSelectDept}
+            label="Select Department"
+            value={dept}
+            // options={deptList}
+            // onChange={onChangeHandlerSelectDept}
+            onChange={(e) => setDept(e.target.value)}
             required
-          ></Select>
+          >
+            {deptList.map((dept, index) => {
+              return (
+                <MenuItem key={index} value={dept.value}>
+                  {dept.label}
+                </MenuItem>
+              );
+            })}
+          </SelectMui>
+          <br />
           <br />
           <Button type="submit" variant="outlined">
             Submit
