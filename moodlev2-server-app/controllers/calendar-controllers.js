@@ -57,6 +57,7 @@ const getMarkDate = async (uId, uType, date) => {
       [uId, date.format("MM-DD-YYYY")]
     );
   } else if (uType === "Teacher") {
+    // console.log("teacher mini calendar");
     result = await pool.query(
       "SELECT json_agg(t) FROM get_day_events_teacher($1,$2) as t",
       [uId, date.format("MM-DD-YYYY")]
@@ -117,6 +118,7 @@ const getEventListMonthView = async (req, res, next) => {
   // console.log("getEventListMonthView");
   try {
     const { uId, date, month, year, uType } = req.body;
+    console.log("utype ", uType);
 
     let result = null;
     const givenDate = moment(new Date(year, month, date));
@@ -127,6 +129,7 @@ const getEventListMonthView = async (req, res, next) => {
         [uId, givenDate.format("MM-DD-YYYY")]
       );
     } else if (uType === "Teacher") {
+      console.log("teacher month req");
       result = await pool.query(
         "SELECT json_agg(t) FROM get_day_events_teacher($1,$2) as t",
         [uId, givenDate.format("MM-DD-YYYY")]

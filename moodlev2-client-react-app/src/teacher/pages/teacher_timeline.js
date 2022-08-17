@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import MonthlyCalendar from "../../shared/components/monthly_calendar";
 import WeeklyCalendar from "../../shared/components/weekly_calendar";
 
-const TeacherTimeline = ({ userName, currentView }) => {
+const TeacherTimeline = ({ userName, currentView, uType }) => {
   // will show weekly view by default
   const [view, setView] = useState(currentView);
   const handleToggleChange = (event, newView) => {
@@ -38,7 +38,7 @@ const TeacherTimeline = ({ userName, currentView }) => {
         )}
         {view === "month" && (
           <div className="timeline__calendar__month">
-            <MonthlyCalendar uId={userName} />
+            <MonthlyCalendar uId={userName} uType={uType} />
           </div>
         )}
       </div>
