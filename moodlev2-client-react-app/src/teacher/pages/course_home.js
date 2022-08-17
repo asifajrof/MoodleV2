@@ -49,7 +49,7 @@ const TeacherCourseHome = ({ userName }) => {
             </div>
             <CourseTopics userName={userName} courseId={courseId} />
           </div>
-          <div>Upcoming/Latest post</div>
+          <div></div>
         </div>
       </div>
     </React.Fragment>

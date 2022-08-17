@@ -58,6 +58,25 @@ const getCourseEvents = async (req, res, next) => {
   }
 };
 
+const getCourseEventsTeacher = async (req, res, next) => {
+  try {
+    const { userName, courseId } = req.body;
+    let result = await pool.query(
+      "SELECT json_agg(t) FROM  get_course_evaluations_teacher($1, $2) as t",
+      [userName, courseId]
+    );
+    const courseEvents = result.rows[0].json_agg;
+    // console.log()
+    if (!courseEvents) {
+      res.json({ message: "No course events given yet!", data: [] });
+    } else {
+      res.json({ message: "getCourseEventsById", data: courseEvents });
+    }
+  } catch (error) {
+    return next(new HttpError(error.message, 500));
+  }
+};
+
 const addNewCourseTopic = async (req, res, next) => {
   try {
     const { topicName, topicDescription, teacherUserName, courseId } = req.body;
@@ -86,3 +105,4 @@ exports.getCourseById = getCourseById;
 exports.getCourseTopicsById = getCourseTopicsById;
 exports.getCourseEvents = getCourseEvents;
 exports.addNewCourseTopic = addNewCourseTopic;
+exports.getCourseEventsTeacher = getCourseEventsTeacher;

@@ -36,7 +36,7 @@ const TeacherCourseEvents = ({ userName }) => {
         <div className="course__home__container__divider">
           {/* <FileUpload /> */}
           <CourseEvaluationEvents userName={userName} courseId={courseId} />
-          <div>Upcoming/Latest post</div>
+          <div></div>
         </div>
       </div>
     </React.Fragment>

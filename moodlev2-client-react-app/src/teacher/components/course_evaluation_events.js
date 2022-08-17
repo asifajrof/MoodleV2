@@ -33,7 +33,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-const CourseEvaluationEvents = ({ studentNo, courseId }) => {
+const CourseEvaluationEvents = ({ userName, courseId }) => {
   // const [courseEvaluationEventList, setCourseEvaluationEventList] = useState(
   //   []
   // );
@@ -44,12 +44,12 @@ const CourseEvaluationEvents = ({ studentNo, courseId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`/api/course/events`, {
+        const res = await fetch(`/api/course/events_teacher`, {
           method: "POST",
           headers: {
             "Content-type": "application/json",
           },
-          body: JSON.stringify({ studentNo, courseId }),
+          body: JSON.stringify({ userName, courseId }),
         });
         const jsonData = await res.json();
         // console.log(data);

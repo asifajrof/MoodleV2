@@ -14,6 +14,12 @@ teacherRoutes.get(
   "/courses/current/:userName",
   teacherControllers.getCurrentCoursesByUsername
 );
+
+teacherRoutes.get(
+  "/courses/all/:userName",
+  teacherControllers.getAllCoursesByUsername
+);
+
 teacherRoutes.get(
   "/upcoming/:userName",
   teacherControllers.getUpcomingEventsByUsername

@@ -43,7 +43,7 @@ const TeacherAddNewCourseTopic = (userName) => {
               <CourseTopicAddForm userName={userName} courseId={courseId} />
             </div>
           </div>
-          <div>Upcoming/Latest post</div>
+          <div></div>
         </div>
       </div>
     </React.Fragment>

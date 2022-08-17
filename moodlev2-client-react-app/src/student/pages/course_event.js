@@ -65,7 +65,7 @@ const StudentCourseEvent = ({ studentNo }) => {
           {courseEvalueationEventInfo.event_description}
           <FileUpload />
 
-          <div>Upcoming/Latest post</div>
+          <div> </div>
         </div>
       </div>
     </React.Fragment>

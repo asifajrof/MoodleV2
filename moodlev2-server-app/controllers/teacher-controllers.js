@@ -64,6 +64,27 @@ const getCurrentCoursesByUsername = async (req, res, next) => {
   }
 };
 
+const getAllCoursesByUsername = async (req, res, next) => {
+  try {
+    console.log("GET api/teacher/courses/all/:username");
+
+    const userName = req.params.userName;
+    console.log(typeof userName);
+    let result = await pool.query(
+      "select json_agg(t) from get_all_course_teacher($1) as t",
+      [userName]
+    );
+    const courses = result.rows[0].json_agg;
+    if (!courses) {
+      res.json({ message: "No course assigned yet!", data: [] });
+    } else {
+      res.json({ message: "getAllCoursesByuserName", data: courses });
+    }
+  } catch (error) {
+    next(new HttpError(error.message, 500));
+  }
+};
+
 const getUpcomingEventsByUsername = async (req, res, next) => {
   try {
     console.log("GET api/teacher/upcoming/:username");
@@ -74,7 +95,7 @@ const getUpcomingEventsByUsername = async (req, res, next) => {
       [userName]
     );
     const upcomingEvents = result.rows[0].json_agg;
-    console.log(upcomingEvents);
+    // console.log(upcomingEvents);
     if (!upcomingEvents) {
       // next(new HttpError('Upcoming Events not found', 404));
       res.json({ message: "No upcoming events yet!", data: [] });
@@ -91,3 +112,4 @@ const getUpcomingEventsByUsername = async (req, res, next) => {
 
 exports.getCurrentCoursesByUsername = getCurrentCoursesByUsername;
 exports.getUpcomingEventsByUsername = getUpcomingEventsByUsername;
+exports.getAllCoursesByUsername = getAllCoursesByUsername;

@@ -16,6 +16,12 @@ studentRoutes.get(
   "/courses/current/:student_id",
   studentControllers.getCurrentCoursesByStudentId
 );
+
+studentRoutes.get(
+  "/courses/all/:student_id",
+  studentControllers.getAllCoursesByStudentId
+);
+
 studentRoutes.get(
   "/upcoming/:student_id",
   studentControllers.getUpcomingEventsByStudentId

@@ -34,7 +34,7 @@ const StudentCourseHome = ({ studentNo }) => {
         </div>
         <div className="course__home__container__divider">
           <CourseTopics studentNo={studentNo} courseId={courseId} />
-          <div>Upcoming/Latest post</div>
+          <div></div>
         </div>
       </div>
     </React.Fragment>
