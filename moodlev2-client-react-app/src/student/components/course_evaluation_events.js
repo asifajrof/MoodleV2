@@ -14,9 +14,10 @@ import CourseEvaluationEventTableRow from "./course_evaluation_events/course_eva
 const courseEvaluationEventListInit = [
   {
     id: 1,
-    title: "HW 1",
-    description: "Homework on Chapter 1",
-    isFinished: false,
+    event_type: "Assignment",
+    event_description: "Homework on Chapter 1",
+    completed: false,
+    event_date: "2022-08-20",
   },
 ];
 
@@ -64,14 +65,6 @@ const CourseEvaluationEvents = ({ studentNo, courseId }) => {
         console.log(err);
         // alert(err);
       }
-      // try {
-      //   const response = await fetch(`/api/course/events/${courseId}`);
-      //   const jsonData = await response.json();
-      //   console.log(jsonData.data);
-      //   setCourseEvaluationEventList(jsonData.data);
-      // } catch (err) {
-      //   console.log(err);
-      // }
     };
     fetchData();
   }, []);

@@ -33,10 +33,7 @@ const TeacherCourseEvents = ({ userName }) => {
           {courseInfo._course_code}: {courseInfo._course_name}
         </div>
         <div className="course__home__container__divider">
-          <div className="container mt-4">
-            <h6 className="display-4 text-center mb-4">File Upload</h6>
-            <FileUpload />
-          </div>
+          {/* <FileUpload /> */}
           <div>Upcoming/Latest post</div>
         </div>
       </div>

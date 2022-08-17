@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 
 import CourseMenuBar from "../components/course_menu_bar";
 import CourseTopics from "../components/course_topics";
-import "./course_home.css";
+// import "./course_home.css";
 
 const TeacherCourseHome = ({ userName }) => {
   const [courseInfo, setcourseInfo] = useState([]);

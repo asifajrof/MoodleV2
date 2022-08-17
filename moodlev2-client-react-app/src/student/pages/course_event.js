@@ -9,9 +9,10 @@ import FileUpload from "../components/file_upload/FileUpload";
 
 const courseEvalueationEventInfoInit = {
   id: 1,
-  title: "HW 1",
-  description: "Homework on Chapter 1",
-  isFinished: false,
+  event_type: "Assignment",
+  event_description: "Homework on Chapter 1",
+  completed: false,
+  event_date: "2022-08-20",
 };
 
 const StudentCourseEvent = ({ studentNo }) => {
@@ -48,11 +49,20 @@ const StudentCourseEvent = ({ studentNo }) => {
           {courseInfo._term} {courseInfo.__year} {courseInfo._dept_shortname}{" "}
           {courseInfo._course_code}: {courseInfo._course_name}
         </div>
-        <div className="course__home__container__event__title">
-          {courseEvalueationEventInfo.title}
+        <div
+          className="course__home__container__event__title"
+          style={{ paddingTop: "2rem" }}
+        >
+          {courseEvalueationEventInfo.event_type}
         </div>
-        <div className="course__home__container__divider">
-          {courseEvalueationEventInfo.description}
+        <div className="course__home__container__event__subtitle">
+          {courseEvalueationEventInfo.event_date}
+        </div>
+        <div
+          className="course__home__container__divider"
+          style={{ paddingLeft: "1rem" }}
+        >
+          {courseEvalueationEventInfo.event_description}
           <FileUpload />
 
           <div>Upcoming/Latest post</div>
