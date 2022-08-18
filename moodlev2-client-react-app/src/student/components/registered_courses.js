@@ -61,7 +61,12 @@ const RegisteredCourses = ({ studentNo }) => {
           `/api/student/courses/current/${studentNo}`
         );
         const jsonData = await response.json();
-        setCurrentCoursesList(jsonData.data);
+        if (response.status === 200) {
+          setCurrentCoursesList(jsonData.data);
+        } else {
+          setCurrentCoursesList([]);
+          console.log(response);
+        }
       } catch (err) {
         console.log(err);
       }
