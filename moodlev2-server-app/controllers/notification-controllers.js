@@ -5,111 +5,130 @@ const getNotificationsByUserName = async (req, res, next) => {
   // console.log("getNotificationsByUserName");
   try {
     const uId = req.params.uId;
-    // console.log("uid " + uId);
-    // let result = await pool.query(
-    //   "SELECT json_agg(t) FROM get_course_topics($1) as t",
-    //   [uId]
-    // );
-    // const notificationList = result.rows[0].json_agg;
-    // console.log()
-    const notificationList = [
-      {
-        id: 1,
-        item: "notification item 1",
-      },
-      {
-        id: 2,
-        item: "notification item 2",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 1,
-        item: "notification item 1",
-      },
-      {
-        id: 2,
-        item: "notification item 2",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-      {
-        id: 3,
-        item: "notification item 3",
-      },
-    ];
+    console.log("uid " + uId);
+
+    let result1 = await pool.query(
+      "SELECT json_agg(t) FROM get_account_type($1) as t",
+      [uId]
+    );
+    const user = result1.rows[0].json_agg;
+    uType = user[0].type;
+    console.log(uType);
+
+    let result2 = null;
+    if (uType == "Student") {
+      result2 = await pool.query(
+        "select json_agg(t) FROM get_evaluation_notifications($1) as t",
+        [uId]
+      );
+    } else if (uType == "Teacher") {
+      result2 = await pool.query(
+        "select json_agg(t) FROM get_evaluation_notifications_teacher($1) as t",
+        [uId]
+      );
+    }
+    // console.log(result2);
+    const notificationList = result2.rows[0].json_agg;
+
+    // console.log(notificationList);
+    // const notificationList = [
+    //   {
+    //     id: 1,
+    //     item: "notification item 1",
+    //   },
+    //   {
+    //     id: 2,
+    //     item: "notification item 2",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 1,
+    //     item: "notification item 1",
+    //   },
+    //   {
+    //     id: 2,
+    //     item: "notification item 2",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    //   {
+    //     id: 3,
+    //     item: "notification item 3",
+    //   },
+    // ];
     if (!notificationList) {
       res.json({ message: "No notifications yet!", data: [] });
     } else {

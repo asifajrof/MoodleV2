@@ -21,7 +21,8 @@ const NotificationLogo = ({ uId }) => {
       if (res.status === 200) {
         setnotificationList(jsonData.data);
       } else {
-        alert(jsonData.message);
+        // alert(jsonData.message);
+        console.log(jsonData.message);
       }
     }, IntervalTime);
   }, []);
