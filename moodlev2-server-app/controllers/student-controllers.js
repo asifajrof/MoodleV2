@@ -82,6 +82,7 @@ const getAllCoursesByStudentId = async (req, res, next) => {
       "SELECT json_agg(t) FROM get_all_course($1) as t",
       [studentId]
     );
+    // console.log(result);
     const courses = result.rows[0].json_agg;
     if (!courses) {
       next(new HttpError("Courses not found", 404));

@@ -33,6 +33,7 @@ import Login from "./shared/pages/login";
 import "./App.css";
 
 import {
+  courses_link,
   course_events_link,
   course_link,
   home_link,
@@ -40,6 +41,8 @@ import {
 } from "./links";
 import useToken from "./shared/pages/useToken";
 import TeacherAddNewCourseTopic from "./teacher/pages/course_add_new_topic";
+import StudentCoursePage from "./student/pages/course_page";
+import TeacherCoursePage from "./teacher/pages/course_page";
 
 const App = () => {
   // const [backendData,setBackendData] = useState([{}])
@@ -149,6 +152,12 @@ const App = () => {
               element={<StudentHome studentNo={token.id} uType={token.type} />}
             />
             <Route
+              path={courses_link}
+              element={
+                <StudentCoursePage studentNo={token.id} uType={token.type} />
+              }
+            />
+            <Route
               path={"/course/:courseId" + course_link}
               element={<StudentCourseHome studentNo={token.id} />}
             />
@@ -189,6 +198,12 @@ const App = () => {
             <Route
               path={home_link}
               element={<TeacherHome userName={token.id} uType={token.type} />}
+            />
+            <Route
+              path={courses_link}
+              element={
+                <TeacherCoursePage userName={token.id} uType={token.type} />
+              }
             />
             <Route
               path={"/course/:courseId" + course_link}

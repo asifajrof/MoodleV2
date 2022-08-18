@@ -34,12 +34,12 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const CourseEvaluationEvents = ({ studentNo, courseId }) => {
-  // const [courseEvaluationEventList, setCourseEvaluationEventList] = useState(
-  //   []
-  // );
   const [courseEvaluationEventList, setCourseEvaluationEventList] = useState(
-    courseEvaluationEventListInit
+    []
   );
+  // const [courseEvaluationEventList, setCourseEvaluationEventList] = useState(
+  //   courseEvaluationEventListInit
+  // );
 
   useEffect(() => {
     const fetchData = async () => {
