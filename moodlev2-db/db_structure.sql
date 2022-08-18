@@ -280,9 +280,7 @@ where not exists(
 
 create materialized view all_courses as
 select c.course_id as _id,term_name(term) as _term,_year as __year,dept_shortname as _dept_shortname,(level*100+course_num) as _course_code, course_name as _course_name from course c join department d on c.dept_code = d.dept_code
-where not exists(
-    select course_id from course cc
-) with data;
+ with data;
 
 create materialized view intersected_sections as
 select e.section_id first_section, f.section_id second_section, count(*) common_students

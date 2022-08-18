@@ -453,3 +453,6 @@ values (2,6,8,'27-08-2022 15:00:00','27-08-2022 16:00:00',50);
 insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks)
 values (4,7,12,'28-08-2022 14:40:00','28-08-2022 15:40:00',20);
 
+
+insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks, description)
+values(5,1,1,current_timestamp,'2022-08-20 17:30:00 +06:00',20,'This is a bonus assignment')

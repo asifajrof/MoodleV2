@@ -2003,8 +2003,6 @@ CREATE MATERIALIZED VIEW public.all_courses AS
     c.course_name AS _course_name
    FROM (public.course c
      JOIN public.department d ON ((c.dept_code = d.dept_code)))
-  WHERE (NOT (EXISTS ( SELECT cc.course_id
-           FROM public.course cc)))
   WITH NO DATA;
 
 
@@ -3579,6 +3577,7 @@ INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id
 INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description) VALUES (3, 1, 2, 2, NULL, '2022-08-22 17:00:00+06', '2022-08-22 17:40:00+06', '2022-08-17', 20, NULL);
 INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description) VALUES (4, 2, 6, 8, NULL, '2022-08-27 21:00:00+06', '2022-08-27 22:00:00+06', '2022-08-17', 50, NULL);
 INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description) VALUES (5, 4, 7, 12, NULL, '2022-08-28 20:40:00+06', '2022-08-28 21:40:00+06', '2022-08-17', 20, NULL);
+INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description) VALUES (6, 5, 1, 1, NULL, '2022-08-18 13:08:51.747624+06', '2022-08-20 17:30:00+06', '2022-08-18', 20, 'This is a bonus assignment');
 
 
 --
@@ -3675,6 +3674,7 @@ INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _d
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (4, 1, 3, 2, '2022-08-22', '2022-08-17 23:12:19.870786+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (5, 1, 4, 2, '2022-08-27', '2022-08-17 23:12:19.893533+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (6, 1, 5, 2, '2022-08-28', '2022-08-17 23:12:19.929126+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (7, 1, 6, 2, '2022-08-18', '2022-08-18 13:08:51.747624+06');
 
 
 --
@@ -3911,7 +3911,7 @@ SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 48, true);
 -- Name: evaluation_evaluation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.evaluation_evaluation_id_seq', 5, true);
+SELECT pg_catalog.setval('public.evaluation_evaluation_id_seq', 6, true);
 
 
 --
@@ -3974,7 +3974,7 @@ SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 18, true);
 -- Name: notification_event_not_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.notification_event_not_id_seq', 6, true);
+SELECT pg_catalog.setval('public.notification_event_not_id_seq', 7, true);
 
 
 --
