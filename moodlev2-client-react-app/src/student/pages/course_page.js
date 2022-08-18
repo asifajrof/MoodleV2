@@ -26,7 +26,7 @@ const StudentCoursePage = ({ studentNo, uType }) => {
       >
         All Registered Courses
       </div>
-      {/* <AllRegisteredCourses studentNo={studentNo} /> */}
+      <AllRegisteredCourses studentNo={studentNo} />
     </div>
   );
 };

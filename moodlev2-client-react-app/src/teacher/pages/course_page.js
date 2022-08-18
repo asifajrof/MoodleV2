@@ -26,7 +26,7 @@ const TeacherCoursePage = ({ userName, uType }) => {
       >
         All Registered Courses
       </div>
-      {/* <AllRegisteredCourses userName={userName} /> */}
+      <AllRegisteredCourses userName={userName} />
     </div>
   );
 };
