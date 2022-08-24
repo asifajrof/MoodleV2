@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 const cors = require("cors");
+const fs = require("fs");
 
 const studentRoutes = require("./routes/student-routes");
 const sharedRoutes = require("./routes/shared-routes");
@@ -55,8 +56,17 @@ app.post("/upload", (req, res) => {
     return new HttpError("No file uploaded", 400);
   }
   const file = req.files.file;
+  const folderPath = `${__dirname}/../moodlev2-client-react-app/public/uploads/`;
+  let fileMovePath = `${folderPath}${file.name}`;
+  // check if already exists
+  if (fs.existsSync(fileMovePath)) {
+    console.log("file exists");
+    // change filename
+    fileMovePath = `${folderPath}${Date.now()}_${file.name}`;
+  }
   file.mv(
-    `${__dirname}/../moodlev2-client-react-app/public/uploads/${file.name}`,
+    // `${__dirname}/../moodlev2-client-react-app/public/uploads/${file.name}`,
+    fileMovePath,
     (err) => {
       if (err) {
         console.error(err);

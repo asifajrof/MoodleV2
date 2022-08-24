@@ -13,15 +13,25 @@ const FileUpload = () => {
 
   const onChange = (e) => {
     setFile(e.target.files[0]);
-    setFilename(e.target.files[0].name);
+    if (e.target.files[0] !== undefined) {
+      setFilename(e.target.files[0].name);
+    }
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("file", file);
 
     try {
+      const formData = new FormData();
+      if (file === "" || file === undefined) {
+        console.log("No file selected");
+        // raise error
+        setMessage("Please select a file");
+        // clear message
+        setTimeout(() => setMessage(""), 2000);
+        return;
+      }
+      formData.append("file", file);
       const res = await axios.post("/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -36,7 +46,9 @@ const FileUpload = () => {
       });
 
       // Clear percentage
-      setTimeout(() => setUploadPercentage(0), 10000);
+      setTimeout(() => setUploadPercentage(0), 1000);
+      // clear message
+      setTimeout(() => setMessage(""), 2000);
 
       const { fileName, filePath } = res.data;
       setUploadedFile({ fileName, filePath });
@@ -48,23 +60,32 @@ const FileUpload = () => {
         setMessage(err.response.data.msg);
       }
       setUploadPercentage(0);
+      // clear message
+      setTimeout(() => setMessage(""), 2000);
     }
   };
   return (
-    <Fragment>
-      {message ? <Message msg={message} /> : null}
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        gap: "1rem",
+        alignItems: "center",
+      }}
+    >
       <form onSubmit={onSubmit}>
-        <div className="custom-file mb-4">
+        <div className="custom-file">
           <input
             type="file"
             className="custom-file-input"
             id="customFile"
             onChange={onChange}
           />
-          <label className="custom-file-label" htmlFor="customFile">
+          {/* <label className="custom-file-label" htmlFor="customFile">
             {filename}
-          </label>
+          </label> */}
         </div>
+        <br />
         <Progress percentage={uploadPercentage} />
         <input
           type="submit"
@@ -72,15 +93,8 @@ const FileUpload = () => {
           className="btn btn-primary btn-block mt-4"
         />
       </form>
-      {/* {uploadedFile ? (
-        <div className="row mt-5">
-          <div className="col-md-6 m-auto">
-            <h3 className="text-center">{uploadedFile.fileName}</h3>
-            <img style={{ width: "100%" }} src={uploadedFile.filePath} alt="" />
-          </div>
-        </div>
-      ) : null} */}
-    </Fragment>
+      {message ? <Message msg={message} showVal={true} /> : null}
+    </div>
   );
 };
 
