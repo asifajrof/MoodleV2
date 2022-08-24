@@ -80,12 +80,12 @@ const getCourseEventsTeacher = async (req, res, next) => {
 const addNewCourseTopic = async (req, res, next) => {
   try {
     const { topicName, topicDescription, teacherUserName, courseId } = req.body;
-    console.log(
-      topicName,
-      topicDescription,
-      teacherUserName.userName,
-      courseId
-    );
+    // console.log(
+    //   topicName,
+    //   topicDescription,
+    //   teacherUserName.userName,
+    //   courseId
+    // );
     let result = await pool.query("select add_course_topic($1,$2,$3,$4,$5);", [
       topicName,
       courseId,
