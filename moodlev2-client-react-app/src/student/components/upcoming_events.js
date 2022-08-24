@@ -47,26 +47,30 @@ const UpcomingEvents = ({ studentNo }) => {
 
   return (
     <>
-      <div className="event__container__title">Upcoming Classes/Events</div>
-      <div className="event__container">
-        {upcomingEventsList.map((event, index) => (
-          <UpcomingEvent key={index} event={event} />
-        ))}
-        <div>
-          <Link
-            to="/timeline"
-            style={{
-              width: "5rem",
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              fontSize: "0.8rem",
-            }}
-          >
-            See All <FaAngleRight />
-          </Link>
-        </div>
-      </div>
+      {upcomingEventsList.length > 0 && (
+        <>
+          <div className="event__container__title">Upcoming Classes/Events</div>
+          <div className="event__container">
+            {upcomingEventsList.map((event, index) => (
+              <UpcomingEvent key={index} event={event} />
+            ))}
+            <div>
+              <Link
+                to="/timeline"
+                style={{
+                  width: "5rem",
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  fontSize: "0.8rem",
+                }}
+              >
+                See All <FaAngleRight />
+              </Link>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 };
