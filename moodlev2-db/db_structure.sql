@@ -1088,11 +1088,11 @@ create or replace function get_upcoming_events_teacher (teacher_username varchar
     select cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
                                                   ((select section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type, tr.instructor_id as instructor_id
                                                     from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
-                                                    where day = extract(isodow from current_date) - 1
+                                                    where day = extract(isodow from current_date) - 1 and start::time>current_time
                                                       and not exists(
                                                             select class_id
                                                             from canceled_class cc
-                                                            where cc.class_id = cr.class_id and _date = current_date and start::time>current_time
+                                                            where cc.class_id = cr.class_id and _date = current_date
                                                         ))
                                                    union
                                                    (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,instructor_id as instructor_id
