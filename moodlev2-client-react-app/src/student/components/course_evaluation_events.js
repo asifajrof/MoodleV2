@@ -80,7 +80,7 @@ const CourseEvaluationEvents = ({ studentNo, courseId }) => {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell align="center"> </StyledTableCell>
+              {/* <StyledTableCell align="center"> </StyledTableCell> */}
               <StyledTableCell align="center">Event Type</StyledTableCell>
               <StyledTableCell align="center">Description</StyledTableCell>
             </TableRow>
