@@ -59,6 +59,25 @@ $$;
 ALTER FUNCTION public.add_course(cname character varying, cnum integer, dept integer, offered_dept integer, offered_batch integer, offered_year integer, offered_level integer, offered_term integer) OWNER TO postgres;
 
 --
+-- Name: add_course_student(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.add_course_student(std_id integer, sectionno integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    std_no integer;
+    begin
+        std_no:=get_student_no(std_id);
+        insert into enrolment(enrol_id, student_id, section_id)
+        values (default,std_no,sectionNo);
+    end;
+$$;
+
+
+ALTER FUNCTION public.add_course_student(std_id integer, sectionno integer) OWNER TO postgres;
+
+--
 -- Name: add_course_topic(character varying, integer, character varying, character varying, boolean); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -577,6 +596,24 @@ $$;
 ALTER FUNCTION public.get_all_course(std_id integer) OWNER TO postgres;
 
 --
+-- Name: get_all_course_admin(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_all_course_admin() RETURNS TABLE(id integer, term character varying, _year integer, dept_shortname character varying, course_code integer, course_name character varying)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name
+    from all_courses cc
+    ;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_all_course_admin() OWNER TO postgres;
+
+--
 -- Name: get_all_course_teacher(character varying); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -700,6 +737,40 @@ $$;
 ALTER FUNCTION public.get_course_posts_teacher(uname character varying) OWNER TO postgres;
 
 --
+-- Name: get_course_students(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_course_students(courseid integer) RETURNS TABLE(std_id integer, std_name character varying, enrolid integer, sec_no integer, sec_name character varying)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+    select (mod(s._year,100)*100000+s.dept_code*1000+s.roll_num) as sid, s.student_name,e.enrol_id,s2.section_no,s2.section_name from student s join enrolment e on s.student_id = e.student_id join section s2 on e.section_id = s2.section_no join course c on s2.course_id = c.course_id
+where c.course_id=courseID;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_course_students(courseid integer) OWNER TO postgres;
+
+--
+-- Name: get_course_teachers(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_course_teachers(courseid integer) RETURNS TABLE(uname character varying, teachername character varying)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+    select ou.username, t.teacher_name from teacher t join official_users ou on t.user_no = ou.user_no join instructor i on t.teacher_id = i.teacher_id join course c on i.course_id = c.course_id
+where c.course_id=courseID;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_course_teachers(courseid integer) OWNER TO postgres;
+
+--
 -- Name: get_course_topics(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -741,6 +812,24 @@ $$;
 
 
 ALTER FUNCTION public.get_current_course(std_id integer) OWNER TO postgres;
+
+--
+-- Name: get_current_course_admin(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_current_course_admin() RETURNS TABLE(id integer, term character varying, _year integer, dept_shortname character varying, course_code integer, course_name character varying)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name
+    from current_courses cc
+    ;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_current_course_admin() OWNER TO postgres;
 
 --
 -- Name: get_current_course_teacher(character varying); Type: FUNCTION; Schema: public; Owner: postgres
@@ -975,6 +1064,24 @@ $$;
 
 
 ALTER FUNCTION public.get_my_marks(userid integer, eid integer) OWNER TO postgres;
+
+--
+-- Name: get_student_no(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_student_no(std_id integer) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans integer;
+    begin
+        select student_id into ans from student where (mod(_year,100)*100000+dept_code*1000+roll_num)=std_id;
+        return ans;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_student_no(std_id integer) OWNER TO postgres;
 
 --
 -- Name: get_teacher_id(character varying); Type: FUNCTION; Schema: public; Owner: postgres
@@ -1776,6 +1883,44 @@ $$;
 ALTER FUNCTION public.poster_check() OWNER TO postgres;
 
 --
+-- Name: remove_course_student(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.remove_course_student(std_id integer, sectionno integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    std_no integer;
+    begin
+        std_no:=get_student_no(std_id);
+        delete from enrolment
+        where student_id=std_no and section_id=sectionNo;
+    end;
+$$;
+
+
+ALTER FUNCTION public.remove_course_student(std_id integer, sectionno integer) OWNER TO postgres;
+
+--
+-- Name: remove_course_teacher(character varying, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.remove_course_teacher(uname character varying, courseid integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    tid integer;
+    begin
+        tid:=get_teacher_id(uname);
+        delete from instructor
+        where teacher_id=tid and course_id=courseID;
+    end;
+$$;
+
+
+ALTER FUNCTION public.remove_course_teacher(uname character varying, courseid integer) OWNER TO postgres;
+
+--
 -- Name: request_event_check(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1913,6 +2058,26 @@ $$;
 
 
 ALTER FUNCTION public.term_name(term_num integer) OWNER TO postgres;
+
+--
+-- Name: update_cr(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.update_cr(std_id integer, sectionno integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    std_no integer;
+    begin
+        std_no:=get_student_no(std_id);
+        update section
+        set cr_id=std_no
+        where section_no=sectionNo;
+    end;
+$$;
+
+
+ALTER FUNCTION public.update_cr(std_id integer, sectionno integer) OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -3741,7 +3906,6 @@ INSERT INTO public.request_type (type_id, type_name) VALUES (2, 'Class Test');
 --
 
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (1, 'CSE-2017-B2-CSE423-2022', 1, NULL);
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (2, 'CSE-2017-B2-CSE453-2022', 2, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (3, 'CSE-2017-B2-HUM475-2022', 3, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (4, 'CSE-2017-B2-CSE405-2022', 4, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (5, 'CSE-2017-B2-CSE409-2022', 5, NULL);
@@ -3750,6 +3914,7 @@ INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (8, 'CSE-2017-B2-CSE421-2022', 8, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (9, 'CSE-2017-B2-CSE463-2022', 9, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (10, 'CSE-2017-B2-CSE408-2022', 10, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (2, 'CSE-2017-B2-CSE453-2022', 2, 2);
 
 
 --
@@ -3904,7 +4069,7 @@ SELECT pg_catalog.setval('public.course_routine_class_id_seq', 23, true);
 -- Name: enrolment_enrol_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 48, true);
+SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 49, true);
 
 
 --
@@ -3967,7 +4132,7 @@ SELECT pg_catalog.setval('public.grading_grading_id_seq', 1, false);
 -- Name: instructor_instructor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 18, true);
+SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 19, true);
 
 
 --

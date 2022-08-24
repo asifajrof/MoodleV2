@@ -1626,6 +1626,114 @@ order by ne.notifucation_time desc;
 end
 $$ language plpgsql;
 
+create or replace function get_current_course_admin ()
+    returns table (id integer,term varchar,_year integer,dept_shortname varchar,course_code integer,course_name varchar) as $$
+    begin
+    return query
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name
+    from current_courses cc
+    ;
+    end
+$$ language plpgsql;
+
+create or replace function get_all_course_admin ()
+    returns table (id integer,term varchar,_year integer,dept_shortname varchar,course_code integer,course_name varchar) as $$
+    begin
+    return query
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name
+    from all_courses cc
+    ;
+    end
+$$ language plpgsql;
+
+create or replace function get_student_no(std_id integer) returns integer as $$
+    declare
+        ans integer;
+    begin
+        select student_id into ans from student where (mod(_year,100)*100000+dept_code*1000+roll_num)=std_id;
+        return ans;
+    end
+$$ language plpgsql;
+
+create or replace function get_course_students (courseID integer)
+    returns table (std_id integer,std_name varchar,enrolID integer,sec_no integer,sec_name varchar) as $$
+    begin
+    return query
+    select (mod(s._year,100)*100000+s.dept_code*1000+s.roll_num) as sid, s.student_name,e.enrol_id,s2.section_no,s2.section_name from student s join enrolment e on s.student_id = e.student_id join section s2 on e.section_id = s2.section_no join course c on s2.course_id = c.course_id
+where c.course_id=courseID;
+    end
+$$ language plpgsql;
+
+create or replace function get_course_teachers (courseID integer)
+    returns table (uname varchar,teacherName varchar) as $$
+    begin
+    return query
+    select ou.username, t.teacher_name from teacher t join official_users ou on t.user_no = ou.user_no join instructor i on t.teacher_id = i.teacher_id join course c on i.course_id = c.course_id
+where c.course_id=courseID;
+    end
+$$ language plpgsql;
+
+create or replace function add_course_teacher(uname varchar,courseID integer) returns void as $$
+    declare
+    tid integer;
+    begin
+        tid:=get_teacher_id(uname);
+        insert into instructor(instructor_id, teacher_id, course_id)
+        values (default,tid,courseID);
+    end;
+$$ language plpgsql;
+
+create or replace function remove_course_teacher(uname varchar,courseID integer) returns void as $$
+    declare
+    tid integer;
+    begin
+        tid:=get_teacher_id(uname);
+        delete from instructor
+        where teacher_id=tid and course_id=courseID;
+    end;
+$$ language plpgsql;
+
+create or replace function add_course_student(std_id integer,sectionNo integer) returns void as $$
+    declare
+    std_no integer;
+    begin
+        std_no:=get_student_no(std_id);
+        insert into enrolment(enrol_id, student_id, section_id)
+        values (default,std_no,sectionNo);
+    end;
+$$ language plpgsql;
+
+create or replace function remove_course_student(std_id integer,sectionNo integer) returns void as $$
+    declare
+    std_no integer;
+    begin
+        std_no:=get_student_no(std_id);
+        delete from enrolment
+        where student_id=std_no and section_id=sectionNo;
+    end;
+$$ language plpgsql;
+
+create or replace function update_cr(std_id integer,sectionNo integer) returns void as $$
+    declare
+    std_no integer;
+    begin
+        std_no:=get_student_no(std_id);
+        update section
+        set cr_id=std_no
+        where section_no=sectionNo;
+    end;
+$$ language plpgsql;
+
+-- drop function update_cr(std_id integer,sectionNo integer);
+-- drop function remove_course_student(std_id integer,sectionNo integer);
+-- drop function add_course_student(std_id integer,sectionNo integer);
+-- drop function remove_course_teacher(uname varchar,courseID integer);
+--drop function add_course_teacher(uname varchar,courseID integer);
+--drop function get_course_teachers(courseID integer);
+-- drop function get_course_students(courseID integer);
+-- drop function get_student_no(std_id integer);
+-- drop function get_all_course_admin();
+-- drop function get_current_course_admin();
 -- drop function get_evaluation_notifications(std_id integer);
 --drop function get_evaluation_notifications_teacher(teacher_username varchar);
 -- drop function get_course_evaluations_teacher(uname varchar, crs_id integer);
