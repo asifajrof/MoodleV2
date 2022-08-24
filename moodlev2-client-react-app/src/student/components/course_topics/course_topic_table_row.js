@@ -1,4 +1,5 @@
 import React from "react";
+import moment from "moment";
 
 import { styled } from "@mui/material/styles";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
@@ -47,6 +48,7 @@ export default function CourseTopicTableRow({ courseTopic }) {
     } else {
       checkBox = <Checkbox disabled />;
     }
+    startTime = moment(startTime).format("LLL");
 
     return {
       dataIndex,
