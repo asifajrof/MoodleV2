@@ -14,46 +14,56 @@ import TeacherTableRow from "./teacher_table_row";
 // import './registered_course.css';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    //   backgroundColor: theme.palette.common.black,
-    backgroundColor: "#F4F7FC",
-    color: theme.palette.common.black,
-    fontWeight: "bold",
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
+	[`&.${tableCellClasses.head}`]: {
+		//   backgroundColor: theme.palette.common.black,
+		backgroundColor: "#F4F7FC",
+		color: theme.palette.common.black,
+		fontWeight: "bold",
+	},
+	[`&.${tableCellClasses.body}`]: {
+		fontSize: 14,
+	},
 }));
 
 const TeacherTable = ({ adminNo }) => {
-  const [allTeachersList, setAllTeachersList] = useState([]);
+	const [allTeachersList, setAllTeachersList] = useState([]);
 
-  useEffect(() => {
-    // fetch
-  }, []);
-  return (
-    <div style={{ width: "100%", paddingRight: "4rem" }}>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              {/* <StyledTableCell align="center"> </StyledTableCell> */}
-              {/* <StyledTableCell align="center"> </StyledTableCell> */}
-              <StyledTableCell align="center">Name</StyledTableCell>
-              <StyledTableCell align="center">Username</StyledTableCell>
-              <StyledTableCell align="center">E-mail</StyledTableCell>
-              <StyledTableCell align="center">Department</StyledTableCell>
-              {/* <StyledTableCell align="center">Designation</StyledTableCell> */}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {allTeachersList.map((teacherObj, index) => (
-              <TeacherTableRow key={index} teacherObj={teacherObj} />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
-  );
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const response = await fetch(`/api/admin/teachers/all`);
+				const jsonData = await response.json();
+				setAllTeachersList(jsonData.data);
+				console.log(jsonData.data);
+			} catch (err) {
+				console.log(err);
+			}
+		};
+		fetchData();
+	}, []);
+	return (
+		<div style={{ width: "100%", paddingRight: "4rem" }}>
+			<TableContainer component={Paper}>
+				<Table sx={{ minWidth: 700 }} aria-label="customized table">
+					<TableHead>
+						<TableRow>
+							{/* <StyledTableCell align="center"> </StyledTableCell> */}
+							{/* <StyledTableCell align="center"> </StyledTableCell> */}
+							<StyledTableCell align="center">Name</StyledTableCell>
+							<StyledTableCell align="center">Username</StyledTableCell>
+							<StyledTableCell align="center">E-mail</StyledTableCell>
+							<StyledTableCell align="center">Department</StyledTableCell>
+							{/* <StyledTableCell align="center">Designation</StyledTableCell> */}
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{allTeachersList.map((teacherObj, index) => (
+							<TeacherTableRow key={index} teacherObj={teacherObj} />
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
+		</div>
+	);
 };
 export default TeacherTable;

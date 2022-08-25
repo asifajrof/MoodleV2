@@ -7,11 +7,12 @@ const adminRoutes = express.Router();
 // remember to keep order of route
 
 adminRoutes.get("/", (req, res, next) => {
-  console.log("GET /admin");
-  res.json({ message: "it works!" });
+	console.log("GET /admin");
+	res.json({ message: "it works!" });
 });
 
 // admin home. get all courses
+adminRoutes.get("/teachers/all", adminControllers.getAllTeachers);
 adminRoutes.get("/courses/all", adminControllers.getAllCourses);
 adminRoutes.get("/dept_list", adminControllers.getDeptList);
 adminRoutes.post("/addcourse", adminControllers.postCourseAdd);

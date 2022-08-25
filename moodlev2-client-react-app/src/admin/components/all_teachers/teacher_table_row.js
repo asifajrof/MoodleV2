@@ -8,70 +8,52 @@ import TableRow from "@mui/material/TableRow";
 import Checkbox from "@mui/material/Checkbox";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
+	[`&.${tableCellClasses.head}`]: {
+		backgroundColor: theme.palette.common.black,
+		color: theme.palette.common.white,
+	},
+	[`&.${tableCellClasses.body}`]: {
+		fontSize: 14,
+	},
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
+	"&:nth-of-type(odd)": {
+		backgroundColor: theme.palette.action.hover,
+	},
+	// hide last border
+	"&:last-child td, &:last-child th": {
+		border: 0,
+	},
 }));
 
 export default function TeacherTableRow({ teacherObj }) {
-  let dataIndex = 0;
-  function createData(
-    isfinished,
-    teacherName,
-    topicName,
-    startTime,
-    topicDescription
-  ) {
-    dataIndex = dataIndex + 1;
-    let checkBox;
-    if (isfinished) {
-      checkBox = <Checkbox disabled checked />;
-    } else {
-      checkBox = <Checkbox disabled />;
-    }
-    startTime = moment(startTime).format("LLL");
+	let dataIndex = 0;
+	function createData(name, teacher_username, email, dept) {
+		return {
+			name,
+			teacher_username,
+			email,
+			dept,
+		};
+	}
+	const row = createData(
+		teacherObj.name,
+		teacherObj.teacher_username,
+		teacherObj.email,
+		teacherObj.dept
+	);
 
-    return {
-      dataIndex,
-      checkBox,
-      teacherName,
-      topicName,
-      startTime,
-      topicDescription,
-    };
-  }
-  const row = createData(
-    teacherObj.isfinished,
-    teacherObj.teachername,
-    teacherObj.title,
-    teacherObj.start_time,
-    teacherObj.topic_description
-  );
-
-  return (
-    <StyledTableRow>
-      <StyledTableCell align="center">{row.checkBox}</StyledTableCell>
-      {/* <StyledTableCell align="center">{row.dataIndex}</StyledTableCell> */}
-      <StyledTableCell align="center">{row.teacherName}</StyledTableCell>
-      <StyledTableCell align="center" component="th" scope="row">
-        {row.topicName}
-      </StyledTableCell>
-      <StyledTableCell align="center">{row.startTime}</StyledTableCell>
-      <StyledTableCell align="center">{row.topicDescription}</StyledTableCell>
-    </StyledTableRow>
-  );
+	return (
+		<StyledTableRow>
+			<StyledTableCell align="center">{row.name}</StyledTableCell>
+			{/* <StyledTableCell align="center">{row.dataIndex}</StyledTableCell> */}
+			<StyledTableCell align="center">{row.teacher_username}</StyledTableCell>
+			{/* <StyledTableCell align="center" component="th" scope="row">
+				{row.topicName}
+			</StyledTableCell> */}
+			<StyledTableCell align="center">{row.email}</StyledTableCell>
+			<StyledTableCell align="center">{row.dept}</StyledTableCell>
+		</StyledTableRow>
+	);
 }
