@@ -70,7 +70,7 @@ const courseForumPagePostsInit = [
   },
 ];
 
-const Post = (props) => {
+const SinglePost = ({ postObj }) => {
   const [showReply, setShowReply] = useState(false);
   const onClickReply = () => {
     setShowReply(!showReply);
@@ -80,33 +80,37 @@ const Post = (props) => {
     setShowReply(false);
   };
   return (
-    <>
-      {props.data.map((item) => (
-        <div className="course__forum__post">
-          <div className="course__forum__post__body">
-            <div className="course__forum__post__body__title">{item.title}</div>
-            <div className="course__forum__post__body__info">
-              By {item.poster} - {item.time}
-            </div>
-            <div className="course__forum__post__body__desc">
-              {item.description}
-            </div>
-            <div className="course__forum__post__body__reply">
-              <Button
-                variant="outlined"
-                size="small"
-                color="primary"
-                onClick={onClickReply}
-              >
-                Reply
-              </Button>
-            </div>
-            {showReply && (
-              <CourseForumPageReply onSubmitReply={onSubmitReply} />
-            )}
-          </div>
-          {item.children?.length && <Post data={item.children} />}
+    <div className="course__forum__post">
+      <div className="course__forum__post__body">
+        <div className="course__forum__post__body__title">{postObj.title}</div>
+        <div className="course__forum__post__body__info">
+          By {postObj.poster} - {postObj.time}
         </div>
+        <div className="course__forum__post__body__desc">
+          {postObj.description}
+        </div>
+        <div className="course__forum__post__body__reply">
+          <Button
+            variant="outlined"
+            size="small"
+            color="primary"
+            onClick={onClickReply}
+          >
+            Reply
+          </Button>
+        </div>
+        {showReply && <CourseForumPageReply onSubmitReply={onSubmitReply} />}
+      </div>
+      {postObj.children?.length && <Post data={postObj.children} />}
+    </div>
+  );
+};
+
+const Post = (props) => {
+  return (
+    <>
+      {props.data.map((item, index) => (
+        <SinglePost key={index} postObj={item} />
       ))}
     </>
   );
