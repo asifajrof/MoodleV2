@@ -37,6 +37,7 @@ import "./App.css";
 import {
   courses_link,
   course_events_link,
+  course_forum_link,
   course_link,
   home_link,
   timeline_link,
@@ -45,6 +46,8 @@ import useToken from "./shared/pages/useToken";
 import TeacherAddNewCourseTopic from "./teacher/pages/course_add_new_topic";
 import StudentCoursePage from "./student/pages/course_page";
 import TeacherCoursePage from "./teacher/pages/course_page";
+import StudentCourseForums from "./student/pages/course_forums";
+import StudentCourseForum from "./student/pages/course_forum";
 
 const App = () => {
   // const [backendData,setBackendData] = useState([{}])
@@ -178,6 +181,14 @@ const App = () => {
             <Route
               path={"/course/:courseId/event/:eventId"}
               element={<StudentCourseEvent studentNo={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId" + course_forum_link}
+              element={<StudentCourseForums studentNo={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId/forum/:forumId"}
+              element={<StudentCourseForum studentNo={token.id} />}
             />
             <Route
               path={timeline_link}
