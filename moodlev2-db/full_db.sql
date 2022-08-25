@@ -686,6 +686,22 @@ $$;
 ALTER FUNCTION public.get_all_teacher_admin() OWNER TO postgres;
 
 --
+-- Name: get_course_children_post(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_course_children_post(parent integer) RETURNS TABLE(postid integer)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+        select post_id from course_post where parent_post=parent;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_course_children_post(parent integer) OWNER TO postgres;
+
+--
 -- Name: get_course_evaluations(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -752,6 +768,22 @@ $$;
 
 
 ALTER FUNCTION public.get_course_marks(uname character varying, eid integer) OWNER TO postgres;
+
+--
+-- Name: get_course_post_file(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_course_post_file(pid integer) RETURNS TABLE(fileid integer, filename character varying, filelink character varying)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+        select file_id,file_name,file_link from course_post_file where post_id=pID;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_course_post_file(pid integer) OWNER TO postgres;
 
 --
 -- Name: get_course_posts(integer); Type: FUNCTION; Schema: public; Owner: postgres
@@ -883,6 +915,28 @@ $$;
 ALTER FUNCTION public.get_current_course_admin() OWNER TO postgres;
 
 --
+-- Name: get_current_course_post(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_current_course_post(pid integer) RETURNS TABLE(postid integer, posterid integer, title character varying, description character varying, teacherorstudentid character varying, postername character varying, posttime timestamp with time zone, isadmin boolean)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+        (select cp.post_id,cp.poster_id,cp.post_name,cp.post_content,ou.username,t.teacher_name,cp.post_time,student_post
+from course_post cp join instructor i on cp.poster_id=i.instructor_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no
+where cp.poster_id=pID and student_post=false)
+union
+(select cp.post_id,cp.poster_id,cp.post_name,cp.post_content,cast((mod(_year,100)*100000+dept_code*1000+roll_num) as varchar),s.student_name,cp.post_time,student_post
+from course_post cp join enrolment e on cp.poster_id=e.enrol_id join student s on e.enrol_id = s.student_id
+where cp.poster_id=pID and student_post=true);
+    end
+$$;
+
+
+ALTER FUNCTION public.get_current_course_post(pid integer) OWNER TO postgres;
+
+--
 -- Name: get_current_course_teacher(character varying); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -902,6 +956,26 @@ $$;
 
 
 ALTER FUNCTION public.get_current_course_teacher(teacher_username character varying) OWNER TO postgres;
+
+--
+-- Name: get_current_forum_post(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_current_forum_post(pid integer) RETURNS TABLE(postid integer, posterid integer, title character varying, description character varying, uname character varying, postername character varying, posttime timestamp with time zone, isadmin boolean)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+        (select fp.post_id,fp.poster,fp.post_name,fp.post_content,ou.username,t.teacher_name,fp.post_time,cast(false as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+where post_id=pID)
+union
+(select fp.post_id,fp.poster,fp.post_name,fp.post_content,ou.username,a.name,fp.post_time,cast(true as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+where post_id=pID);
+    end
+$$;
+
+
+ALTER FUNCTION public.get_current_forum_post(pid integer) OWNER TO postgres;
 
 --
 -- Name: get_day_events(integer, date); Type: FUNCTION; Schema: public; Owner: postgres
@@ -1071,6 +1145,38 @@ $$;
 ALTER FUNCTION public.get_event_description(event integer) OWNER TO postgres;
 
 --
+-- Name: get_forum_children_post(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_forum_children_post(parent integer) RETURNS TABLE(postid integer)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+        select post_id from forum_post where parent_post=parent;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_forum_children_post(parent integer) OWNER TO postgres;
+
+--
+-- Name: get_forum_post_file(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_forum_post_file(pid integer) RETURNS TABLE(fileid integer, filename character varying, filelink character varying)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+        select file_id,file_name,file_link from forum_post_files where post_id=pID;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_forum_post_file(pid integer) OWNER TO postgres;
+
+--
 -- Name: get_forum_posts(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1132,6 +1238,43 @@ $$;
 
 
 ALTER FUNCTION public.get_my_marks(userid integer, eid integer) OWNER TO postgres;
+
+--
+-- Name: get_root_course_posts(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_root_course_posts(courseid integer) RETURNS TABLE(postid integer, posterid integer, teacherid integer, title character varying, postername character varying, posttime timestamp with time zone)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+        select post_id,poster_id,t.teacher_id,post_name,t.teacher_name, post_time from course_post cp join instructor i on i.instructor_id=cp.poster_id join teacher t on i.teacher_id = t.teacher_id join course c on i.course_id = c.course_id
+        where c.course_id=courseID and cp.parent_post is null;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_root_course_posts(courseid integer) OWNER TO postgres;
+
+--
+-- Name: get_root_forum_posts(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_root_forum_posts() RETURNS TABLE(postid integer, posterid integer, title character varying, teacheroradminid integer, postername character varying, posttime timestamp with time zone, isadmin boolean)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+        (select fp.post_id,fp.poster,fp.post_name,t.teacher_id,t.teacher_name,fp.post_time,cast(false as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+where fp.parent_post is null)
+union
+(select fp.post_id,fp.poster,fp.post_name,a.admin_id,a.name,fp.post_time,cast(true as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+where fp.parent_post is null);
+    end
+$$;
+
+
+ALTER FUNCTION public.get_root_forum_posts() OWNER TO postgres;
 
 --
 -- Name: get_student_no(integer); Type: FUNCTION; Schema: public; Owner: postgres
