@@ -24,7 +24,9 @@ import AdminMenuBar from "./admin/components/menu_bar";
 import AdminHome from "./admin/pages/AdminHome";
 import AddNewCourse from "./admin/pages/AddNewCourse";
 import DeptAddForm from "./admin/components/add_dept";
+import AdminTeachers from "./admin/pages/AdminTeachers";
 import AddNewTeacher from "./admin/pages/AddNewTeacher";
+import AdminStudents from "./admin/pages/AdminStudents";
 import AddNewStudent from "./admin/pages/AddNewStudent";
 
 import BlankMenuBar from "./shared/components/BlankMenuBar";
@@ -117,8 +119,16 @@ const App = () => {
               element={<AddNewCourse adminNo={token.id} />}
             />
             <Route
+              path={"/teachers"}
+              element={<AdminTeachers adminNo={token.id} />}
+            />
+            <Route
               path={"/teachers/addnew"}
               element={<AddNewTeacher adminNo={token.id} />}
+            />
+            <Route
+              path={"/students"}
+              element={<AdminStudents adminNo={token.id} />}
             />
             <Route
               path={"/students/addnew"}
