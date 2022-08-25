@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 
 import CourseMenuBar from "../components/course_menu_bar";
 import CourseEvaluationEvents from "../components/course_evaluation_events";
-import FileUpload from "../components/file_upload/FileUpload";
 import "./course_home.css";
 
 const StudentCourseEvents = ({ studentNo }) => {
@@ -35,7 +34,6 @@ const StudentCourseEvents = ({ studentNo }) => {
           {courseInfo._course_code}: {courseInfo._course_name}
         </div>
         <div className="course__home__container__divider">
-          {/* <FileUpload /> */}
           <CourseEvaluationEvents studentNo={studentNo} courseId={courseId} />
           <div></div>
         </div>

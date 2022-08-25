@@ -1,0 +1,8 @@
+.custom-file {
+  cursor: pointer;
+}
+.custom-file-input {
+  position: relative;
+  border: 1 rem solid #ced4da;
+  cursor: pointer;
+}

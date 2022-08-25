@@ -3,6 +3,7 @@ import axios from "axios";
 
 import Message from "./Message";
 import Progress from "./Progress";
+import "./FileUpload.css";
 
 const FileUpload = () => {
   const [file, setFile] = useState("");
@@ -15,6 +16,8 @@ const FileUpload = () => {
     setFile(e.target.files[0]);
     if (e.target.files[0] !== undefined) {
       setFilename(e.target.files[0].name);
+    } else {
+      setFilename("Choose File");
     }
   };
 
@@ -47,12 +50,13 @@ const FileUpload = () => {
 
       // Clear percentage
       setTimeout(() => setUploadPercentage(0), 1000);
-      // clear message
-      setTimeout(() => setMessage(""), 2000);
-
       const { fileName, filePath } = res.data;
       setUploadedFile({ fileName, filePath });
       setMessage("File Uploaded");
+      // clear message
+      setTimeout(() => setMessage(""), 2000);
+      setFile("");
+      setFilename("Choose File");
     } catch (err) {
       if (err.response.status === 500) {
         setMessage("There was a problem with the server");
@@ -76,14 +80,16 @@ const FileUpload = () => {
       <form onSubmit={onSubmit}>
         <div className="custom-file">
           <input
-            type="file"
             className="custom-file-input"
+            type="file"
+            // style={{ display: "none" }}
             id="customFile"
             onChange={onChange}
           />
-          {/* <label className="custom-file-label" htmlFor="customFile">
+
+          <label className="custom-file-label" htmlFor="customFile">
             {filename}
-          </label> */}
+          </label>
         </div>
         <br />
         <Progress percentage={uploadPercentage} />
