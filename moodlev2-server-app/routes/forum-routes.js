@@ -11,7 +11,11 @@ forumRoutes.get("/", (req, res, next) => {
 	res.json({ message: "it works!" });
 });
 
-forumRoutes.get("/course/:courseId", forumControllers.getCourseForum);
-forumRoutes.get("/main", forumControllers.getMainForum);
+forumRoutes.get("/course/:courseId", forumControllers.getCourseForumRootList);
+forumRoutes.post(
+	"/course/addNewCourseForum",
+	forumControllers.addNewCourseForum
+);
+// forumRoutes.get("/main", forumControllers.getMainForum);
 
 module.exports = forumRoutes;

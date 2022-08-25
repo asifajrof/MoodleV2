@@ -1,8 +1,34 @@
 const pool = require("../models/db_connect");
 const HttpError = require("../models/http-error");
 
-const getMainForumRootList = async (req, res, next) => {
+const getCourseForumRootList = async (req, res, next) => {
 	try {
+		const courseId = req.params.courseId;
+		console.log("GET api/forum/course/root");
+		let result = await pool.query(
+			"SELECT json_agg(t) FROM get_root_course_posts($1) as t",
+			[courseId]
+		);
+		// console.log(courseId);
+		const rootList = result.rows[0].json_agg;
+		console.log(rootList);
+		// console.log(result);
+		if (!rootList) {
+			// console.log("here");
+			res.json({ message: "getCourseForumRootList", data: [] });
+		} else if (rootList == null) {
+			res.json({ message: "getCourseForumRootList", data: [] });
+		} else {
+			res.json({ message: "getCourseForumRootList", data: rootList });
+		}
+	} catch (err) {
+		return next(new HttpError(err.message, 500));
+	}
+};
+
+const getCourseForumRecursive = async (req, res, next) => {
+	try {
+		const postId = req.params.postId;
 		console.log("GET api/forum/main/");
 		let result = await pool.query(
 			"SELECT json_agg(t) FROM get_root_posts() as t"
@@ -19,21 +45,21 @@ const getMainForumRootList = async (req, res, next) => {
 		return next(new HttpError(err.message, 500));
 	}
 };
-
-const getMainForumRecursive = async (req, res, next) => {
+const addNewCourseForum = async (req, res, next) => {
 	try {
-		const postId = req.params.postId;
-		console.log("GET api/forum/main/");
+		const { forumName, forumDescription, courseId, teacherUserName } = req.body;
+		console.log("POST api/forum/course/addNewCourseForum");
 		let result = await pool.query(
-			"SELECT json_agg(t) FROM get_root_posts() as t"
+			"SELECT json_agg(t) FROM add_new_course_forum($1) as t",
+			[forumName, forumDescription, courseId, teacherUserName]
 		);
-		const rootList = result.rows[0].json_agg;
+		const forum = result.rows[0].json_agg;
 		// console.log(forum);
 		// console.log(result);
-		if (!rootList) {
-			next(new HttpError("Forum Posts not found", 404));
+		if (!forum) {
+			next(new HttpError("Forum not found", 404));
 		} else {
-			res.json({ message: "getAllPosts", data: rootList });
+			res.json({ message: "addNewCourseForum", data: forum });
 		}
 	} catch (err) {
 		return next(new HttpError(err.message, 500));
@@ -59,6 +85,7 @@ const getCourseForum = async (req, res, next) => {
 	// }
 };
 
-exports.getMainForum = getMainForum;
+// exports.getMainForum = getMainForum;
 exports.getCourseForum = getCourseForum;
-exports.getMainForumRootList = getMainForumRootList;
+exports.getCourseForumRootList = getCourseForumRootList;
+exports.addNewCourseForum = addNewCourseForum;

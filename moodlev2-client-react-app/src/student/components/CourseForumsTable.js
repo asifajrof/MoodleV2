@@ -14,57 +14,57 @@ import CourseForumTableRow from "./course_forums/course_forum_table_row";
 // import './course_home.css';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    //   backgroundColor: theme.palette.common.black,
-    backgroundColor: "#F4F7FC",
-    color: theme.palette.common.black,
-    fontWeight: "bold",
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
+	[`&.${tableCellClasses.head}`]: {
+		//   backgroundColor: theme.palette.common.black,
+		backgroundColor: "#F4F7FC",
+		color: theme.palette.common.black,
+		fontWeight: "bold",
+	},
+	[`&.${tableCellClasses.body}`]: {
+		fontSize: 14,
+	},
 }));
 
 const CourseForumsTable = ({ studentNo, courseId }) => {
-  const [courseForumsList, setCourseForumsList] = useState([]);
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch(`/api/course/forum/${courseId}`);
-  //       const jsonData = await response.json();
-  //       setCourseForumsList(jsonData.data);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
+	const [courseForumsList, setCourseForumsList] = useState([]);
+	useEffect(() => {
+		const fetchData = async (courseId) => {
+			try {
+				const response = await fetch(`/api/forum/course/${courseId}`);
+				const jsonData = await response.json();
+				setCourseForumsList(jsonData.data);
+			} catch (err) {
+				console.log(err);
+			}
+		};
+		fetchData(courseId);
+	}, [courseId]);
 
-  return (
-    <div style={{ width: "100%", paddingRight: "4rem" }}>
-      {/* <CourseTopicsTable courseTopicList={courseTopicList}/> */}
+	return (
+		<div style={{ width: "100%", paddingRight: "4rem" }}>
+			{/* <CourseTopicsTable courseTopicList={courseTopicList}/> */}
 
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              {/* <StyledTableCell align="center"> </StyledTableCell> */}
-              {/* <StyledTableCell align="center"> </StyledTableCell> */}
-              <StyledTableCell align="center">Discussion</StyledTableCell>
-              <StyledTableCell align="center">Started By</StyledTableCell>
-              <StyledTableCell align="center">Replies</StyledTableCell>
-              {/* <StyledTableCell align="center">Description</StyledTableCell> */}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {courseForumsList.map((courseForum, index) => (
-              <CourseForumTableRow key={index} courseForum={courseForum} />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
-  );
+			<TableContainer component={Paper}>
+				<Table sx={{ minWidth: 700 }} aria-label="customized table">
+					<TableHead>
+						<TableRow>
+							{/* <StyledTableCell align="center"> </StyledTableCell> */}
+							{/* <StyledTableCell align="center"> </StyledTableCell> */}
+							<StyledTableCell align="center">Discussion</StyledTableCell>
+							<StyledTableCell align="center">Started By</StyledTableCell>
+							<StyledTableCell align="center">Replies</StyledTableCell>
+							{/* <StyledTableCell align="center">Description</StyledTableCell> */}
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{courseForumsList.map((courseForum, index) => (
+							<CourseForumTableRow key={index} courseForum={courseForum} />
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
+		</div>
+	);
 };
 
 export default CourseForumsTable;
