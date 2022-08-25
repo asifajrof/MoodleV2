@@ -1724,6 +1724,15 @@ create or replace function update_cr(std_id integer,sectionNo integer) returns v
     end;
 $$ language plpgsql;
 
+create or replace function get_all_teacher_admin ()
+    returns table (teacher_username varchar,name varchar,dept varchar,email varchar) as $$
+    begin
+    return query
+    select ou.username,t.teacher_name, d.dept_shortname,ou.email_address from teacher t join department d on t.dept_code = d.dept_code join official_users ou on t.user_no = ou.user_no;
+    end
+$$ language plpgsql;
+
+-- drop function get_all_teacher_admin();
 -- drop function update_cr(std_id integer,sectionNo integer);
 -- drop function remove_course_student(std_id integer,sectionNo integer);
 -- drop function add_course_student(std_id integer,sectionNo integer);
