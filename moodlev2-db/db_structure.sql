@@ -177,6 +177,7 @@ create table  evaluation(
     _date DATE NOT NULL DEFAULT CURRENT_DATE,
     total_marks FLOAT NOT NULL CHECK(total_marks>0),
     description VARCHAR(2048),
+	link VARCHAR(1024) UNIQUE DEFAULT NULL,
     unique (_date,type_id,section_no,start,_end)
 );
 create table extra_evaluation_instructor(
@@ -1740,6 +1741,26 @@ create or replace function get_all_student_admin ()
     end
 $$ language plpgsql;
 
+create or replace function mark_topic_done(top_num integer) returns void as $$
+    declare
+    begin
+        update topic
+        set finished=true
+        where topic_num=top_num;
+    end;
+$$ language plpgsql;
+
+create or replace function get_submissions (event integer)
+    returns table (subID integer,studentID integer,studentName varchar,subLink varchar,subTime timestamp with time zone) as $$
+    begin
+    return query
+        select sub_id,(mod(_year,100)*100000+dept_code*1000+roll_num) as id,student_name,sub.link,sub_time from submission sub join enrolment e on e.enrol_id = sub.enrol_id join student s on e.student_id = s.student_id join evaluation e2 on sub.event_id = e2.evaluation_id
+where event_id=event;
+    end
+$$ language plpgsql;
+
+-- drop function get_submissions(event integer);
+-- drop function mark_topic_done(top_num integer);
 -- drop function get_all_student_admin();
 -- drop function get_all_teacher_admin();
 -- drop function update_cr(std_id integer,sectionNo integer);
