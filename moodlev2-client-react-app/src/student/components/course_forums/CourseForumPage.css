@@ -30,5 +30,8 @@
   font-size: 0.75rem;
 }
 .course__forum__post__body__reply {
-  /* font-size: 0.75rem; */
+  align-self: flex-end;
+}
+.course__forum__post__body__reply__form {
+  margin-top: 0.5rem;
 }
