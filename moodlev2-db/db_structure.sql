@@ -1759,6 +1759,19 @@ where event_id=event;
     end
 $$ language plpgsql;
 
+create or replace function grade_submission(subID integer,teacher_username integer,courseID integer,totalMarks float,obtainedMarks float,remark varchar) returns void as $$
+    declare
+        tid integer;
+        insID integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+        select instructor_id into insID from instructor where course_id=courseID and teacher_id=tid;
+        insert into grading(grading_id, sub_id, instructor_id, total_marks, obtained_marks, remarks)
+        values (default,subID,insID,totalMarks,obtainedMarks,remark);
+    end;
+$$ language plpgsql;
+
+-- drop function grade_submission(subID integer, teacher_username integer, courseID integer, totalMarks float, obtainedMarks float, remark varchar);
 -- drop function get_submissions(event integer);
 -- drop function mark_topic_done(top_num integer);
 -- drop function get_all_student_admin();
