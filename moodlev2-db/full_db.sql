@@ -635,6 +635,38 @@ $$;
 ALTER FUNCTION public.get_all_course_teacher(teacher_username character varying) OWNER TO postgres;
 
 --
+-- Name: get_all_student_admin(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_all_student_admin() RETURNS TABLE(std_id integer, name character varying, dept character varying, email character varying)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+    select (mod(_year,100)*100000+d.dept_code*1000+roll_num) as id,student_name,email_address,d.dept_shortname from student join department d on student.dept_code = d.dept_code;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_all_student_admin() OWNER TO postgres;
+
+--
+-- Name: get_all_teacher_admin(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_all_teacher_admin() RETURNS TABLE(teacher_username character varying, name character varying, dept character varying, email character varying)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+    select ou.username,t.teacher_name, d.dept_shortname,ou.email_address from teacher t join department d on t.dept_code = d.dept_code join official_users ou on t.user_no = ou.user_no;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_all_teacher_admin() OWNER TO postgres;
+
+--
 -- Name: get_course_evaluations(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
