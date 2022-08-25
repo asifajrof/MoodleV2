@@ -1054,6 +1054,23 @@ $$;
 ALTER FUNCTION public.get_evaluation_notifications_teacher(teacher_username character varying) OWNER TO postgres;
 
 --
+-- Name: get_event_description(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_event_description(event integer) RETURNS TABLE(eventid integer, eventtype character varying, description character varying, subtime timestamp with time zone)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+    select e.evaluation_id,et.type_name,e.description,e._end from evaluation e join evaluation_type et on et.type_id = e.type_id
+    where e.evaluation_id=1;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_event_description(event integer) OWNER TO postgres;
+
+--
 -- Name: get_forum_posts(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1135,6 +1152,31 @@ $$;
 ALTER FUNCTION public.get_student_no(std_id integer) OWNER TO postgres;
 
 --
+-- Name: get_submission_info(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_submission_info(eventid integer, stdid integer) RETURNS TABLE(subid integer, subtime timestamp with time zone, sublink character varying)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        stdNo integer;
+        secNo integer;
+        enrolID integer;
+    begin
+        select section_no into secNo from evaluation where evaluation_id=eventID;
+        stdNo:=get_student_no(stdID);
+        select enrol_id into enrolID from enrolment
+        where student_id=stdNo and section_id=secNo;
+    return query
+        select sub_id,sub_time,link from submission
+        where enrol_id=enrolID and event_id=eventID;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_submission_info(eventid integer, stdid integer) OWNER TO postgres;
+
+--
 -- Name: get_submissions(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1150,6 +1192,24 @@ $$;
 
 
 ALTER FUNCTION public.get_submissions(event integer) OWNER TO postgres;
+
+--
+-- Name: get_submitted_file_link(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_submitted_file_link(subid integer) RETURNS character varying
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans varchar;
+    begin
+        select link into ans from submission where sub_id=subID;
+        return ans;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_submitted_file_link(subid integer) OWNER TO postgres;
 
 --
 -- Name: get_teacher_id(character varying); Type: FUNCTION; Schema: public; Owner: postgres
@@ -1263,27 +1323,6 @@ $$;
 
 
 ALTER FUNCTION public.get_upcoming_events_teacher(teacher_username character varying) OWNER TO postgres;
-
---
--- Name: grade_submission(integer, integer, integer, double precision, double precision, character varying); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION public.grade_submission(subid integer, teacher_username integer, courseid integer, totalmarks double precision, obtainedmarks double precision, remark character varying) RETURNS void
-    LANGUAGE plpgsql
-    AS $$
-    declare
-        tid integer;
-        insID integer;
-    begin
-        tid:=get_teacher_id(teacher_username);
-        select instructor_id into insID from instructor where course_id=courseID and teacher_id=tid;
-        insert into grading(grading_id, sub_id, instructor_id, total_marks, obtained_marks, remarks)
-        values (default,subID,insID,totalMarks,obtainedMarks,remark);
-    end;
-$$;
-
-
-ALTER FUNCTION public.grade_submission(subid integer, teacher_username integer, courseid integer, totalmarks double precision, obtainedmarks double precision, remark character varying) OWNER TO postgres;
 
 --
 -- Name: grading_check(); Type: FUNCTION; Schema: public; Owner: postgres
@@ -1428,6 +1467,30 @@ $$;
 
 
 ALTER FUNCTION public.intersected_section_update() OWNER TO postgres;
+
+--
+-- Name: make_submission(integer, integer, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.make_submission(eventid integer, stdid integer, sublink character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        stdNo integer;
+        secNo integer;
+        enrolID integer;
+    begin
+        stdNo:=get_student_no(stdID);
+        select section_no into secNo from evaluation where evaluation_id=eventID;
+        select enrol_id into enrolID from enrolment
+        where student_id=stdNo and section_id=secNo;
+        insert into submission(sub_id, event_id, enrol_id, link)
+        values (default,eventID,enrolID,subLink);
+    end;
+$$;
+
+
+ALTER FUNCTION public.make_submission(eventid integer, stdid integer, sublink character varying) OWNER TO postgres;
 
 --
 -- Name: mark_topic_done(integer); Type: FUNCTION; Schema: public; Owner: postgres
@@ -4053,6 +4116,7 @@ INSERT INTO public.student (student_id, student_name, password, _year, roll_num,
 -- Data for Name: submission; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.submission (sub_id, event_id, enrol_id, link, sub_time) VALUES (4, 1, 4, '\file.txt', '2022-08-25 20:52:59.548799+06');
 
 
 --
@@ -4310,7 +4374,7 @@ SELECT pg_catalog.setval('public.student_student_id_seq', 6, true);
 -- Name: submission_sub_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.submission_sub_id_seq', 1, false);
+SELECT pg_catalog.setval('public.submission_sub_id_seq', 4, true);
 
 
 --

@@ -1759,7 +1759,43 @@ where event_id=event;
     end
 $$ language plpgsql;
 
-create or replace function grade_submission(subID integer,teacher_username integer,courseID integer,totalMarks float,obtainedMarks float,remark varchar) returns void as $$
+create or replace function get_event_description (event integer)
+    returns table (eventID integer,eventType varchar,description varchar,subTime timestamp with time zone) as $$
+    begin
+    return query
+    select e.evaluation_id,et.type_name,e.description,e._end from evaluation e join evaluation_type et on et.type_id = e.type_id
+    where e.evaluation_id=1;
+    end
+$$ language plpgsql;
+
+create or replace function get_submission_info (eventID integer,stdID integer)
+    returns table (subID integer,subTime timestamp with time zone,subLink varchar) as $$
+    declare
+        stdNo integer;
+        secNo integer;
+        enrolID integer;
+    begin
+        select section_no into secNo from evaluation where evaluation_id=eventID;
+        stdNo:=get_student_no(stdID);
+        select enrol_id into enrolID from enrolment
+        where student_id=stdNo and section_id=secNo;
+    return query
+        select sub_id,sub_time,link from submission
+        where enrol_id=enrolID and event_id=eventID;
+    end
+$$ language plpgsql;
+
+create or replace function get_submitted_file_link (subID integer)
+    returns varchar as $$
+    declare
+        ans varchar;
+    begin
+        select link into ans from submission where sub_id=subID;
+        return ans;
+    end
+$$ language plpgsql;
+
+create or replace function grade_submission(subID integer,teacher_username varchar,courseID integer,totalMarks float,obtainedMarks float,remark varchar) returns void as $$
     declare
         tid integer;
         insID integer;
@@ -1771,7 +1807,26 @@ create or replace function grade_submission(subID integer,teacher_username integ
     end;
 $$ language plpgsql;
 
--- drop function grade_submission(subID integer, teacher_username integer, courseID integer, totalMarks float, obtainedMarks float, remark varchar);
+create or replace function make_submission(eventID integer,stdID integer,subLink varchar) returns void as $$
+    declare
+        stdNo integer;
+        secNo integer;
+        enrolID integer;
+    begin
+        stdNo:=get_student_no(stdID);
+        select section_no into secNo from evaluation where evaluation_id=eventID;
+        select enrol_id into enrolID from enrolment
+        where student_id=stdNo and section_id=secNo;
+        insert into submission(sub_id, event_id, enrol_id, link)
+        values (default,eventID,enrolID,subLink);
+    end;
+$$ language plpgsql;
+
+--drop function make_submission(eventID integer, stdID integer, subLink varchar);
+-- drop function grade_submission(eventID integer, teacher_username varchar, courseID integer, totalMarks float, obtainedMarks float, remark varchar);
+--drop function get_submitted_file_link (subID integer);
+--drop function get_submission_info(eventID integer, stdID integer);
+--drop function get_event_description(event integer);
 -- drop function get_submissions(event integer);
 -- drop function mark_topic_done(top_num integer);
 -- drop function get_all_student_admin();
