@@ -3,170 +3,179 @@ const HttpError = require("../models/http-error");
 const moment = require("moment");
 
 const getCourseById = async (req, res, next) => {
-	try {
-		const courseId = req.params.course_id;
-		let result = await pool.query(
-			"SELECT * FROM current_courses WHERE _id = $1",
-			[courseId]
-		);
-		const course = result.rows[0];
-		// console.log()
-		if (!course) {
-			res.json({ message: "No course like that!", data: [] });
-		} else {
-			res.json({ message: "getCourseById", data: course });
-		}
-	} catch (error) {
-		return next(new HttpError(error.message, 500));
-	}
+  try {
+    const courseId = req.params.course_id;
+    let result = await pool.query(
+      "SELECT * FROM current_courses WHERE _id = $1",
+      [courseId]
+    );
+    const course = result.rows[0];
+    // console.log()
+    if (!course) {
+      res.json({ message: "No course like that!", data: [] });
+    } else {
+      res.json({ message: "getCourseById", data: course });
+    }
+  } catch (error) {
+    return next(new HttpError(error.message, 500));
+  }
 };
 
 const getCourseTopicsById = async (req, res, next) => {
-	try {
-		const courseId = req.params.course_id;
-		let result = await pool.query(
-			"SELECT json_agg(t) FROM get_course_topics($1) as t",
-			[courseId]
-		);
-		const courseTopics = result.rows[0].json_agg;
-		// console.log()
-		if (!courseTopics) {
-			res.json({ message: "No course topics given yet!", data: [] });
-		} else {
-			res.json({ message: "getCourseTopicsById", data: courseTopics });
-		}
-	} catch (error) {
-		return next(new HttpError(error.message, 500));
-	}
+  try {
+    const courseId = req.params.course_id;
+    let result = await pool.query(
+      "SELECT json_agg(t) FROM get_course_topics($1) as t",
+      [courseId]
+    );
+    const courseTopics = result.rows[0].json_agg;
+    // console.log()
+    if (!courseTopics) {
+      res.json({ message: "No course topics given yet!", data: [] });
+    } else {
+      res.json({ message: "getCourseTopicsById", data: courseTopics });
+    }
+  } catch (error) {
+    return next(new HttpError(error.message, 500));
+  }
 };
 
 const getCourseEvents = async (req, res, next) => {
-	try {
-		const { studentNo, courseId } = req.body;
-		let result = await pool.query(
-			"SELECT json_agg(t) FROM  get_course_evaluations($1, $2) as t",
-			[studentNo, courseId]
-		);
-		const courseEvents = result.rows[0].json_agg;
-		// console.log()
-		if (!courseEvents) {
-			res.json({ message: "No course events given yet!", data: [] });
-		} else {
-			res.json({ message: "getCourseEventsById", data: courseEvents });
-		}
-	} catch (error) {
-		return next(new HttpError(error.message, 500));
-	}
+  try {
+    const { studentNo, courseId } = req.body;
+    let result = await pool.query(
+      "SELECT json_agg(t) FROM  get_course_evaluations($1, $2) as t",
+      [studentNo, courseId]
+    );
+    const courseEvents = result.rows[0].json_agg;
+    // console.log()
+    if (!courseEvents) {
+      res.json({ message: "No course events given yet!", data: [] });
+    } else {
+      res.json({ message: "getCourseEventsById", data: courseEvents });
+    }
+  } catch (error) {
+    return next(new HttpError(error.message, 500));
+  }
 };
 
 const getEventDetails = async (req, res, next) => {
-	try {
-		const eventId = req.params.eventId;
-		let result = await pool.query(
-			"SELECT json_agg(t) FROM  get_event_description($1) as t",
-			[eventId]
-		);
+  try {
+    const eventId = req.params.eventId;
+    console.log(eventId);
+    let result = await pool.query(
+      "SELECT json_agg(t) FROM  get_event_description($1) as t",
+      [eventId]
+    );
 
-		const eventDetails = result.rows[0].json_agg;
-		const id = eventDetails[0].eventid;
-		const event_description = eventDetails[0].description;
-		const event_type = eventDetails[0].eventtype;
-		let endtime = eventDetails[0].subtime;
-		let date_ob = new Date();
-		// console.log(date_ob);
-		date_ob = moment(date_ob);
-		endtime = moment(endtime);
-		// console.log(subtime, date_ob);
-		const checkCompleted = endtime.isBefore(date_ob);
-		// console.log(checkCompleted);
+    const eventDetails = result.rows[0].json_agg;
+    const id = eventDetails[0].eventid;
+    const event_description = eventDetails[0].description;
+    const event_type = eventDetails[0].eventtype;
+    let endtime = eventDetails[0].subtime;
+    let nowDate = new Date();
+    // console.log(date_ob);
+    nowDate = moment(nowDate);
+    endtime = moment(endtime);
+    // console.log(endtime, nowDate);
+    const checkCompleted = endtime.isBefore(nowDate);
+    // console.log(checkCompleted);
 
-		let completed = false;
-		if (checkCompleted) {
-			completed = true;
-		}
-		// console.log("here");
-		let result2 = await pool.query(
-			"SELECT json_agg(t) FROM  get_submissions($1) as t",
-			[eventId]
-		);
+    let completed = false;
+    if (checkCompleted) {
+      completed = true;
+    }
+    let result2 = await pool.query(
+      "SELECT json_agg(t) FROM  get_submissions($1) as t",
+      [eventId]
+    );
 
-		const subDetails = result2.rows[0].json_agg;
-		let submitted = false;
-		let submission_time = null;
+    const subDetails = result2.rows[0].json_agg;
+    let submitted = false;
+    let submission_time = 0;
 
-		// console.log(subDetails);
+    // console.log(subDetails);
 
-		if (subDetails != null) {
-			submitted = true;
-			submission_time = moment(subDetails[0].subtime);
-		}
+    if (subDetails != null) {
+      submitted = true;
+      submission_time = subDetails[0].subtime;
+      console.log("submitted true");
+    }
+    submission_time = moment(submission_time);
+    // console.log("endtime", endtime.format("YYYY-MM-DD HH:mm:ss"));
+    // console.log("nowDate", nowDate.format("YYYY-MM-DD HH:mm:ss"));
+    console.log(
+      "submission_time",
+      submission_time.format("YYYY-MM-DD HH:mm:ss")
+    );
+    const eventObj = {
+      id: id,
+      event_description: event_description,
+      event_type: event_type,
+      event_date: endtime,
+      completed: completed,
+      submitted: submitted,
+      fileID: submitted ? subDetails[0].subid : null,
+      remaining_time: completed
+        ? submitted
+          ? moment.duration(endtime - submission_time).humanize()
+          : moment.duration(endtime - nowDate).humanize()
+        : moment.duration(endtime - nowDate).humanize(),
+    };
 
-		const eventObj = {
-			id: id,
-			event_description: event_description,
-			event_type: event_type,
-			event_date: endtime,
-			completed: completed,
-			submitted: submitted,
-			fileID: submitted ? subDetails[0].subid : null,
-			remaining_time: completed
-				? parseInt(moment.duration(endtime.diff(submission_time)).asHours())
-				: parseInt(moment.duration(endtime.diff(date_ob)).asHours()),
-		};
+    // console.log(eventObj.remaining_time);
 
-		console.log(eventObj.remaining_time);
-
-		if (!eventDetails) {
-			res.json({ message: "Error retriving eventdetails", data: [] });
-		} else {
-			res.json({ message: "getCourseEventsById", data: eventObj });
-		}
-	} catch (error) {
-		return next(new HttpError(error.message, 500));
-	}
+    if (!eventDetails) {
+      res.json({ message: "Error retriving eventdetails", data: [] });
+    } else {
+      res.json({ message: "getCourseEventsById", data: eventObj });
+    }
+  } catch (error) {
+    return next(new HttpError(error.message, 500));
+  }
 };
 
 const getCourseEventsTeacher = async (req, res, next) => {
-	try {
-		const { userName, courseId } = req.body;
-		let result = await pool.query(
-			"SELECT json_agg(t) FROM  get_course_evaluations_teacher($1, $2) as t",
-			[userName, courseId]
-		);
-		const courseEvents = result.rows[0].json_agg;
-		// console.log()
-		if (!courseEvents) {
-			res.json({ message: "No course events given yet!", data: [] });
-		} else {
-			res.json({ message: "getCourseEventsById", data: courseEvents });
-		}
-	} catch (error) {
-		return next(new HttpError(error.message, 500));
-	}
+  try {
+    const { userName, courseId } = req.body;
+    let result = await pool.query(
+      "SELECT json_agg(t) FROM  get_course_evaluations_teacher($1, $2) as t",
+      [userName, courseId]
+    );
+    const courseEvents = result.rows[0].json_agg;
+    // console.log()
+    if (!courseEvents) {
+      res.json({ message: "No course events given yet!", data: [] });
+    } else {
+      res.json({ message: "getCourseEventsById", data: courseEvents });
+    }
+  } catch (error) {
+    return next(new HttpError(error.message, 500));
+  }
 };
 
 const addNewCourseTopic = async (req, res, next) => {
-	try {
-		const { topicName, topicDescription, teacherUserName, courseId } = req.body;
-		// console.log(
-		//   topicName,
-		//   topicDescription,
-		//   teacherUserName.userName,
-		//   courseId
-		// );
-		let result = await pool.query("select add_course_topic($1,$2,$3,$4,$5);", [
-			topicName,
-			courseId,
-			teacherUserName.userName,
-			topicDescription,
-			false,
-		]);
+  try {
+    const { topicName, topicDescription, teacherUserName, courseId } = req.body;
+    // console.log(
+    //   topicName,
+    //   topicDescription,
+    //   teacherUserName.userName,
+    //   courseId
+    // );
+    let result = await pool.query("select add_course_topic($1,$2,$3,$4,$5);", [
+      topicName,
+      courseId,
+      teacherUserName.userName,
+      topicDescription,
+      false,
+    ]);
 
-		res.json({ message: "new course topic added" });
-	} catch (err) {
-		console.log(err);
-		return next(new HttpError(err.message, 500));
-	}
+    res.json({ message: "new course topic added" });
+  } catch (err) {
+    console.log(err);
+    return next(new HttpError(err.message, 500));
+  }
 };
 exports.getEventDetails = getEventDetails;
 exports.getCourseById = getCourseById;

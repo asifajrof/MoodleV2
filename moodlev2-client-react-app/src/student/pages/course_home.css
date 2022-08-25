@@ -99,3 +99,18 @@
   flex-direction: row;
   gap: 1rem;
 }
+.course__event__submission__info__col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.overdue__remaining__time {
+  background: rgb(255, 201, 201);
+  padding: 0.1rem;
+  border-radius: 0.2rem;
+}
+.early__remaining__time {
+  background: rgb(201, 255, 201);
+  padding: 0.1rem;
+  border-radius: 0.2rem;
+}
