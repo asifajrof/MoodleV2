@@ -79,6 +79,9 @@ const FileUpload = () => {
     >
       <form onSubmit={onSubmit}>
         <div className="custom-file">
+          <label className="custom-file-label" htmlFor="customFile">
+            {filename}
+          </label>
           <input
             className="custom-file-input"
             type="file"
@@ -86,9 +89,8 @@ const FileUpload = () => {
             id="customFile"
             onChange={onChange}
           />
-
-          <label className="custom-file-label" htmlFor="customFile">
-            {filename}
+          <label className="custom-file-label2" htmlFor="customFile">
+            Browse
           </label>
         </div>
         <br />

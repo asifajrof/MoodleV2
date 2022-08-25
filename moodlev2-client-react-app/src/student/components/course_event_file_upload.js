@@ -9,7 +9,7 @@ const courseEvalueationEventInfoInit = {
   event_description: "Homework on Chapter 1",
   completed: false,
   event_date: "2022-08-20",
-  submitted: true,
+  submitted: false,
   fileIDs: [1],
 };
 
