@@ -1,3 +1,4 @@
+import { Button } from "@mui/material";
 import React, { useState } from "react";
 import "./CourseForumPage.css";
 
@@ -69,21 +70,36 @@ const courseForumPagePostsInit = [
 ];
 
 const Post = (props) => {
+  const [showReply, setShowReply] = useState(false);
+  const onClickReply = () => {
+    setShowReply(!showReply);
+  };
   return (
     <>
       {props.data.map((item) => (
-        <>
-          <div className="course__forum__post">
-            {item.title}
-            <br />
-            {item.description}
-            <br />
-            {item.time}
-            <br />
-            {item.poster}
-            {item.children?.length && <Post data={item.children} />}
+        <div className="course__forum__post">
+          <div className="course__forum__post__body">
+            <div className="course__forum__post__body__title">{item.title}</div>
+            <div className="course__forum__post__body__info">
+              By {item.poster} - {item.time}
+            </div>
+            <div className="course__forum__post__body__desc">
+              {item.description}
+            </div>
+            <div className="course__forum__post__body__reply">
+              <Button
+                variant="outlined"
+                size="small"
+                color="primary"
+                onClick={onClickReply}
+              >
+                Reply
+              </Button>
+              {showReply && <div>reply dewar jayga</div>}
+            </div>
           </div>
-        </>
+          {item.children?.length && <Post data={item.children} />}
+        </div>
       ))}
     </>
   );
