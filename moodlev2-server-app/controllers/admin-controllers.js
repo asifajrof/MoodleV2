@@ -146,6 +146,25 @@ const getAllTeachers = async (req, res, next) => {
 	}
 };
 
+const getAllStudents = async (req, res, next) => {
+	try {
+		console.log("GET api/admin/students/all");
+		let result = await pool.query(
+			"SELECT json_agg(t) FROM get_all_student_admin() as t"
+		);
+		const students = result.rows[0].json_agg;
+		// console.log(students);
+		// console.log(result);
+		if (!students) {
+			next(new HttpError("Students not found", 404));
+		} else {
+			res.json({ message: "getAllStudents", data: students });
+		}
+	} catch (err) {
+		return next(new HttpError(err.message, 500));
+	}
+};
+
 const getDeptList = async (req, res, next) => {
 	try {
 		console.log("GET api/admin/dept_list");
@@ -190,6 +209,7 @@ const postDeptAdd = async (req, res, next) => {
 	}
 };
 
+exports.getAllStudents = getAllStudents;
 exports.getAllTeachers = getAllTeachers;
 exports.getAllCourses = getAllCourses;
 exports.getDeptList = getDeptList;

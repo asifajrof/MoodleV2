@@ -24,32 +24,32 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 	},
 }));
 
-export default function TeacherTableRow({ teacherObj }) {
-	function createData(name, teacher_username, email, dept) {
+export default function StudentTableRow({ studentObj }) {
+	function createData(name, std_id, email, dept) {
 		return {
 			name,
-			teacher_username,
+			std_id,
 			email,
 			dept,
 		};
 	}
 	const row = createData(
-		teacherObj.name,
-		teacherObj.teacher_username,
-		teacherObj.email,
-		teacherObj.dept
+		studentObj.name,
+		studentObj.std_id,
+		studentObj.email,
+		studentObj.dept
 	);
 
 	return (
 		<StyledTableRow>
 			<StyledTableCell align="center">{row.name}</StyledTableCell>
 			{/* <StyledTableCell align="center">{row.dataIndex}</StyledTableCell> */}
-			<StyledTableCell align="center">{row.teacher_username}</StyledTableCell>
+			<StyledTableCell align="center">{row.std_id}</StyledTableCell>
 			{/* <StyledTableCell align="center" component="th" scope="row">
 				{row.topicName}
 			</StyledTableCell> */}
-			<StyledTableCell align="center">{row.email}</StyledTableCell>
 			<StyledTableCell align="center">{row.dept}</StyledTableCell>
+			<StyledTableCell align="center">{row.email}</StyledTableCell>
 		</StyledTableRow>
 	);
 }

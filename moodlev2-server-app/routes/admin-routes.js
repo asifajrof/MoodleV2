@@ -13,6 +13,7 @@ adminRoutes.get("/", (req, res, next) => {
 
 // admin home. get all courses
 adminRoutes.get("/teachers/all", adminControllers.getAllTeachers);
+adminRoutes.get("/students/all", adminControllers.getAllStudents);
 adminRoutes.get("/courses/all", adminControllers.getAllCourses);
 adminRoutes.get("/dept_list", adminControllers.getDeptList);
 adminRoutes.post("/addcourse", adminControllers.postCourseAdd);
