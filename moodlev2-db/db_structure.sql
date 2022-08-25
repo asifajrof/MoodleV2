@@ -1822,6 +1822,93 @@ create or replace function make_submission(eventID integer,stdID integer,subLink
     end;
 $$ language plpgsql;
 
+create or replace function get_root_course_posts (courseID integer)
+    returns table (postID integer,posterID integer,teacherID integer,title varchar,posterName varchar,postTime timestamp with time zone) as $$
+    begin
+    return query
+        select post_id,poster_id,t.teacher_id,post_name,t.teacher_name, post_time from course_post cp join instructor i on i.instructor_id=cp.poster_id join teacher t on i.teacher_id = t.teacher_id join course c on i.course_id = c.course_id
+        where c.course_id=courseID and cp.parent_post is null;
+    end
+$$ language plpgsql;
+
+create or replace function get_root_forum_posts ()
+    returns table (postID integer,posterID integer,title varchar,teacherOrAdminID integer,posterName varchar,postTime timestamp with time zone,isAdmin boolean) as $$
+    begin
+    return query
+        (select fp.post_id,fp.poster,fp.post_name,t.teacher_id,t.teacher_name,fp.post_time,cast(false as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+where fp.parent_post is null)
+union
+(select fp.post_id,fp.poster,fp.post_name,a.admin_id,a.name,fp.post_time,cast(true as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+where fp.parent_post is null);
+    end
+$$ language plpgsql;
+
+create or replace function get_current_forum_post(pID integer)
+    returns table (postID integer,posterID integer,title varchar,description varchar,uname varchar,posterName varchar,postTime timestamp with time zone,isAdmin boolean) as $$
+    begin
+    return query
+        (select fp.post_id,fp.poster,fp.post_name,fp.post_content,ou.username,t.teacher_name,fp.post_time,cast(false as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+where post_id=pID)
+union
+(select fp.post_id,fp.poster,fp.post_name,fp.post_content,ou.username,a.name,fp.post_time,cast(true as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+where post_id=pID);
+    end
+$$ language plpgsql;
+
+create or replace function get_current_course_post(pID integer)
+    returns table (postID integer,posterID integer,title varchar,description varchar,teacherOrStudentID varchar,posterName varchar,postTime timestamp with time zone,isAdmin boolean) as $$
+    begin
+    return query
+        (select cp.post_id,cp.poster_id,cp.post_name,cp.post_content,ou.username,t.teacher_name,cp.post_time,student_post
+from course_post cp join instructor i on cp.poster_id=i.instructor_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no
+where cp.poster_id=pID and student_post=false)
+union
+(select cp.post_id,cp.poster_id,cp.post_name,cp.post_content,cast((mod(_year,100)*100000+dept_code*1000+roll_num) as varchar),s.student_name,cp.post_time,student_post
+from course_post cp join enrolment e on cp.poster_id=e.enrol_id join student s on e.enrol_id = s.student_id
+where cp.poster_id=pID and student_post=true);
+    end
+$$ language plpgsql;
+
+create or replace function get_course_post_file(pID integer)
+    returns table (fileID integer,fileName varchar,fileLink varchar) as $$
+    begin
+    return query
+        select file_id,file_name,file_link from course_post_file where post_id=pID;
+    end
+$$ language plpgsql;
+
+create or replace function get_forum_post_file(pID integer)
+    returns table (fileID integer,fileName varchar,fileLink varchar) as $$
+    begin
+    return query
+        select file_id,file_name,file_link from forum_post_files where post_id=pID;
+    end
+$$ language plpgsql;
+
+create or replace function get_forum_children_post(parent integer)
+    returns table (postID integer) as $$
+    begin
+    return query
+        select post_id from forum_post where parent_post=parent;
+    end
+$$ language plpgsql;
+
+create or replace function get_course_children_post(parent integer)
+    returns table (postID integer) as $$
+    begin
+    return query
+        select post_id from course_post where parent_post=parent;
+    end
+$$ language plpgsql;
+
+--drop function get_course_children_post(parent integer);
+--drop function get_forum_children_post(parent integer);
+--drop function get_forum_post_file(pID integer);
+--drop function get_course_post_file(pID integer);
+--drop function get_current_course_post(pID integer);
+--drop function get_current_forum_post(pID integer);
+-- drop function get_root_forum_posts();
+--drop function get_root_course_posts(courseID integer);
 --drop function make_submission(eventID integer, stdID integer, subLink varchar);
 -- drop function grade_submission(eventID integer, teacher_username varchar, courseID integer, totalMarks float, obtainedMarks float, remark varchar);
 --drop function get_submitted_file_link (subID integer);
