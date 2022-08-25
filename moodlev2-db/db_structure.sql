@@ -1732,6 +1732,15 @@ create or replace function get_all_teacher_admin ()
     end
 $$ language plpgsql;
 
+create or replace function get_all_student_admin ()
+    returns table (std_id integer,name varchar,dept varchar,email varchar) as $$
+    begin
+    return query
+    select (mod(_year,100)*100000+d.dept_code*1000+roll_num) as id,student_name,email_address,d.dept_shortname from student join department d on student.dept_code = d.dept_code;
+    end
+$$ language plpgsql;
+
+-- drop function get_all_student_admin();
 -- drop function get_all_teacher_admin();
 -- drop function update_cr(std_id integer,sectionNo integer);
 -- drop function remove_course_student(std_id integer,sectionNo integer);
