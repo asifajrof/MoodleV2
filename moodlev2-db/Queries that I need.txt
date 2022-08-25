@@ -1,3 +1,4 @@
-1. events for a course --> from teacher side
-
-2. notifications --> for student, teacher 
+1. admin --> get_all_teacher?
+2. admin --> individual info for each teacher?
+3. admin __> get all student?
+4. admin --> individual info for each student?
