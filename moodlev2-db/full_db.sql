@@ -1265,6 +1265,27 @@ $$;
 ALTER FUNCTION public.get_upcoming_events_teacher(teacher_username character varying) OWNER TO postgres;
 
 --
+-- Name: grade_submission(integer, integer, integer, double precision, double precision, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.grade_submission(subid integer, teacher_username integer, courseid integer, totalmarks double precision, obtainedmarks double precision, remark character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+        insID integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+        select instructor_id into insID from instructor where course_id=courseID and teacher_id=tid;
+        insert into grading(grading_id, sub_id, instructor_id, total_marks, obtained_marks, remarks)
+        values (default,subID,insID,totalMarks,obtainedMarks,remark);
+    end;
+$$;
+
+
+ALTER FUNCTION public.grade_submission(subid integer, teacher_username integer, courseid integer, totalmarks double precision, obtainedmarks double precision, remark character varying) OWNER TO postgres;
+
+--
 -- Name: grading_check(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
