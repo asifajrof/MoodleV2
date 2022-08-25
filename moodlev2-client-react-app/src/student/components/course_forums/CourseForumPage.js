@@ -1,6 +1,7 @@
 import { Button } from "@mui/material";
 import React, { useState } from "react";
 import "./CourseForumPage.css";
+import CourseForumPageReply from "./CourseForumPageReply";
 
 const courseForumPagePostsInit = [
   {
@@ -74,6 +75,10 @@ const Post = (props) => {
   const onClickReply = () => {
     setShowReply(!showReply);
   };
+  const onSubmitReply = (e) => {
+    e.preventDefault();
+    setShowReply(false);
+  };
   return (
     <>
       {props.data.map((item) => (
@@ -95,8 +100,10 @@ const Post = (props) => {
               >
                 Reply
               </Button>
-              {showReply && <div>reply dewar jayga</div>}
             </div>
+            {showReply && (
+              <CourseForumPageReply onSubmitReply={onSubmitReply} />
+            )}
           </div>
           {item.children?.length && <Post data={item.children} />}
         </div>

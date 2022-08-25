@@ -442,7 +442,7 @@ insert into evaluation(type_id, section_no, instructor_id, start, _end, total_ma
 values (1,4,9,'20-08-2022 08:00:00','20-08-2022 08:40:00',20);
 
 insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks)
-values (5,6,8,current_timestamp,'20-08-2022 14:20:00',100);
+values (5,6,8,current_timestamp,'27-08-2022 14:20:00',100);
 
 insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks)
 values (1,2,2,'22-08-2022 11:00:00','22-08-2022 11:40:00',20);
@@ -455,4 +455,4 @@ values (4,7,12,'28-08-2022 14:40:00','28-08-2022 15:40:00',20);
 
 
 insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks, description)
-values(5,1,1,current_timestamp,'2022-08-20 17:30:00 +06:00',20,'This is a bonus assignment')
+values(5,1,1,current_timestamp,'2022-08-27 17:30:00 +06:00',20,'This is a bonus assignment')
