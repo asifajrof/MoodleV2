@@ -4,8 +4,14 @@ const fileControllers = require("../controllers/file-controllers");
 
 const fileRoutes = express.Router();
 
-fileRoutes.get("/:fileID", fileControllers.getFileInfo);
-fileRoutes.get("/download/:fileID", fileControllers.getFile);
+fileRoutes.get(
+	"/edit/student/course/evaluation/:fileID",
+	fileControllers.getStudentAssignmentSubmittedFileInfo
+);
+fileRoutes.get(
+	"/download/student/course/evaluation/:fileID",
+	fileControllers.getStudentCourseAssignmentSubmittedFile
+);
 fileRoutes.post(
 	"/upload/student/course/evaluation",
 	fileControllers.StudentCourseAssignmentSubmit

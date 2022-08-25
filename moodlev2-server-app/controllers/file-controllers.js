@@ -1,27 +1,36 @@
 const pool = require("../models/db_connect");
 const HttpError = require("../models/http-error");
 const fs = require("fs");
+const Path = require("path");
 
 const fileInfoDummy = {
 	id: 1,
 	file_name: "file name 1.pdf",
 };
-const getFileInfo = async (req, res, next) => {
+
+//work to be done after getting query
+const getStudentAssignmentSubmittedFileInfo = async (req, res, next) => {
 	// console.log("getFileInfo");
 	try {
-		const fileID = req.params.fileID;
+		const submissionId = req.params.fileID;
 		// console.log("fileID " + fileID);
 
 		// let result1 = await pool.query(
 		//   "SELECT json_agg(t) FROM get_account_type($1) as t",
 		//   [fileID]
 		// );
-		// const fileInfo = result1.rows[0].json_agg;
+		// const filePath = result1.rows[0].json_agg;
 		const fileInfo = fileInfoDummy;
 
 		if (!fileInfo) {
+			// --> change it to filePath
 			res.json({ message: "No fileInfo!", data: [] });
 		} else {
+			// const filenNme = Path.basename(filePath);
+			// res.json({
+			// 	message: "getStudentAssignmentSubmittedFileInfo",
+			// 	data: filenNme,
+			// });
 			res.json({
 				message: "getFileInfo",
 				data: fileInfo,
@@ -32,9 +41,11 @@ const getFileInfo = async (req, res, next) => {
 	}
 };
 
-const getFile = async (req, res, next) => {
+//work to be done after getting query
+const getStudentCourseAssignmentSubmittedFile = async (req, res, next) => {
 	// console.log("getFile");
 	try {
+		const submissionId = req.params.fileID;
 		const fileName = "file.pdf";
 		const folderPath = `${__dirname}/../../moodlev2-client-react-app/public/uploads/`;
 		const fileURL = `${folderPath}/file.pdf`;
@@ -91,6 +102,8 @@ const StudentCourseAssignmentSubmit = async (req, res, next) => {
 	}
 };
 
-exports.getFile = getFile;
-exports.getFileInfo = getFileInfo;
+exports.getStudentCourseAssignmentSubmittedFile =
+	getStudentCourseAssignmentSubmittedFile;
+exports.getStudentAssignmentSubmittedFileInfo =
+	getStudentAssignmentSubmittedFileInfo;
 exports.StudentCourseAssignmentSubmit = StudentCourseAssignmentSubmit;
