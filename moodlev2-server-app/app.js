@@ -42,6 +42,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/login", loginRoutes);
 app.use("/api/notification", notificationRoutes);
 app.use("/api/calendar", calendarRoutes);
+// app.use("/api/forum", forumRoutes);
 
 // download endpoint
 app.use("/api/file", fileRoutes);

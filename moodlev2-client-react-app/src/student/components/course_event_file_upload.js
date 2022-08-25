@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FileUpload from "./file_upload/FileUpload";
 import FileEdit from "./file_edit/FileEdit";
 // import "./course_home.css";
@@ -10,7 +10,7 @@ const courseEvalueationEventInfoInit = {
 	completed: false,
 	event_date: "2022-08-20",
 	submitted: false,
-	fileIDs: [1],
+	fileIDs: 1, // why array?
 };
 
 const StudentCourseEventFileUpload = ({ studentNo, courseId, eventId }) => {
@@ -20,18 +20,18 @@ const StudentCourseEventFileUpload = ({ studentNo, courseId, eventId }) => {
 	const [courseEvalueationEventInfo, setCourseEvalueationEventInfo] = useState(
 		courseEvalueationEventInfoInit
 	);
-	//   useEffect(() => {
-	//     const fetchData = async () => {
-	//       try {
-	//         const response = await fetch(`/api/course/${courseId}/event/${eventId}`);
-	//         const jsonData = await response.json();
-	//         setCourseEvalueationEventInfo(jsonData.data);
-	//       } catch (err) {
-	//         console.log(err);
-	//       }
-	//     };
-	//     fetchData();
-	//   }, []);
+	useEffect(() => {
+		const fetchData = async (eventId) => {
+			try {
+				const response = await fetch(`/api/course/event/${eventId}`);
+				const jsonData = await response.json();
+				setCourseEvalueationEventInfo(jsonData.data);
+			} catch (err) {
+				console.log(err);
+			}
+		};
+		fetchData(eventId);
+	}, [eventId]);
 	return (
 		<div className="course__event__container">
 			<div className="course__event__info">
@@ -69,9 +69,9 @@ const StudentCourseEventFileUpload = ({ studentNo, courseId, eventId }) => {
 						File upload:
 					</div>
 					<div className="col_right">
-						bla bla bla
+						{courseEvalueationEventInfo.event_date}
 						<br />
-						bla bla bla
+						{courseEvalueationEventInfo.remaining_time}
 						<br />
 						{!courseEvalueationEventInfo.submitted && (
 							<FileUpload

@@ -6,7 +6,7 @@ const getNotificationsByUserName = async (req, res, next) => {
 	// console.log("getNotificationsByUserName");
 	try {
 		const uId = req.params.uId;
-		console.log("uid " + uId);
+		// console.log("uid " + uId);
 
 		let result1 = await pool.query(
 			"SELECT json_agg(t) FROM get_account_type($1) as t",
