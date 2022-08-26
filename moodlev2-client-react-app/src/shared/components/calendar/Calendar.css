@@ -79,9 +79,9 @@
   font-size: 0.75em;
   font-weight: bold;
 }
-.react-calendar__month-view__days__day--weekend {
-  /* color: #d10000; */
-}
+/* .react-calendar__month-view__days__day--weekend {
+  color: #d10000;
+} */
 .react-calendar__month-view__buet__weekend {
   color: #d10000;
 }

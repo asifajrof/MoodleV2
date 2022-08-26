@@ -26,13 +26,14 @@
   align-items: center;
 }
 .calendar__monthly__hourstamp {
-  align-self: flex-end;
+  /* align-self: flex-end; */
   font-size: small;
   font-weight: lighter;
 }
 .calendar__monthly__inside__content {
-  max-height: 8rem;
+  max-height: 6rem;
   overflow: auto !important;
+  gap: 0.25rem;
   padding-right: 0.25rem;
   display: flex;
   flex-direction: column;
@@ -50,4 +51,17 @@
 .calendar__monthly__inside__content::-webkit-scrollbar-thumb {
   background-color: #8b8b8b;
   border-radius: 0.25rem;
+}
+
+div.calendar__monthly__inside__content > div:nth-of-type(odd) {
+  background: #f3f3f3;
+}
+
+.calendar__monthly__inside__content__line {
+  /* border: 0.01rem dotted #000; */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  /* gap: 0.25rem; */
 }

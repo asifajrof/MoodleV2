@@ -130,8 +130,13 @@ const TileContent = ({ uId, date, view, uType }) => {
         <div className="calendar__monthly__inside__content">
           {hours.map((hour, index) => {
             return (
-              <div key={index} className="calendar__monthly__hourstamp">
-                {hour}
+              <div
+                key={index}
+                className="calendar__monthly__inside__content__line"
+              >
+                {/* <div style={{ background: "#000" }}>event details</div> */}
+                <div> </div>
+                <div className="calendar__monthly__hourstamp">{hour}</div>
               </div>
             );
           })}
