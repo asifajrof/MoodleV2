@@ -456,3 +456,7 @@ values (4,7,12,'28-08-2022 14:40:00','28-08-2022 15:40:00',20);
 
 insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks, description)
 values(5,1,1,current_timestamp,'2022-08-27 17:30:00 +06:00',20,'This is a bonus assignment')
+
+select add_course_post(1,'alimrazi',false,'Class Test Marks','Here is class test marks',null);
+select add_course_post(1,'1705119',true,'Marks Not Found','Sir, I attended the test but the document shows me absent',2);
+select add_course_post(1,'alimrazi',false,'Correction','Your marks has been added',3);

@@ -59,6 +59,52 @@ $$;
 ALTER FUNCTION public.add_course(cname character varying, cnum integer, dept integer, offered_dept integer, offered_batch integer, offered_year integer, offered_level integer, offered_term integer) OWNER TO postgres;
 
 --
+-- Name: add_course_post(integer, character varying, boolean, character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.add_course_post(courseid integer, userid character varying, isstudent boolean, title character varying, content character varying, parentpost integer) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        posterID integer;
+        entityPK integer;
+        ans integer;
+    begin
+        if (isStudent) then
+            entityPK:=get_student_no(cast(userID as integer));
+            select enrol_id into posterID from enrolment e join section s on e.section_id = s.section_no
+            where e.student_id=entityPK and s.course_id=courseID;
+        else
+            entityPK:=get_teacher_id(userID);
+            select instructor_id into posterID from instructor
+            where teacher_id=entityPK and course_id=courseID;
+        end if;
+        insert into course_post(post_id, parent_post, poster_id, student_post, post_name, post_content)
+        values(default,parentPost,posterID,isStudent,title,content) returning post_id into ans;
+        return ans;
+    end;
+$$;
+
+
+ALTER FUNCTION public.add_course_post(courseid integer, userid character varying, isstudent boolean, title character varying, content character varying, parentpost integer) OWNER TO postgres;
+
+--
+-- Name: add_course_post_file(integer, character varying, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.add_course_post_file(postid integer, filename character varying, filelink character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    begin
+        insert into course_post_file(file_id, post_id, file_name, file_link)
+        values(default,postID,fileName,fileLink);
+    end;
+$$;
+
+
+ALTER FUNCTION public.add_course_post_file(postid integer, filename character varying, filelink character varying) OWNER TO postgres;
+
+--
 -- Name: add_course_student(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -116,6 +162,44 @@ $$;
 
 
 ALTER FUNCTION public.add_course_topic(tname character varying, courseid integer, username character varying, topicdescription character varying, ended boolean) OWNER TO postgres;
+
+--
+-- Name: add_forum_post(character varying, character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.add_forum_post(uname character varying, title character varying, content character varying, parentpost integer) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        posterID integer;
+        ans integer;
+    begin
+        select ou.user_no into posterID from official_users ou
+        where ou.username=uname;
+        insert into forum_post(post_id, parent_post, poster, post_name, post_content)
+        values(default,parentPost,posterID,title,content) returning post_id into ans;
+        return ans;
+    end;
+$$;
+
+
+ALTER FUNCTION public.add_forum_post(uname character varying, title character varying, content character varying, parentpost integer) OWNER TO postgres;
+
+--
+-- Name: add_forum_post_file(integer, character varying, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.add_forum_post_file(postid integer, filename character varying, filelink character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    begin
+        insert into forum_post_files(file_id, post_id, file_name, file_link)
+        values(default,postID,fileName,fileLink);
+    end;
+$$;
+
+
+ALTER FUNCTION public.add_forum_post_file(postid integer, filename character varying, filelink character varying) OWNER TO postgres;
 
 --
 -- Name: add_student(character varying, character varying, integer, integer, integer, character varying); Type: FUNCTION; Schema: public; Owner: postgres
@@ -888,7 +972,7 @@ from ((
      ) s join (
          select enrol_id,student_id,section_id from enrolment
     ) e on s.student_id=e.student_id join section sec on e.section_id=sec.section_no join current_courses cc on sec.course_id=cc._id)
-left outer join evaluation ev on (ev.section_no=e.section_id and ev._end<current_timestamp)) left outer join submission s2 on (s2.enrol_id=e.enrol_id)
+left outer join evaluation ev on (ev.section_no=e.section_id and ev._end>current_timestamp)) left outer join submission s2 on (s2.enrol_id=e.enrol_id)
 group by _id,_term,__year,_dept_shortname,_course_code,_course_name;
 end
 $$;
@@ -925,11 +1009,11 @@ CREATE FUNCTION public.get_current_course_post(pid integer) RETURNS TABLE(postid
     return query
         (select cp.post_id,cp.poster_id,cp.post_name,cp.post_content,ou.username,t.teacher_name,cp.post_time,student_post
 from course_post cp join instructor i on cp.poster_id=i.instructor_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no
-where cp.poster_id=pID and student_post=false)
+where cp.post_id=pID and student_post=false)
 union
 (select cp.post_id,cp.poster_id,cp.post_name,cp.post_content,cast((mod(_year,100)*100000+dept_code*1000+roll_num) as varchar),s.student_name,cp.post_time,student_post
 from course_post cp join enrolment e on cp.poster_id=e.enrol_id join student s on e.enrol_id = s.student_id
-where cp.poster_id=pID and student_post=true);
+where cp.post_id=pID and student_post=true);
     end
 $$;
 
@@ -3939,6 +4023,9 @@ INSERT INTO public.course (course_id, course_name, course_num, dept_code, offere
 -- Data for Name: course_post; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.course_post (post_id, parent_post, poster_id, student_post, post_name, post_content, post_time) VALUES (2, NULL, 1, false, 'Class Test Marks', 'Here is class test marks', '2022-08-26 11:33:47.547081+06');
+INSERT INTO public.course_post (post_id, parent_post, poster_id, student_post, post_name, post_content, post_time) VALUES (3, 2, 1, true, 'Marks Not Found', 'Sir, I attended the test but the document shows me absent', '2022-08-26 11:38:59.623663+06');
+INSERT INTO public.course_post (post_id, parent_post, poster_id, student_post, post_name, post_content, post_time) VALUES (4, 3, 1, false, 'Correction', 'Your marks has been added', '2022-08-26 11:40:25.914105+06');
 
 
 --
@@ -4092,6 +4179,7 @@ INSERT INTO public.evaluation_type (type_id, type_name, notification_time_type) 
 -- Data for Name: forum_post; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.forum_post (post_id, parent_post, poster, post_name, post_content, post_time) VALUES (1, NULL, 2, 'Seminar on 5G Networks', 'Details is given here', '2022-08-26 11:52:23.045686+06');
 
 
 --
@@ -4154,6 +4242,10 @@ INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _d
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (5, 1, 5, 2, '2022-08-27', '2022-08-25 16:42:31.247752+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (6, 1, 6, 2, '2022-08-28', '2022-08-25 16:42:37.375425+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (7, 1, 8, 2, '2022-08-25', '2022-08-25 16:42:50.59004+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (9, 1, 2, 4, '2022-08-26', '2022-08-26 11:33:47.547081+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (10, 1, 3, 4, '2022-08-26', '2022-08-26 11:38:59.623663+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (11, 1, 4, 4, '2022-08-26', '2022-08-26 11:40:25.914105+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (12, 1, 1, 8, '2022-08-26', '2022-08-26 11:52:23.045686+06');
 
 
 --
@@ -4370,7 +4462,7 @@ SELECT pg_catalog.setval('public.course_post_file_file_id_seq', 1, false);
 -- Name: course_post_post_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_post_post_id_seq', 1, false);
+SELECT pg_catalog.setval('public.course_post_post_id_seq', 4, true);
 
 
 --
@@ -4433,7 +4525,7 @@ SELECT pg_catalog.setval('public.forum_post_files_file_id_seq', 1, false);
 -- Name: forum_post_post_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.forum_post_post_id_seq', 1, false);
+SELECT pg_catalog.setval('public.forum_post_post_id_seq', 1, true);
 
 
 --
@@ -4454,7 +4546,7 @@ SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 18, true);
 -- Name: notification_event_not_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.notification_event_not_id_seq', 7, true);
+SELECT pg_catalog.setval('public.notification_event_not_id_seq', 12, true);
 
 
 --

@@ -411,7 +411,7 @@ from ((
      ) s join (
          select enrol_id,student_id,section_id from enrolment
     ) e on s.student_id=e.student_id join section sec on e.section_id=sec.section_no join current_courses cc on sec.course_id=cc._id)
-left outer join evaluation ev on (ev.section_no=e.section_id and ev._end<current_timestamp)) left outer join submission s2 on (s2.enrol_id=e.enrol_id)
+left outer join evaluation ev on (ev.section_no=e.section_id and ev._end>current_timestamp)) left outer join submission s2 on (s2.enrol_id=e.enrol_id)
 group by _id,_term,__year,_dept_shortname,_course_code,_course_name;
 end
 $$ language plpgsql;
@@ -1861,11 +1861,11 @@ create or replace function get_current_course_post(pID integer)
     return query
         (select cp.post_id,cp.poster_id,cp.post_name,cp.post_content,ou.username,t.teacher_name,cp.post_time,student_post
 from course_post cp join instructor i on cp.poster_id=i.instructor_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no
-where cp.poster_id=pID and student_post=false)
+where cp.post_id=pID and student_post=false)
 union
 (select cp.post_id,cp.poster_id,cp.post_name,cp.post_content,cast((mod(_year,100)*100000+dept_code*1000+roll_num) as varchar),s.student_name,cp.post_time,student_post
 from course_post cp join enrolment e on cp.poster_id=e.enrol_id join student s on e.enrol_id = s.student_id
-where cp.poster_id=pID and student_post=true);
+where cp.post_id=pID and student_post=true);
     end
 $$ language plpgsql;
 
@@ -1901,6 +1901,58 @@ create or replace function get_course_children_post(parent integer)
     end
 $$ language plpgsql;
 
+create or replace function add_course_post(courseID integer,userID varchar,isStudent boolean,title varchar,content varchar,parentPost integer) returns integer as $$
+    declare
+        posterID integer;
+        entityPK integer;
+        ans integer;
+    begin
+        if (isStudent) then
+            entityPK:=get_student_no(cast(userID as integer));
+            select enrol_id into posterID from enrolment e join section s on e.section_id = s.section_no
+            where e.student_id=entityPK and s.course_id=courseID;
+        else
+            entityPK:=get_teacher_id(userID);
+            select instructor_id into posterID from instructor
+            where teacher_id=entityPK and course_id=courseID;
+        end if;
+        insert into course_post(post_id, parent_post, poster_id, student_post, post_name, post_content)
+        values(default,parentPost,posterID,isStudent,title,content) returning post_id into ans;
+        return ans;
+    end;
+$$ language plpgsql;
+
+create or replace function add_forum_post(uname varchar,title varchar,content varchar,parentPost integer) returns integer as $$
+    declare
+        posterID integer;
+        ans integer;
+    begin
+        select ou.user_no into posterID from official_users ou
+        where ou.username=uname;
+        insert into forum_post(post_id, parent_post, poster, post_name, post_content)
+        values(default,parentPost,posterID,title,content) returning post_id into ans;
+        return ans;
+    end;
+$$ language plpgsql;
+
+create or replace function add_forum_post_file(postID integer,fileName varchar,fileLink varchar) returns void as $$
+    begin
+        insert into forum_post_files(file_id, post_id, file_name, file_link)
+        values(default,postID,fileName,fileLink);
+    end;
+$$ language plpgsql;
+
+create or replace function add_course_post_file(postID integer,fileName varchar,fileLink varchar) returns void as $$
+    begin
+        insert into course_post_file(file_id, post_id, file_name, file_link)
+        values(default,postID,fileName,fileLink);
+    end;
+$$ language plpgsql;
+
+-- drop function add_course_post_file(postID integer, fileName varchar, fileLink varchar);
+-- drop function add_forum_post_file(postID integer, fileName varchar, fileLink varchar);
+-- drop function add_forum_post(uname varchar, title varchar, content varchar, parentPost integer);
+--drop function add_course_post(courseID integer, userID varchar, isStudent boolean, title varchar, content varchar, parentPost integer);
 --drop function get_course_children_post(parent integer);
 --drop function get_forum_children_post(parent integer);
 --drop function get_forum_post_file(pID integer);
