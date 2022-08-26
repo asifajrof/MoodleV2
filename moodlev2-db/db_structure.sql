@@ -1764,7 +1764,7 @@ create or replace function get_event_description (event integer)
     begin
     return query
     select e.evaluation_id,et.type_name,e.description,e._end from evaluation e join evaluation_type et on et.type_id = e.type_id
-    where e.evaluation_id=1;
+    where e.evaluation_id=event;
     end
 $$ language plpgsql;
 
