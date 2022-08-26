@@ -786,6 +786,22 @@ $$;
 ALTER FUNCTION public.get_course_children_post(parent integer) OWNER TO postgres;
 
 --
+-- Name: get_course_cr(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_course_cr(courseid integer) RETURNS TABLE(sectionid integer, sectionname character varying, crid integer, crname character varying)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+    select sec.section_no,sec.section_name,(mod(s._year,100)*100000+s.dept_code*1000+s.roll_num) as sid,s.student_name from section sec left outer join student s on sec.cr_id = s.student_id where sec.course_id=courseID;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_course_cr(courseid integer) OWNER TO postgres;
+
+--
 -- Name: get_course_evaluations(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
