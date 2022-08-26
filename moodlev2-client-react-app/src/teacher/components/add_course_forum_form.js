@@ -19,10 +19,12 @@ const CourseForumAddForm = ({ userName, courseId }) => {
 				body: JSON.stringify(courseForumObj),
 			});
 			const data = await res.json();
-			console.log(data);
-			console.log(res.status);
+			let id = null;
+			// console.log(data);
+			// console.log(res.status);
 			if (res.status === 200) {
 				console.log("Course forum added successfully!");
+				id = data.id;
 			} else {
 				// alert(data.message);
 				console.log(data.message);
