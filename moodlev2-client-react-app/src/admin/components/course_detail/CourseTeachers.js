@@ -6,37 +6,20 @@ import CourseTeacherTable from "./CourseTeacherTable";
 // import './course_home.css';
 
 const CourseTeachers = ({ adminNo, courseId }) => {
-  const [showDelete, setShowDelete] = useState(false);
   return (
     <div className="home__container">
       <div className="home__container__divider">
         <div className="course__container" style={{ width: "100%" }}>
           <div className="course__container__add">
-            <div>
-              {showDelete && (
-                <Link to={`course/${courseId}/teachers/add`}>
-                  <Button variant="contained">
-                    Add
-                    <AddIcon />
-                  </Button>
-                </Link>
-              )}
-            </div>
-            <div>
-              <Link to={`course/${courseId}/teachers/add`}>
-                <Button variant="contained">
-                  Add
-                  <AddIcon />
-                </Button>
-              </Link>
-            </div>
+            <Link to={`course/${courseId}/teachers/add`}>
+              <Button variant="contained">
+                Add
+                <AddIcon />
+              </Button>
+            </Link>
           </div>
           <div className="course__home__container__item__1">Teachers</div>
-          <CourseTeacherTable
-            adminNo={adminNo}
-            courseId={courseId}
-            setShowDelete={setShowDelete}
-          />
+          <CourseTeacherTable adminNo={adminNo} courseId={courseId} />
         </div>
       </div>
     </div>

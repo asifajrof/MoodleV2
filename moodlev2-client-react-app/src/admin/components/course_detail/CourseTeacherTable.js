@@ -26,55 +26,34 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-const CourseTeacherTable = ({ adminNo, courseId, setShowDelete }) => {
+const CourseTeacherTable = ({ adminNo, courseId }) => {
   const [selectedTeachersList, setSelectedTeachersList] = useState([]);
   const [courseTeachersList, setCourseTeachersList] = useState([]);
   const [checkedList, setCheckedList] = useState([]);
-
-  const updateSetCheckedList = (index, checked) => {
-    // console.log("updateSetCheckedList", index, checked);
-    const newCheckedList = [...checkedList];
-    newCheckedList[index] = checked;
-    setCheckedList(newCheckedList);
-    if (checked === true) {
-      // insert into selectedTeachersList
-      console.log("insert into selectedTeachersList");
-      const newSelectedTeachersList = [...selectedTeachersList];
-      newSelectedTeachersList.push({
-        index: index,
-        teacherObj: courseTeachersList[index],
-      });
-      setSelectedTeachersList(newSelectedTeachersList);
-    } else {
-      // remove from selectedTeachersList after finding
-      const newSelectedTeachersList = [...selectedTeachersList];
-      // find
-      const foundIndex = newSelectedTeachersList.findIndex(
-        (selectedTeacher) => selectedTeacher.index === index
-      );
-      // remove
-      newSelectedTeachersList.splice(foundIndex, 1);
-      setSelectedTeachersList(newSelectedTeachersList);
-    }
-  };
+  const [showDelete, setShowDelete] = useState(false);
 
   const handleChangeCheckAll = (event) => {
     const newCheckedList = [...checkedList];
-    // for (let i = 0; i < courseTeachersList.length; i++) {
-    //   updateSetCheckedList(i, event.target.checked);
-    // }
-    courseTeachersList.map((teacherObj, index) => {
-      //   console.log("handleChangeCheckAll", index, event.target.checked);
-      //   updateSetCheckedList(index, event.target.checked);
-      //   newCheckedList.push(event.target.checked);
-      newCheckedList[index] = event.target.checked;
-    });
-    // console.log(newCheckedList);
+    const newSelectedTeachersList = [];
+    if (event.target.checked === true) {
+      // add all into selected
+      for (let i = 0; i < courseTeachersList.length; i++) {
+        newCheckedList[i] = true;
+        newSelectedTeachersList.push({
+          index: i,
+          teacherObj: courseTeachersList[i],
+        });
+      }
+    } else {
+      // remove all from selected
+      for (let i = 0; i < courseTeachersList.length; i++) {
+        newCheckedList[i] = false;
+      }
+    }
     setCheckedList(newCheckedList);
+    setSelectedTeachersList(newSelectedTeachersList);
   };
   const isAllChecked = () => {
-    // console.log("isAllChecked");
-    // console.log(checkedList);
     let val = false;
     // for loop
     for (let i = 0; i < checkedList.length; i++) {
@@ -85,11 +64,9 @@ const CourseTeacherTable = ({ adminNo, courseId, setShowDelete }) => {
         val = true;
       }
     }
-    // console.log("val", val);
     return val;
   };
   const isIndeterminate = () => {
-    // console.log("isIndeterminate");
     let val = false;
     let initial = false;
     // for loop
@@ -107,11 +84,27 @@ const CourseTeacherTable = ({ adminNo, courseId, setShowDelete }) => {
   };
 
   const handleChangeSingle = (index, checked) => {
-    // const newCheckedList = [...checkedList];
-    // newCheckedList[index] = checked;
-    // setCheckedList(newCheckedList);
-    updateSetCheckedList(index, checked);
-    // console.log("handleChangeSingle", index, checked);
+    const newCheckedList = [...checkedList];
+    newCheckedList[index] = checked;
+    setCheckedList(newCheckedList);
+
+    const newSelectedTeachersList = [...selectedTeachersList];
+    if (checked === true) {
+      // insert into selectedTeachersList
+      newSelectedTeachersList.push({
+        index: index,
+        teacherObj: courseTeachersList[index],
+      });
+    } else {
+      // remove from selectedTeachersList after finding
+      // find
+      const foundIndex = newSelectedTeachersList.findIndex(
+        (selectedTeacher) => selectedTeacher.index === index
+      );
+      // remove
+      newSelectedTeachersList.splice(foundIndex, 1);
+    }
+    setSelectedTeachersList(newSelectedTeachersList);
   };
 
   useEffect(() => {
@@ -133,48 +126,52 @@ const CourseTeacherTable = ({ adminNo, courseId, setShowDelete }) => {
   }, []);
 
   useEffect(() => {
-    console.log("selectedTeachersList", selectedTeachersList);
     setShowDelete(selectedTeachersList.length > 0);
   }, [selectedTeachersList]);
   return (
-    <div style={{ width: "100%", paddingRight: "4rem" }}>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              {/* <StyledTableCell align="center"> </StyledTableCell> */}
-              <StyledTableCell align="center">
-                <Checkbox
-                  checked={isAllChecked()}
-                  indeterminate={isIndeterminate()}
-                  onChange={handleChangeCheckAll}
+    <>
+      {showDelete && <div style={{ alignSelf: "flex-start" }}>button here</div>}
+      <div style={{ width: "100%", paddingRight: "4rem" }}>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 700 }} aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                {/* <StyledTableCell align="center"> </StyledTableCell> */}
+                <StyledTableCell align="center">
+                  <Checkbox
+                    checked={isAllChecked()}
+                    indeterminate={isIndeterminate()}
+                    onChange={handleChangeCheckAll}
+                  />
+                </StyledTableCell>
+                <StyledTableCell align="center">Name</StyledTableCell>
+                <StyledTableCell align="center">Username</StyledTableCell>
+                <StyledTableCell align="center">E-mail</StyledTableCell>
+                <StyledTableCell align="center">Department</StyledTableCell>
+                {/* <StyledTableCell align="center">Designation</StyledTableCell> */}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {courseTeachersList.map((teacherObj, index) => (
+                <CourseTeacherTableRow
+                  key={index}
+                  teacherIndex={index}
+                  checked={
+                    checkedList[index] === undefined
+                      ? false
+                      : checkedList[index]
+                  }
+                  teacherObj={teacherObj}
+                  adminNo={adminNo}
+                  courseId={courseId}
+                  handleChangeSingle={handleChangeSingle}
                 />
-              </StyledTableCell>
-              <StyledTableCell align="center">Name</StyledTableCell>
-              <StyledTableCell align="center">Username</StyledTableCell>
-              <StyledTableCell align="center">E-mail</StyledTableCell>
-              <StyledTableCell align="center">Department</StyledTableCell>
-              {/* <StyledTableCell align="center">Designation</StyledTableCell> */}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {courseTeachersList.map((teacherObj, index) => (
-              <CourseTeacherTableRow
-                key={index}
-                teacherIndex={index}
-                checked={
-                  checkedList[index] === undefined ? false : checkedList[index]
-                }
-                teacherObj={teacherObj}
-                adminNo={adminNo}
-                courseId={courseId}
-                handleChangeSingle={handleChangeSingle}
-              />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
+    </>
   );
 };
 
