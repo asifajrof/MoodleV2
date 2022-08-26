@@ -3,14 +3,15 @@ import React, { useEffect, useState } from "react";
 const FileEdit = ({ fileID }) => {
 	const [fileInfo, setFileInfo] = useState([]);
 	useEffect(() => {
-		const fetchData = async (fileID, studentNo, courseId, eventId) => {
+		const fetchData = async (fileID) => {
 			try {
+				// console.log(fileID);
 				const response = await fetch(
 					`/api/file/edit/student/course/evaluation/${fileID}`
 				);
 				const jsonData = await response.json();
 				setFileInfo(jsonData.data);
-				console.log(fileInfo);
+				// console.log(jsonData.data);
 			} catch (err) {
 				console.log(err);
 			}

@@ -3,53 +3,72 @@ const HttpError = require("../models/http-error");
 const fs = require("fs");
 const Path = require("path");
 
-const fileInfoDummy = {
-	id: 1,
-	file_name: "file name 1.pdf",
-};
+// const fileInfoDummy = {
+// 	id: 1,
+// 	file_name: "file name 1.pdf",
+// };
 
-//work to be done after getting query
+//work to be done after getting query -- done
 const getStudentAssignmentSubmittedFileInfo = async (req, res, next) => {
+	// console.log(req.params.fileID);
 	// console.log("getFileInfo");
 	try {
 		const submissionId = req.params.fileID;
-		// console.log("fileID " + fileID);
+		// console.log("submissionId " + submissionId);
 
-		// let result1 = await pool.query(
-		//   "SELECT json_agg(t) FROM get_account_type($1) as t",
-		//   [fileID]
-		// );
-		// const filePath = result1.rows[0].json_agg;
-		const fileInfo = fileInfoDummy;
+		let result = await pool.query(
+			"select link from submission where sub_id = $1",
+			[submissionId]
+		);
+		const path = result.rows[0].link;
+		const filePath = `${__dirname}${path}`;
+		// console.log(filePath);
+		// const fileInfo = fileInfoDummy;
 
-		if (!fileInfo) {
+		if (!fs.existsSync(filePath)) {
 			// --> change it to filePath
-			res.json({ message: "No fileInfo!", data: [] });
+			res.json({ message: "No filePath!", data: [] });
 		} else {
-			// const filenNme = Path.basename(filePath);
-			// res.json({
-			// 	message: "getStudentAssignmentSubmittedFileInfo",
-			// 	data: filenNme,
-			// });
+			const fileName = Path.basename(filePath);
+			// console.log(filenName);
+			const fileInfo = {
+				id: submissionId,
+				file_name: fileName,
+			};
 			res.json({
-				message: "getFileInfo",
+				message: "getStudentAssignmentSubmittedFileInfo",
 				data: fileInfo,
 			});
+			// res.json({
+			// 	message: "getFileInfo",
+			// 	data: fileInfo,
+			// });
 		}
 	} catch (error) {
 		return next(new HttpError(error.message, 500));
 	}
 };
 
-//work to be done after getting query
+//work to be done after getting query -- done
 const getStudentCourseAssignmentSubmittedFile = async (req, res, next) => {
 	// console.log("getFile");
 	try {
 		const submissionId = req.params.fileID;
-		const fileName = "file.pdf";
-		const folderPath = `${__dirname}/../../moodlev2-client-react-app/public/uploads/`;
-		const fileURL = `${folderPath}/file.pdf`;
-		const stream = fs.createReadStream(fileURL);
+		// const fileName = "file.pdf";
+		// const folderPath = `${__dirname}/../../moodlev2-client-react-app/public/uploads/`;
+		// const fileURL = `${folderPath}/file.pdf`;
+		// console.log(fileURL);
+
+		let result = await pool.query(
+			"select link from submission where sub_id = $1",
+			[submissionId]
+		);
+		const path = result.rows[0].link;
+		const filePath = `${__dirname}${path}`;
+		const fileName = Path.basename(filePath);
+		// console.log(filePath);
+
+		const stream = fs.createReadStream(filePath);
 		res.set({
 			"Content-Disposition": `attachment; filename='${fileName}'`,
 		});
@@ -72,7 +91,7 @@ const StudentCourseAssignmentSubmit = async (req, res, next) => {
 		const eventId = req.body.eventId;
 		const file = req.files.file;
 
-		console.log(studentNo, courseId, eventId);
+		// console.log(studentNo, courseId, eventId);
 
 		const folderPath = `${__dirname}/../Files/course/${courseId}/event/${eventId}/student/${studentNo}/`;
 		if (!fs.existsSync(folderPath)) {
@@ -82,7 +101,7 @@ const StudentCourseAssignmentSubmit = async (req, res, next) => {
 		let fileMovePath = `${folderPath}${file.name}`;
 		// check if already exists
 		if (fs.existsSync(fileMovePath)) {
-			console.log("file exists");
+			// console.log("file exists");
 			// change filename
 			fileMovePath = `${folderPath}${Date.now()}_${file.name}`;
 		}
@@ -96,6 +115,12 @@ const StudentCourseAssignmentSubmit = async (req, res, next) => {
 				}
 				res.json({ message: "File uploaded!" });
 			}
+		);
+		// console.log(fileMovePath);
+		const submission_path = `/../Files/course/${courseId}/event/${eventId}/student/${studentNo}/${file.name}`;
+		const result = await pool.query(
+			"SELECT json_agg(t) FROM make_submission($1, $2, $3) as t",
+			[eventId, studentNo, submission_path]
 		);
 	} catch (error) {
 		return next(new HttpError(error.message, 500));
