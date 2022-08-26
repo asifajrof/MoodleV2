@@ -1172,6 +1172,36 @@ $$;
 ALTER FUNCTION public.get_day_events_teacher(teacher_username character varying, query_date date) OWNER TO postgres;
 
 --
+-- Name: get_day_events_to_schedule(integer, date); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_day_events_to_schedule(secno integer, query_date date) RETURNS TABLE(eventid integer, secid integer, courseid integer, dept_shortname character varying, course_code integer, start_time time without time zone, end_time time without time zone, event_type character varying)
+    LANGUAGE plpgsql
+    AS $$
+begin
+    return query
+    (select class_id, cr.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time,cast('Class' as varchar) as _event_type
+from course_routine cr join section sec on cr.section_no=sec.section_no join current_courses cc on cc._id=sec.course_id join intersected_sections isec on isec.second_section=sec.section_no
+where isec.first_section=secNo
+ and day = extract(isodow from query_date) - 1
+  and not exists (select class_id from canceled_class cc
+ where cc.class_id = cr.class_id and _date = query_date))
+union
+(select extra_class_id,ec.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time,cast('Extra Class' as varchar) as _event_type
+from extra_class ec join section sec on ec.section_no = sec.section_no join current_courses cc on cc._id=sec.course_id join intersected_sections isec on isec.second_section=sec.section_no
+where isec.first_section=secNo and _date= query_date)
+union
+(select evaluation_id,e.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time, et.type_name as _event_type
+from evaluation e join evaluation_type et on (et.type_id = e.type_id and et.notification_time_type = false)
+join section sec on e.section_no = sec.section_no join current_courses cc on cc._id=sec.course_id join intersected_sections isec on isec.second_section=sec.section_no
+where isec.first_section=secNo and start::date = query_date);
+end
+$$;
+
+
+ALTER FUNCTION public.get_day_events_to_schedule(secno integer, query_date date) OWNER TO postgres;
+
+--
 -- Name: get_dept_list(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
