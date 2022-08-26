@@ -3,19 +3,6 @@ import moment from "moment";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
-// const events = [
-//   {
-//     date: "18-08-2022",
-//     title: "CSE409 Class",
-//     type: 0,
-//   },
-//   {
-//     date: "01-08-2022",
-//     title: "CSE423 CT",
-//     type: 1,
-//   },
-// ];
-
 const eventColors = [
   "#e6ffe5",
   "#ffe5e5",
@@ -117,56 +104,6 @@ const TileContent = ({ uId, date, view, uType }) => {
         </div>
       );
     }
-    // tileElement = (
-    //   <div className="calendar__monthly__event__container">
-    //     <br></br>
-    //     <br></br>
-    //     <br></br>
-    //     <br></br>
-    //     <br></br>
-    //   </div>
-    // );
-    // map over eventList and check if the date matches the date of the tile
-    //     eventList.map((event) => {
-    //       if (eventCount < maxEventCount) {
-    //         // if the date matches, add the event to the tile
-    //         tileElement = (
-    //           <div
-    //             className="calendar__monthly__event"
-    //             style={{ backgroundColor: eventColors[event.type] }}
-    //           >
-    //             <div className="event__title">{event.title}</div>
-    //             <div className="event__type">:aro kisu lekha</div>
-    //           </div>
-    //         );
-    //       } else if (eventCount === maxEventCount) {
-    //         tileElement = (
-    //           <div
-    //             className="calendar__monthly__event"
-    //             style={{ backgroundColor: eventColors[event.type] }}
-    //           >
-    //             <div className="event__title">{event.title}</div>
-    //             <div className="event__type">:aro kisu lekha</div>
-    //             <AddCircleIcon />
-    //           </div>
-    //         );
-    //       }
-    //     });
-    //   } else {
-    //     // not month
-    //     tileElement = <></>;
-    //   }
-    //   return tileElement;
-
-    //   return (
-    //     <>
-    //       <br></br>
-    //       <br></br>
-    //       <br></br>
-    //       <br></br>
-    //       <br></br>
-    //     </>
-    //   );
   } else {
     let eventCount = 0;
     for (let i = 0; i < maxEventCount + 1; i++) {
@@ -178,7 +115,32 @@ const TileContent = ({ uId, date, view, uType }) => {
       );
     }
   }
-  return tileElement;
+
+  // list of hours
+  const hours = [];
+  for (let i = 0; i < 24; i++) {
+    // hh:mm format
+    hours.push(moment(`${i}:00`, "h:mm a").format("h:mm a"));
+  }
+  // console.log(hours);
+  // return tileElement;
+  return (
+    <>
+      {view === "month" ? (
+        <>
+          {hours.map((hour, index) => {
+            return (
+              <div key={index} className="calendar__monthly__hourstamp">
+                {hour}
+              </div>
+            );
+          })}
+        </>
+      ) : (
+        <></>
+      )}
+    </>
+  );
 };
 
 export default TileContent;

@@ -25,3 +25,8 @@
   justify-content: flex-start;
   align-items: center;
 }
+.calendar__monthly__hourstamp {
+  align-self: flex-end;
+  font-size: small;
+  font-weight: lighter;
+}

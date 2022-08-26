@@ -94,7 +94,7 @@
   padding: 2em 0.5em;
 }
 .react-calendar__tile {
-  height: 8rem;
+  max-height: 8rem;
   overflow: auto !important;
   scrollbar-width: none;
   max-width: 100%;
