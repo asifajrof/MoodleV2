@@ -11,7 +11,7 @@ const CourseTeachers = ({ adminNo, courseId }) => {
       <div className="home__container__divider">
         <div className="course__container" style={{ width: "100%" }}>
           <div className="course__container__add">
-            <Link to={`course/${courseId}/teachers/add`}>
+            <Link to={`/course/${courseId}/teachers/add`}>
               <Button variant="contained">
                 Add
                 <AddIcon />
