@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import moment from "moment";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ReactDOM from "react-dom";
+import { Link } from "react-router-dom";
 // const events = [
 //   {
 //     date: "18-08-2022",
@@ -66,6 +67,7 @@ const TileContent = ({ uId, date, view, uType }) => {
   const tileElement = [];
   const eventListLength = eventList.length;
   if (view === "month") {
+    // console.log(eventList);
     let eventCount = 0;
     const brCount = maxEventCount - eventListLength;
 
@@ -81,6 +83,7 @@ const TileContent = ({ uId, date, view, uType }) => {
     for (let i = eventCountAfterBr; i < maxEventCount; i++) {
       eventCount++;
       tileElement.push(
+        // <Link to={`/course/${eventList[i - eventCountAfterBr]}`}>
         <div
           className="calendar__monthly__event"
           style={{
@@ -94,8 +97,10 @@ const TileContent = ({ uId, date, view, uType }) => {
             {eventList[i - eventCountAfterBr].course_code}{" "}
             {eventList[i - eventCountAfterBr].event_type}
           </div>
+
           {/* <div className="event__type"> </div> */}
         </div>
+        // </Link>
       );
     }
     eventCount++;
