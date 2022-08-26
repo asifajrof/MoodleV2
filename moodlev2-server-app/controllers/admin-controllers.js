@@ -127,6 +127,23 @@ const getAllCourses = async (req, res, next) => {
 	}
 };
 
+const getCurrentCourses = async (req, res, next) => {
+	try {
+		console.log("GET api/admin/courses/all");
+		let result = await pool.query("Select * from current_courses");
+		const courses = result.rows;
+		// console.log(courses);
+		// console.log(result);
+		if (!courses) {
+			next(new HttpError("Courses not found", 404));
+		} else {
+			res.json({ message: "getCurrentCourses", data: courses });
+		}
+	} catch (err) {
+		return next(new HttpError(error.message, 500));
+	}
+};
+
 const getAllCourseTeachers = async (req, res, next) => {
 	try {
 		const courseId = req.params.courseId;
@@ -157,7 +174,7 @@ const getAllCourseStudents = async (req, res, next) => {
 			[courseId]
 		);
 		const students = result.rows[0].json_agg;
-		console.log(students);
+		// console.log(students);
 		// console.log(result);
 		if (!students) {
 			next(new HttpError("Students not found", 404));
@@ -262,3 +279,4 @@ exports.addNewTeacher = addNewTeacher;
 exports.addNewStudent = addNewStudent;
 exports.getAllCourseTeachers = getAllCourseTeachers;
 exports.getAllCourseStudents = getAllCourseStudents;
+exports.getCurrentCourses = getCurrentCourses;

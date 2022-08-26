@@ -15,6 +15,7 @@ adminRoutes.get("/", (req, res, next) => {
 adminRoutes.get("/teachers/all", adminControllers.getAllTeachers);
 adminRoutes.get("/students/all", adminControllers.getAllStudents);
 adminRoutes.get("/courses/all", adminControllers.getAllCourses);
+adminRoutes.get("/courses/current", adminControllers.getCurrentCourses);
 adminRoutes.get("/dept_list", adminControllers.getDeptList);
 adminRoutes.post("/addcourse", adminControllers.postCourseAdd);
 adminRoutes.post("/adddept", adminControllers.postDeptAdd);
