@@ -135,7 +135,33 @@ const TileContent = ({ uId, date, view, uType }) => {
                 className="calendar__monthly__inside__content__line"
               >
                 {/* <div style={{ background: "#000" }}>event details</div> */}
-                <div> </div>
+                <div className="calendar__monthly__event__list">
+                  {eventList.map((event, index) => {
+                    return (
+                      <div
+                        key={index}
+                        className="calendar__monthly__event__particular"
+                      >
+                        {moment(event.lookup_time, "hh:mm:ss").isBetween(
+                          moment(hour, "h:mm a").subtract(1, "minutes"),
+                          moment(hour, "h:mm a").add(1, "hour")
+                        ) ? (
+                          <div
+                            className="calendar__monthly__event"
+                            style={{
+                              backgroundColor: eventColors[event.event_id - 1],
+                            }}
+                          >
+                            {event.dept_shortname} {event.course_code}{" "}
+                            {event.event_type}
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
                 <div className="calendar__monthly__hourstamp">{hour}</div>
               </div>
             );
