@@ -127,7 +127,7 @@ const TileContent = ({ uId, date, view, uType }) => {
   return (
     <>
       {view === "month" ? (
-        <>
+        <div className="calendar__monthly__inside__content">
           {hours.map((hour, index) => {
             return (
               <div key={index} className="calendar__monthly__hourstamp">
@@ -135,7 +135,7 @@ const TileContent = ({ uId, date, view, uType }) => {
               </div>
             );
           })}
-        </>
+        </div>
       ) : (
         <></>
       )}

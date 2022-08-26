@@ -30,3 +30,24 @@
   font-size: small;
   font-weight: lighter;
 }
+.calendar__monthly__inside__content {
+  max-height: 8rem;
+  overflow: auto !important;
+  padding-right: 0.25rem;
+  display: flex;
+  flex-direction: column;
+}
+.calendar__monthly__inside__content::-webkit-scrollbar {
+  /* WebKit */
+  /* width: 0;
+  height: 0; */
+  width: 0.5rem;
+}
+.calendar__monthly__inside__content::-webkit-scrollbar-track {
+  background-color: #e4e4e4;
+  border-radius: 0.25rem;
+}
+.calendar__monthly__inside__content::-webkit-scrollbar-thumb {
+  background-color: #8b8b8b;
+  border-radius: 0.25rem;
+}
