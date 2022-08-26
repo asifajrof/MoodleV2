@@ -5,12 +5,11 @@ const moment = require("moment");
 const getCourseById = async (req, res, next) => {
 	try {
 		const courseId = req.params.course_id;
-		let result = await pool.query(
-			"SELECT * FROM current_courses WHERE _id = $1",
-			[courseId]
-		);
+		let result = await pool.query("SELECT * FROM all_courses WHERE _id = $1", [
+			courseId,
+		]);
 		const course = result.rows[0];
-		// console.log()
+		// console.log(course);
 		if (!course) {
 			res.json({ message: "No course like that!", data: [] });
 		} else {

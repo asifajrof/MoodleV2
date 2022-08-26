@@ -127,6 +127,48 @@ const getAllCourses = async (req, res, next) => {
 	}
 };
 
+const getAllCourseTeachers = async (req, res, next) => {
+	try {
+		const courseId = req.params.courseId;
+		console.log("GET api/admin/course/:courseId/teachers");
+		let result = await pool.query(
+			"SELECT json_agg(t) FROM get_course_teachers($1) as t",
+			[courseId]
+		);
+		const teachers = result.rows[0].json_agg;
+		// console.log(teachers);
+		// console.log(result);
+		if (!teachers) {
+			next(new HttpError("Teachers not found", 404));
+		} else {
+			res.json({ message: "getAllCourseTeachers", data: teachers });
+		}
+	} catch (err) {
+		return next(new HttpError(err.message, 500));
+	}
+};
+
+const getAllCourseStudents = async (req, res, next) => {
+	try {
+		const courseId = req.params.courseId;
+		console.log("GET api/admin/course/:courseId/students");
+		let result = await pool.query(
+			"SELECT json_agg(t) FROM get_course_students($1) as t",
+			[courseId]
+		);
+		const students = result.rows[0].json_agg;
+		console.log(students);
+		// console.log(result);
+		if (!students) {
+			next(new HttpError("Students not found", 404));
+		} else {
+			res.json({ message: "getAllCourseStudent", data: students });
+		}
+	} catch (err) {
+		return next(new HttpError(err.message, 500));
+	}
+};
+
 const getAllTeachers = async (req, res, next) => {
 	try {
 		console.log("GET api/admin/teachers/all");
@@ -218,3 +260,5 @@ exports.postDeptAdd = postDeptAdd;
 exports.addNewCourse = addNewCourse;
 exports.addNewTeacher = addNewTeacher;
 exports.addNewStudent = addNewStudent;
+exports.getAllCourseTeachers = getAllCourseTeachers;
+exports.getAllCourseStudents = getAllCourseStudents;
