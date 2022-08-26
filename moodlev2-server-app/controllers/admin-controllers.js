@@ -277,12 +277,21 @@ const getAllCourseCRs = async (req, res, next) => {
 			[courseId]
 		);
 		const crs = result.rows[0].json_agg;
+		let cr_list = [];
 		console.log(crs);
+
+		for (cr in crs) {
+			if (cr.crid == null && cr.crname == null) {
+				continue;
+			} else {
+				cr_list.push(cr);
+			}
+		}
 		// console.log(result);
-		if (!students) {
+		if (!crs) {
 			next(new HttpError("CRs not found", 404));
 		} else {
-			res.json({ message: "getAllCourseCRs", data: crs });
+			res.json({ message: "getAllCourseCRs", data: cr_list });
 		}
 	} catch (err) {
 		return next(new HttpError(err.message, 500));
