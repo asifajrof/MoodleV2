@@ -1961,6 +1961,15 @@ create or replace function get_course_cr (courseID integer)
     end
 $$ language plpgsql;
 
+create or replace function upload_evaluation(eventID integer,fileLink varchar) returns void as $$
+    begin
+        update evaluation
+        set link=fileLink
+        where evaluation_id=eventID;
+    end;
+$$ language plpgsql;
+
+-- drop function upload_evaluation(eventID integer, fileLink varchar);
 -- drop function get_course_cr(courseID integer);
 -- drop function add_course_post_file(postID integer, fileName varchar, fileLink varchar);
 -- drop function add_forum_post_file(postID integer, fileName varchar, fileLink varchar);

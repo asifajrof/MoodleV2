@@ -2496,6 +2496,23 @@ $$;
 
 ALTER FUNCTION public.update_cr(std_id integer, sectionno integer) OWNER TO postgres;
 
+--
+-- Name: upload_evaluation(integer, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.upload_evaluation(eventid integer, filelink character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    begin
+        update evaluation
+        set link=fileLink
+        where evaluation_id=eventID;
+    end;
+$$;
+
+
+ALTER FUNCTION public.upload_evaluation(eventid integer, filelink character varying) OWNER TO postgres;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
