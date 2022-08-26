@@ -1953,6 +1953,15 @@ create or replace function add_course_post_file(postID integer,fileName varchar,
     end;
 $$ language plpgsql;
 
+create or replace function get_course_cr (courseID integer)
+    returns table (sectionID integer,sectionName varchar,CRID integer,CRName varchar) as $$
+    begin
+    return query
+    select sec.section_no,sec.section_name,(mod(s._year,100)*100000+s.dept_code*1000+s.roll_num) as sid,s.student_name from section sec left outer join student s on sec.cr_id = s.student_id where sec.course_id=courseID;
+    end
+$$ language plpgsql;
+
+-- drop function get_course_cr(courseID integer);
 -- drop function add_course_post_file(postID integer, fileName varchar, fileLink varchar);
 -- drop function add_forum_post_file(postID integer, fileName varchar, fileLink varchar);
 -- drop function add_forum_post(uname varchar, title varchar, content varchar, parentPost integer);
