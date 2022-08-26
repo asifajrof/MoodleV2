@@ -96,15 +96,21 @@ const StudentCourseEventFileUpload = ({ studentNo, courseId, eventId }) => {
               {courseEvalueationEventInfo.remaining_time}
             </div> */}
             </>
-            {!courseEvalueationEventInfo.submitted && (
+            {!courseEvalueationEventInfo.submitted &&
+            !courseEvalueationEventInfo.completed ? (
               <FileUpload
                 studentNo={studentNo}
                 courseId={courseId}
                 eventId={eventId}
               />
-            )}
-            {courseEvalueationEventInfo.submitted && (
-              <FileEdit fileIDs={courseEvalueationEventInfo.fileIDs} />
+            ) : (
+              <>
+                {!courseEvalueationEventInfo.submitted ? (
+                  <>{/* blank */}</>
+                ) : (
+                  <FileEdit fileIDs={courseEvalueationEventInfo.fileIDs} />
+                )}
+              </>
             )}
           </div>
         </div>
