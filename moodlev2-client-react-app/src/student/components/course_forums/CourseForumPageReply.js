@@ -3,9 +3,14 @@ import React, { useState } from "react";
 
 const CourseForumPageReply = ({ onSubmitReply }) => {
   const [replyBody, setReplyBody] = useState("");
+  const onSubmitReplyHelper = (e) => {
+    e.preventDefault();
+    onSubmitReply(replyBody);
+    setReplyBody("");
+  };
   return (
     <div className="course__forum__post__body__reply__form">
-      <form onSubmit={onSubmitReply}>
+      <form onSubmit={onSubmitReplyHelper}>
         <TextField
           fullWidth
           type="text"

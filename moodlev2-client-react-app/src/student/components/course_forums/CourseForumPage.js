@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./CourseForumPage.css";
 import CourseForumPageReply from "./CourseForumPageReply";
 
@@ -70,14 +70,23 @@ const courseForumPagePostsInit = [
   },
 ];
 
-const SinglePost = ({ postObj }) => {
+const SinglePost = ({ studentNo, courseId, forumId, postObj, onNewReply }) => {
   const [showReply, setShowReply] = useState(false);
   const onClickReply = () => {
     setShowReply(!showReply);
   };
-  const onSubmitReply = (e) => {
-    e.preventDefault();
+  const onSubmitReply = (replyBody) => {
+    // e.preventDefault();
+    // console.log("studentNo", studentNo);
+    // console.log("courseId", courseId);
+    // console.log("forumId", forumId);
+    // console.log("postId", postObj.id);
+    // console.log(replyBody);
+
+    // send to backend
+
     setShowReply(false);
+    onNewReply();
   };
   return (
     <div className="course__forum__post">
@@ -101,30 +110,59 @@ const SinglePost = ({ postObj }) => {
         </div>
         {showReply && <CourseForumPageReply onSubmitReply={onSubmitReply} />}
       </div>
-      {postObj.children?.length && <Post data={postObj.children} />}
+      {postObj.children?.length && (
+        <Post
+          studentNo={studentNo}
+          courseId={courseId}
+          forumId={forumId}
+          data={postObj.children}
+          onNewReply={onNewReply}
+        />
+      )}
     </div>
   );
 };
 
-const Post = (props) => {
+const Post = ({ studentNo, courseId, forumId, data, onNewReply }) => {
   return (
     <>
-      {props.data.map((item, index) => (
-        <SinglePost key={index} postObj={item} />
+      {data.map((item, index) => (
+        <SinglePost
+          key={index}
+          studentNo={studentNo}
+          courseId={courseId}
+          forumId={forumId}
+          postObj={item}
+          onNewReply={onNewReply}
+        />
       ))}
     </>
   );
 };
 
-const CourseForumPage = ({ studentNo, courseId, eventId }) => {
+const CourseForumPage = ({ studentNo, courseId, forumId }) => {
   // const [courseForumPagePosts, setCourseForumPagePosts] = useState([]);
   const [courseForumPagePosts, setCourseForumPagePosts] = useState(
     courseForumPagePostsInit
   );
+  const [newReply, setNewReply] = useState(false);
+  useEffect(() => {
+    // fetch here
+  }, [newReply]);
+
+  const onNewReply = () => {
+    setNewReply(true);
+  };
   return (
     <div className="course__event__container" style={{ width: "95%" }}>
       <div className="course__event__info">
-        <Post data={courseForumPagePosts} />
+        <Post
+          studentNo={studentNo}
+          courseId={courseId}
+          forumId={forumId}
+          data={courseForumPagePosts}
+          onNewReply={onNewReply}
+        />
       </div>
     </div>
   );
