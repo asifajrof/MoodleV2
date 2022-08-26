@@ -278,7 +278,7 @@ const getAllCourseCRs = async (req, res, next) => {
 		);
 		const crs = result.rows[0].json_agg;
 		let cr_list = [];
-		console.log(crs);
+		// console.log(crs);
 
 		for (cr in crs) {
 			if (cr.crid == null && cr.crname == null) {
@@ -297,6 +297,69 @@ const getAllCourseCRs = async (req, res, next) => {
 		return next(new HttpError(err.message, 500));
 	}
 };
+
+const removeCourseStudent = async (req, res, next) => {
+	try {
+		console.log("POST api/admin/removeCourseStudent");
+
+		const { courseId, studentList } = req.body;
+		console.log(studentList);
+		for (student of studentList) {
+			let result = await pool.query(
+				"select json_agg(t) FROM remove_course_student($1,$2) as t",
+				[student, courseId]
+			);
+			console.log(student, courseId);
+		}
+
+		res.json({ message: "student removal successful" });
+	} catch (err) {
+		console.log(err);
+		return next(new HttpError(err.message, 500));
+	}
+};
+
+const removeCourseTeacher = async (req, res, next) => {
+	try {
+		console.log("POST api/admin/removeCourseTeacher");
+
+		const { courseId, teacherList } = req.body;
+		for (teacher of teacherList) {
+			let result = await pool.query(
+				"select json_agg(t) FROM remove_course_teacher($1,$2) as t",
+				[teacher, courseId]
+			);
+		}
+
+		res.json({ message: "teacher removal successful" });
+	} catch (err) {
+		console.log(err);
+		if (err.message.startsWith("update or delete on")) {
+			res.json({ message: "teacher cannot be removed" });
+		}
+		return next(new HttpError(err.message, 500));
+	}
+};
+
+// const removeCourseCR = async (req, res, next) => {
+// 	try {
+// 		console.log("POST api/admin/removeCourseCR");
+
+// 		const { sectionid, crList } = req.body;
+// 		for (cr in crList) {
+// 			let result = await pool.query(
+// 				"select json_agg(t) FROM remove_course_teacher($1,$2) as t",
+// 				[cr, courseId]
+// 			);
+// 		}
+
+// 		res.json({ message: "teacher removal successful" });
+// 	} catch (err) {
+// 		console.log(err);
+// 		return next(new HttpError(err.message, 500));
+// 	}
+// };
+
 exports.getAllStudents = getAllStudents;
 exports.getAllTeachers = getAllTeachers;
 exports.getAllCourses = getAllCourses;
@@ -310,3 +373,5 @@ exports.getAllCourseTeachers = getAllCourseTeachers;
 exports.getAllCourseStudents = getAllCourseStudents;
 exports.getCurrentCourses = getCurrentCourses;
 exports.getAllCourseCRs = getAllCourseCRs;
+exports.removeCourseTeacher = removeCourseTeacher;
+exports.removeCourseStudent = removeCourseStudent;

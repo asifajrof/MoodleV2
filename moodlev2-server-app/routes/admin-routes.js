@@ -22,6 +22,8 @@ adminRoutes.post("/adddept", adminControllers.postDeptAdd);
 adminRoutes.post("/addNewCourse", adminControllers.addNewCourse);
 adminRoutes.post("/addNewTeacher", adminControllers.addNewTeacher);
 adminRoutes.post("/addNewStudent", adminControllers.addNewStudent);
+adminRoutes.post("/removeCourseTeacher", adminControllers.removeCourseTeacher);
+adminRoutes.post("/removeCourseStudent", adminControllers.removeCourseStudent);
 adminRoutes.get(
 	"/course/:courseId/teachers",
 	adminControllers.getAllCourseTeachers
