@@ -268,6 +268,26 @@ const postDeptAdd = async (req, res, next) => {
 	}
 };
 
+const getAllCourseCRs = async (req, res, next) => {
+	try {
+		const courseId = req.params.courseId;
+		console.log("GET api/admin/course/:courseId/crs");
+		let result = await pool.query(
+			"SELECT json_agg(t) FROM get_course_cr($1) as t",
+			[courseId]
+		);
+		const crs = result.rows[0].json_agg;
+		console.log(crs);
+		// console.log(result);
+		if (!students) {
+			next(new HttpError("CRs not found", 404));
+		} else {
+			res.json({ message: "getAllCourseCRs", data: crs });
+		}
+	} catch (err) {
+		return next(new HttpError(err.message, 500));
+	}
+};
 exports.getAllStudents = getAllStudents;
 exports.getAllTeachers = getAllTeachers;
 exports.getAllCourses = getAllCourses;
@@ -280,3 +300,4 @@ exports.addNewStudent = addNewStudent;
 exports.getAllCourseTeachers = getAllCourseTeachers;
 exports.getAllCourseStudents = getAllCourseStudents;
 exports.getCurrentCourses = getCurrentCourses;
+exports.getAllCourseCRs = getAllCourseCRs;

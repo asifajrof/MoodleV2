@@ -30,5 +30,6 @@ adminRoutes.get(
 	"/course/:courseId/students",
 	adminControllers.getAllCourseStudents
 );
+adminRoutes.get("/course/:courseId/crs", adminControllers.getAllCourseCRs);
 
 module.exports = adminRoutes;
