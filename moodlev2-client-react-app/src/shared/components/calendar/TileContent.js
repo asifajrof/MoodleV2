@@ -47,7 +47,7 @@ const TileContent = ({ uId, date, view, uType }) => {
           body: JSON.stringify(calendarPostBody),
         });
         const jsonData = await res.json();
-        console.log(jsonData);
+        // console.log(jsonData);
         // console.log(res.status);
         if (res.status === 200) {
           setEventList(jsonData.eventList);
