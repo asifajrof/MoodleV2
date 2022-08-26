@@ -1704,11 +1704,15 @@ create or replace function add_course_student(std_id integer,sectionNo integer) 
     end;
 $$ language plpgsql;
 
-create or replace function remove_course_student(std_id integer,sectionNo integer) returns void as $$
+create or replace function remove_course_student(std_id integer,courseNo integer) returns void as $$
     declare
     std_no integer;
+    sectionNo integer;
     begin
         std_no:=get_student_no(std_id);
+        select s.section_no into sectionNo from enrolment e join section s on s.section_no = e.section_id
+        where e.student_id=std_no and s.course_id=courseNo;
+        update section set cr_id = null where cr_id=std_no and section_no=sectionNo;
         delete from enrolment
         where student_id=std_no and section_id=sectionNo;
     end;
@@ -1971,7 +1975,7 @@ $$ language plpgsql;
 -- drop function get_all_student_admin();
 -- drop function get_all_teacher_admin();
 -- drop function update_cr(std_id integer,sectionNo integer);
--- drop function remove_course_student(std_id integer,sectionNo integer);
+-- drop function remove_course_student(std_id integer,courseNo integer);
 -- drop function add_course_student(std_id integer,sectionNo integer);
 -- drop function remove_course_teacher(uname varchar,courseID integer);
 --drop function add_course_teacher(uname varchar,courseID integer);

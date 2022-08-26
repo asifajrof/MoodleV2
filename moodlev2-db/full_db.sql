@@ -2283,20 +2283,24 @@ ALTER FUNCTION public.poster_check() OWNER TO postgres;
 -- Name: remove_course_student(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.remove_course_student(std_id integer, sectionno integer) RETURNS void
+CREATE FUNCTION public.remove_course_student(std_id integer, courseno integer) RETURNS void
     LANGUAGE plpgsql
     AS $$
     declare
     std_no integer;
+    sectionNo integer;
     begin
         std_no:=get_student_no(std_id);
+        select s.section_no into sectionNo from enrolment e join section s on s.section_no = e.section_id
+        where e.student_id=std_no and s.course_id=courseNo;
+        update section set cr_id = null where cr_id=std_no and section_no=sectionNo;
         delete from enrolment
         where student_id=std_no and section_id=sectionNo;
     end;
 $$;
 
 
-ALTER FUNCTION public.remove_course_student(std_id integer, sectionno integer) OWNER TO postgres;
+ALTER FUNCTION public.remove_course_student(std_id integer, courseno integer) OWNER TO postgres;
 
 --
 -- Name: remove_course_teacher(character varying, integer); Type: FUNCTION; Schema: public; Owner: postgres
