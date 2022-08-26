@@ -12,9 +12,19 @@ forumRoutes.get("/", (req, res, next) => {
 });
 
 forumRoutes.get("/course/:courseId", forumControllers.getCourseForumRootList);
+forumRoutes.get(
+	"/course/post/:postId",
+	forumControllers.getCourseForumRecursive
+);
+
 forumRoutes.post(
 	"/course/addNewCourseForum",
 	forumControllers.addNewCourseForum
+);
+
+forumRoutes.post(
+	"/course/addCourseForumReply",
+	forumControllers.addCourseForumReply
 );
 // forumRoutes.get("/main", forumControllers.getMainForum);
 

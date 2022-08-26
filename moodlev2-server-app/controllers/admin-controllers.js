@@ -113,7 +113,7 @@ const addNewStudent = async (req, res, next) => {
 const getAllCourses = async (req, res, next) => {
 	try {
 		console.log("GET api/admin/courses/all");
-		let result = await pool.query("Select * from current_courses");
+		let result = await pool.query("Select * from all_courses");
 		const courses = result.rows;
 		// console.log(courses);
 		// console.log(result);
