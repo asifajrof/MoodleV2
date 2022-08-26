@@ -426,7 +426,7 @@ from ((
      ) s join (
          select enrol_id,student_id,section_id from enrolment
     ) e on s.student_id=e.student_id join section sec on e.section_id=sec.section_no join all_courses cc on sec.course_id=cc._id)
-left outer join evaluation ev on (ev.section_no=e.section_id and ev._end<current_timestamp)) left outer join submission s2 on (s2.enrol_id=e.enrol_id)
+left outer join evaluation ev on (ev.section_no=e.section_id and ev._end>current_timestamp)) left outer join submission s2 on (s2.enrol_id=e.enrol_id)
 group by _id,_term,__year,_dept_shortname,_course_code,_course_name;
 end
 $$ language plpgsql;
@@ -1122,11 +1122,11 @@ end
 $$ language plpgsql;
 
 create or replace function get_day_events (std_id integer,query_date date)
-    returns table (id integer,dept_shortname varchar,course_code integer, lookup_time time,event_type varchar) as $$
+    returns table (eventID integer,sectionID integer,id integer,dept_shortname varchar,course_code integer, lookup_time time,event_type varchar) as $$
 begin
     return query
-    select cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
-                                                  ((select section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type
+    select ut.eid, ut.section_no,cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
+                                                  ((select cr.class_id as eid,section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type
                                                     from course_routine cr
                                                     where day = extract(isodow from query_date) - 1
                                                       and not exists(
@@ -1135,17 +1135,17 @@ begin
                                                             where cc.class_id = cr.class_id and _date = query_date
                                                         ))
                                                    union
-                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type
+                                                   (select extra_class_id as eid,section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type
                                                     from extra_class
                                                     where start::date = query_date)
                                                    union
-                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type
+                                                   (select e.evaluation_id as eid,section_no, start::time as _lookup_time, et.type_name as _event_type
                                                     from evaluation e
                                                              join evaluation_type et
                                                                   on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and start::date = query_date)
                                                    union
-                                                   (select section_no, _end::time as _lookup_time, et.type_name as _event_type
+                                                   (select e.evaluation_id as eid,section_no, _end::time as _lookup_time, et.type_name as _event_type
                                                     from evaluation e
                                                              join evaluation_type et
                                                                   on (et.type_id = e.type_id and et.notification_time_type = true)
@@ -1153,19 +1153,19 @@ begin
     (
         select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
     ) ss on (ut.section_no=ss.section_id) join section s on (ss.section_id=s.section_no) join current_courses cc on (s.course_id=cc._id)
-    order by _lookup_time;
+    order by ut._lookup_time;
 end
 $$ language plpgsql;
 
 create or replace function get_day_events_teacher (teacher_username varchar, query_date date)
-    returns table (id integer,dept_shortname varchar,course_code integer, lookup_time time,event_type varchar) as $$
+    returns table (eventID integer,sectionID integer,id integer,dept_shortname varchar,course_code integer, lookup_time time,event_type varchar) as $$
     declare
         tid integer;
     begin
         tid:=get_teacher_id(teacher_username);
     return query
-    select cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
-                                                  ((select section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type, tr.instructor_id as instructor_id
+    select ut.eid,ut.section_no,cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
+                                                  ((select cr.class_id as eid,section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type, tr.instructor_id as instructor_id
                                                     from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
                                                     where day = extract(isodow from query_date) - 1
                                                       and not exists(
@@ -1174,21 +1174,21 @@ create or replace function get_day_events_teacher (teacher_username varchar, que
                                                             where cc.class_id = cr.class_id and _date = query_date
                                                         ))
                                                    union
-                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,instructor_id as instructor_id
+                                                   (select extra_class_id as eid,section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,instructor_id as instructor_id
                                                     from extra_class
                                                     where start::date = query_date)
                                                    union
-                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,ect.instructor_id as instructor_id
+                                                   (select ect.extra_class_id as eid,section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,ect.instructor_id as instructor_id
                                                     from extra_class join extra_class_teacher ect on extra_class.extra_class_id = ect.extra_class_id
                                                     where start::date = query_date)
                                                    union
-                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type, e.instructor_id as instructor_id
+                                                   (select e.evaluation_id as eid,section_no, start::time as _lookup_time, et.type_name as _event_type, e.instructor_id as instructor_id
                                                     from evaluation e
                                                              join evaluation_type et
                                                                   on (et.type_id = e.type_id and et.notification_time_type = false)
                                                                       and start::date = query_date)
                                                    union
-                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type,eet.instructor_id
+                                                   (select eet.evaluation_id as eid,section_no, start::time as _lookup_time, et.type_name as _event_type,eet.instructor_id
                                                     from evaluation e join extra_evaluation_instructor eet on e.evaluation_id = eet.evaluation_id
                                                              join evaluation_type et
                                                                   on (et.type_id = e.type_id and et.notification_time_type = false)
