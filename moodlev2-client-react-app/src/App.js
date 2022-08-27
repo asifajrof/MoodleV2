@@ -13,6 +13,7 @@ import StudentCourseHome from "./student/pages/course_home";
 import StudentCourseEvents from "./student/pages/course_events";
 import StudentTimeline from "./student/pages/student_timeline";
 import StudentCourseEvent from "./student/pages/course_event";
+import StudentSiteNews from "./student/pages/site_news";
 
 import TeacherMenuBar from "./teacher/components/menu_bar";
 import TeacherHome from "./teacher/pages/teacher_home";
@@ -48,6 +49,7 @@ import TeacherAddNewCourseTopic from "./teacher/pages/course_add_new_topic";
 import StudentCoursePage from "./student/pages/course_page";
 import TeacherCoursePage from "./teacher/pages/course_page";
 import StudentCourseForums from "./student/pages/course_forums";
+import StudentSiteNewsList from "./student/pages/site_news_list";
 import StudentCourseForum from "./student/pages/course_forum";
 import TeacherCourseForums from "./teacher/pages/course_forums";
 import TeacherAddNewForum from "./teacher/pages/course_add_new_forum";
@@ -122,10 +124,10 @@ const App = () => {
 							path={"/courses"}
 							element={<AdminHome adminNo={token.id} />}
 						/>
-						<Route
+						{/* <Route
 							path={siteNews_link}
 							element={<Navigate to="/courses" replace />}
-						/>
+						/> */}
 						<Route
 							path={"/courses/addnew"}
 							element={<AddNewCourse adminNo={token.id} />}
@@ -207,6 +209,16 @@ const App = () => {
 							path={timeline_link}
 							element={
 								<StudentTimeline studentNo={token.id} uType={token.type} />
+							}
+						/>
+						<Route
+							path={"/sitenews/:forumId"}
+							element={<StudentSiteNews studentNo={token.id} />}
+						/>
+						<Route
+							path={siteNews_link}
+							element={
+								<StudentSiteNewsList studentNo={token.id} uType={token.type} />
 							}
 						/>
 						<Route
