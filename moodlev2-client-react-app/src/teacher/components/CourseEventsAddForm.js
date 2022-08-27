@@ -6,9 +6,12 @@ import {
   InputLabel,
   MenuItem,
 } from "@mui/material";
-import DateTimePicker from "react-datetime-picker";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { Select as SelectMui } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 const typeList = [
   {
@@ -118,13 +121,25 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
             <></>
           ) : (
             <>
-              {eventType == 5 ? <></> : <>schedule button</>}
-              <div className="date__time__picker__form">
-                <div className="date__time__picker__label">
-                  Select Event Time
+              {eventType == 5 ? (
+                <></>
+              ) : (
+                <div>
+                  schedule button
+                  <br /> <br />
                 </div>
-                <DateTimePicker onChange={setEventTime} value={eventTime} />
-              </div>
+              )}
+
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  renderInput={(props) => <TextField {...props} />}
+                  label="Select Event Time"
+                  value={eventTime}
+                  onChange={(newValue) => {
+                    setEventTime(newValue);
+                  }}
+                />
+              </LocalizationProvider>
               <br />
               <br />
               <InputLabel>Description</InputLabel>
