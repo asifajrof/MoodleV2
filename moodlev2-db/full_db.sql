@@ -164,6 +164,33 @@ $$;
 ALTER FUNCTION public.add_course_topic(tname character varying, courseid integer, username character varying, topicdescription character varying, ended boolean) OWNER TO postgres;
 
 --
+-- Name: add_evaluation(integer, integer, character varying, character varying, timestamp with time zone, timestamp with time zone, double precision, character varying, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.add_evaluation(typeid integer, sectionno integer, uname character varying, caption_exten character varying, start_time timestamp with time zone, end_time timestamp with time zone, marks double precision, descrip character varying, filelink character varying) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+        insID integer;
+        courseNO integer;
+        ans integer;
+    begin
+        select course_id into courseNO from section
+        where section_no=sectionNo;
+        tid:=get_teacher_id(uname);
+        select instructor_id into insID from instructor
+        where course_id=courseNO and teacher_id=tid;
+        insert into evaluation(evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, total_marks, description, link)
+        values(default,typeID,sectionNo,insID,caption_exten,start_time,end_time,marks,descrip,fileLink) returning evaluation_id into ans;
+        return ans;
+    end;
+$$;
+
+
+ALTER FUNCTION public.add_evaluation(typeid integer, sectionno integer, uname character varying, caption_exten character varying, start_time timestamp with time zone, end_time timestamp with time zone, marks double precision, descrip character varying, filelink character varying) OWNER TO postgres;
+
+--
 -- Name: add_forum_post(character varying, character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -2687,6 +2714,24 @@ $$;
 ALTER FUNCTION public.update_cr(std_id integer, sectionno integer) OWNER TO postgres;
 
 --
+-- Name: update_evaluation_link(integer, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.update_evaluation_link(eventid integer, filelink character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    begin
+        update evaluation
+        set link=fileLink
+        where evaluation_id=eventID;
+    end;
+$$;
+
+
+ALTER FUNCTION public.update_evaluation_link(eventid integer, filelink character varying) OWNER TO postgres;
+
+--
 -- Name: upload_evaluation(integer, character varying); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -4371,6 +4416,7 @@ INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id
 INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description, link) VALUES (5, 2, 6, 8, NULL, '2022-08-27 21:00:00+06', '2022-08-27 22:00:00+06', '2022-08-25', 50, NULL, NULL);
 INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description, link) VALUES (6, 4, 7, 12, NULL, '2022-08-28 20:40:00+06', '2022-08-28 21:40:00+06', '2022-08-25', 20, NULL, NULL);
 INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description, link) VALUES (8, 5, 1, 1, NULL, '2022-08-25 16:42:50.59004+06', '2022-08-27 17:30:00+06', '2022-08-25', 20, 'This is a bonus assignment', NULL);
+INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description, link) VALUES (9, 5, 5, 6, NULL, '2022-08-27 19:00:18.176651+06', '2022-08-29 11:30:00+06', '2022-08-27', 20, NULL, NULL);
 
 
 --
@@ -4473,6 +4519,7 @@ INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _d
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (10, 1, 3, 4, '2022-08-26', '2022-08-26 11:38:59.623663+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (11, 1, 4, 4, '2022-08-26', '2022-08-26 11:40:25.914105+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (12, 1, 1, 8, '2022-08-26', '2022-08-26 11:52:23.045686+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (13, 1, 9, 2, '2022-08-27', '2022-08-27 19:00:18.176651+06');
 
 
 --
@@ -4710,7 +4757,7 @@ SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 48, true);
 -- Name: evaluation_evaluation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.evaluation_evaluation_id_seq', 8, true);
+SELECT pg_catalog.setval('public.evaluation_evaluation_id_seq', 9, true);
 
 
 --
@@ -4773,7 +4820,7 @@ SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 18, true);
 -- Name: notification_event_not_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.notification_event_not_id_seq', 12, true);
+SELECT pg_catalog.setval('public.notification_event_not_id_seq', 13, true);
 
 
 --
