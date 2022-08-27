@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import moment from "moment";
 import FileUpload from "./file_upload/FileUpload";
 import FileEdit from "./file_edit/FileEdit";
+import ShowFile from "../../shared/components/ShowFile";
 // import "./course_home.css";
 
 // const courseEvalueationEventInfoInit = {
@@ -48,6 +49,12 @@ const StudentCourseEventDetail = ({ studentNo, courseId, eventId }) => {
           // style={{ paddingLeft: "1rem" }}
         >
           {courseEvalueationEventInfo.event_description}
+        </div>
+        <div
+          className="course__home__container__item__2"
+          // style={{ paddingLeft: "1rem" }}
+        >
+          <ShowFile fileID={eventId} />
         </div>
       </div>
       <div

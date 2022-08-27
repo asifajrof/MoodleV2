@@ -4,7 +4,7 @@ import moment from "moment";
 import { useParams } from "react-router-dom";
 
 import CourseMenuBar from "../components/course_menu_bar";
-import FileUpload from "./file_upload/FileUpload";
+import FileUpload from "../components/file_upload/FileUpload";
 // import "./course_home.css";
 
 const TeacherCourseEventFileAdd = ({ userName }) => {
