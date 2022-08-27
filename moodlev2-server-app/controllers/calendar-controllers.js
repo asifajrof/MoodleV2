@@ -118,7 +118,7 @@ const getEventListMonthView = async (req, res, next) => {
 	// console.log("getEventListMonthView");
 	try {
 		const { uId, date, month, year, uType } = req.body;
-		console.log("utype ", uType);
+		// console.log("utype ", uType);
 
 		let result = null;
 		const givenDate = moment(new Date(year, month, date));
@@ -142,9 +142,10 @@ const getEventListMonthView = async (req, res, next) => {
 		if (events) {
 			for (const e of events) {
 				e.event_type_id = getIdEvent(e.event_type);
-				if (e.event_type !== "Class") {
-					eventList.push(e);
-				}
+				// if (e.event_type !== "Class") {
+				// 	eventList.push(e);
+				// }
+				eventList.push(e);
 			}
 		}
 
