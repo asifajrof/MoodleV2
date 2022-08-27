@@ -886,6 +886,69 @@ $$;
 ALTER FUNCTION public.get_course_post_file(pid integer) OWNER TO postgres;
 
 --
+-- Name: get_course_post_notifications(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_course_post_notifications(std_id integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, userid integer, dept_shortname character varying, course_code integer, eventtypename character varying, postername character varying, notificationtime timestamp with time zone, scheduleddate date)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    begin
+    return query
+    (select ne.event_type,ne.event_no,c._id,t.teacher_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),t.teacher_name,ne.notifucation_time, ne._date
+    from notification_event ne join course_post cp on ne.event_no=cp.post_id join instructor i on i.instructor_id=cp.poster_id
+    join current_courses c on i.course_id = c._id join section s on c._id = s.course_id
+    join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
+    join teacher t on i.teacher_id = t.teacher_id
+    where student_post=false and ne.event_type=4 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and s2.notification_last_seen<ne.notifucation_time)
+    union
+    (select ne.event_type,ne.event_no,c._id,ps.student_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),ps.student_name,ne.notifucation_time, ne._date
+    from notification_event ne join course_post cp on ne.event_no=cp.post_id join enrolment ep on ep.enrol_id=cp.poster_id
+    join section sec1 on ep.section_id = sec1.section_no join current_courses c on sec1.course_id=c._id
+    join student ps on ps.student_id = ep.student_id
+    join section s on s.course_id = c._id
+    join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
+    where student_post=true and ps.student_id!=s2.student_id and ne.event_type=4 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and s2.notification_last_seen<ne.notifucation_time);
+end
+$$;
+
+
+ALTER FUNCTION public.get_course_post_notifications(std_id integer) OWNER TO postgres;
+
+--
+-- Name: get_course_post_notifications_teacher(character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_course_post_notifications_teacher(uname character varying) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, userid integer, dept_shortname character varying, course_code integer, eventtypename character varying, postername character varying, notificationtime timestamp with time zone, scheduleddate date)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    begin
+    return query
+    (select ne.event_type,ne.event_no,c._id,t.teacher_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),t.teacher_name,ne.notifucation_time, ne._date
+    from notification_event ne join course_post cp on ne.event_no=cp.post_id join instructor i on i.instructor_id=cp.poster_id
+    join current_courses c on i.course_id = c._id
+    join teacher t on i.teacher_id = t.teacher_id
+    join instructor iv on iv.course_id=c._id
+    join teacher tv on tv.teacher_id=iv.teacher_id
+    join official_users ou on ou.user_no=tv.user_no
+    where student_post=false and ne.event_type=4 and ou.username=uname and tv.teacher_id!=t.teacher_id and tv.notification_last_seen<ne.notifucation_time)
+    union
+    (select ne.event_type,ne.event_no,c._id,ps.student_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),ps.student_name,ne.notifucation_time, ne._date
+    from notification_event ne join course_post cp on ne.event_no=cp.post_id join enrolment ep on ep.enrol_id=cp.poster_id
+    join section sec1 on ep.section_id = sec1.section_no join current_courses c on sec1.course_id=c._id
+    join student ps on ps.student_id = ep.student_id
+    join instructor iv on iv.course_id=c._id
+    join teacher tv on tv.teacher_id=iv.teacher_id
+    join official_users ou on ou.user_no=tv.user_no
+    where student_post=true and ne.event_type=4 and ou.username=uname and  tv.notification_last_seen<ne.notifucation_time);
+end
+$$;
+
+
+ALTER FUNCTION public.get_course_post_notifications_teacher(uname character varying) OWNER TO postgres;
+
+--
 -- Name: get_course_posts(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1275,6 +1338,46 @@ $$;
 ALTER FUNCTION public.get_event_description(event integer) OWNER TO postgres;
 
 --
+-- Name: get_extra_class_notifications(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_extra_class_notifications(std_id integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, notificationtime timestamp with time zone, scheduleddate date)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    begin
+    return query
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class' as varchar),t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join extra_class ec on ne.event_no=ec.extra_class_id
+    join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ec.instructor_id = i.instructor_id join teacher t on i.teacher_id = t.teacher_id join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
+where ne.event_type=1 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and s2.notification_last_seen<ne.notifucation_time
+order by ne.notifucation_time desc;
+end
+$$;
+
+
+ALTER FUNCTION public.get_extra_class_notifications(std_id integer) OWNER TO postgres;
+
+--
+-- Name: get_extra_class_notifications_teacher(character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_extra_class_notifications_teacher(teacher_username character varying) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, notificationtime timestamp with time zone, scheduleddate date)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    begin
+    return query
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class' as varchar),t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join evaluation ec on ne.event_no=ec.evaluation_id
+   join extra_class_teacher eei on ec.evaluation_id = eei.extra_class_id join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on eei.instructor_id = i.instructor_id join instructor j on j.instructor_id=ec.instructor_id join teacher t on j.teacher_id = t.teacher_id join teacher t2 on t2.teacher_id=i.teacher_id join official_users ou on t2.user_no = ou.user_no
+where ne.event_type=1 and ou.username=teacher_username and t2.notification_last_seen<ne.notifucation_time
+order by ne.notifucation_time desc;
+end
+$$;
+
+
+ALTER FUNCTION public.get_extra_class_notifications_teacher(teacher_username character varying) OWNER TO postgres;
+
+--
 -- Name: get_forum_children_post(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1405,6 +1508,63 @@ $$;
 
 
 ALTER FUNCTION public.get_root_forum_posts() OWNER TO postgres;
+
+--
+-- Name: get_sections(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_sections(courseid integer) RETURNS TABLE(secno integer, secname character varying)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+        select section_no,section_name from section
+        where course_id=courseID;
+end
+$$;
+
+
+ALTER FUNCTION public.get_sections(courseid integer) OWNER TO postgres;
+
+--
+-- Name: get_site_news_notifications(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_site_news_notifications() RETURNS TABLE(eventtype integer, eventno integer, username character varying, eventtypename character varying, postername character varying, notificationtime timestamp with time zone, scheduleddate date)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+    (select ne.event_type,ne.event_no,ou.username,cast ('Site News' as varchar),t.teacher_name,ne.notifucation_time,ne._date from notification_event ne join forum_post fp on ne.event_no=fp.post_id join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+where ne.event_type=8)
+union
+(select ne.event_type,ne.event_no,ou.username,cast ('Site News' as varchar),a.name,ne.notifucation_time,ne._date from notification_event ne join forum_post fp on ne.event_no=fp.post_id join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+where ne.event_type=8);
+end
+$$;
+
+
+ALTER FUNCTION public.get_site_news_notifications() OWNER TO postgres;
+
+--
+-- Name: get_site_news_notifications_official(character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_site_news_notifications_official(uname character varying) RETURNS TABLE(eventtype integer, eventno integer, username character varying, eventtypename character varying, postername character varying, notificationtime timestamp with time zone, scheduleddate date)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+    (select ne.event_type,ne.event_no,ou.username,cast ('Site News' as varchar),t.teacher_name,ne.notifucation_time,ne._date from notification_event ne join forum_post fp on ne.event_no=fp.post_id join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+where ne.event_type=8 and ou.username!=uname)
+union
+(select ne.event_type,ne.event_no,ou.username,cast ('Site News' as varchar),a.name,ne.notifucation_time,ne._date from notification_event ne join forum_post fp on ne.event_no=fp.post_id join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+where ne.event_type=8 and ou.username!=uname);
+end
+$$;
+
+
+ALTER FUNCTION public.get_site_news_notifications_official(uname character varying) OWNER TO postgres;
 
 --
 -- Name: get_student_no(integer); Type: FUNCTION; Schema: public; Owner: postgres
