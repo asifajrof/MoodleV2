@@ -2131,6 +2131,27 @@ create or replace function update_evaluation_link(eventID integer,fileLink varch
     end;
 $$ language plpgsql;
 
+create or replace function get_cancel_class_notifications_teacher (teacher_username varchar)
+    returns table (eventType integer,eventNo integer,courseID integer,teacherID integer,dept_shortname varchar,course_code integer,eventTypeName varchar,teacherNamr varchar, notificationTime timestamp with time zone,scheduledDate date) as $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+    return query
+        select ne.event_type,ne.event_no,c._id,tp.teacher_id,c._dept_shortname,c._course_code,cast('Canceled Class' as varchar),tp.teacher_name,ne.notifucation_time, ne._date
+        from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.not_id
+        join instructor ip on cc.instructor_id = ip.instructor_id
+        join current_courses c on c._id=ip.course_id
+        join teacher_routine tr on cc.class_id = tr.class_id
+        join teacher tp on ip.teacher_id = tp.teacher_id
+        join instructor iv on tr.instructor_id = iv.instructor_id
+        join teacher tv on iv.teacher_id=tv.teacher_id
+        where ne.event_type=3 and tv.teacher_id!=tp.teacher_id and tv.teacher_id=tid
+        and tv.notification_last_seen<ne.notifucation_time;
+    end
+$$ language plpgsql;
+
+-- drop function get_cancel_class_notifications_teacher(teacher_username varchar);
 -- drop function update_evaluation_link(eventID integer, fileLink varchar);
 -- drop function add_evaluation(typeID integer, sectionNo integer, uname varchar, caption_exten varchar, start_time timestamp with time zone, end_time timestamp with time zone, marks float, descrip varchar, fileLink varchar);
 --drop function get_evaluation_types();
