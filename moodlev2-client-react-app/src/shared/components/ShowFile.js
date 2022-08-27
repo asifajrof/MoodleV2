@@ -38,10 +38,14 @@ const ShowFile = ({ fileID }) => {
 	};
 	return (
 		<div>
-			<Button variant="outlined" onClick={() => downloadFile(fileID)}>
-				<FileDownloadIcon />
-				{fileInfo.file_name}
-			</Button>
+			{fileInfo.fileExists ? (
+				<Button variant="outlined" onClick={() => downloadFile(fileID)}>
+					<FileDownloadIcon />
+					{fileInfo.file_name}
+				</Button>
+			) : (
+				<></>
+			)}
 		</div>
 	);
 };

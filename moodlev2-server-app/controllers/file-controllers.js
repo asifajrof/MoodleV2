@@ -182,7 +182,7 @@ const getEvaluationSubmittedFileInfo = async (req, res, next) => {
 	try {
 		const eventId = req.params.fileID;
 		// console.log("submissionId " + submissionId);
-
+		// let check = false;
 		let result = await pool.query(
 			"select link from evaluation where evaluation_id = $1",
 			[eventId]
@@ -194,13 +194,23 @@ const getEvaluationSubmittedFileInfo = async (req, res, next) => {
 
 		if (!fs.existsSync(filePath)) {
 			// --> change it to filePath
-			res.json({ message: "No filePath!", data: [] });
+			res.json({
+				message: "No filePath!",
+				data: {
+					fileInfo: {
+						id: null,
+						file_name: null,
+						fileExists: false,
+					},
+				},
+			});
 		} else {
 			const fileName = Path.basename(filePath);
 			// console.log(filenName);
 			const fileInfo = {
 				id: eventId,
 				file_name: fileName,
+				fileExists: true,
 			};
 			res.json({
 				message: "getEvaluationSubmittedFileInfo",
