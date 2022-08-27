@@ -82,6 +82,7 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
 	//   const classes = useStyles();
 	const navigate = useNavigate();
 	const [eventType, setEventType] = useState("");
+	const [eventFullMarks, setEventFullMarks] = useState("");
 	const [typeList, setTypeList] = useState([]);
 	const [sectionList, setSectionList] = useState([]);
 	const [eventSection, setEventSection] = useState([]);
@@ -131,29 +132,33 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
 		setEventSection(value);
 	};
 
-	const addCourseForum = async (courseForumObj) => {
+	const addCourseEvent = async (courseEventObj) => {
 		//post method here
 		//courseId, userName (for teacher info) available. other stuffs are input from form
 		try {
-			const res = await fetch(`/api/forum/course/addNewCourseForum`, {
+			const res = await fetch(`/api/course/addNewEvent`, {
 				method: "POST",
 				headers: {
 					"Content-type": "application/json",
 				},
-				body: JSON.stringify(courseForumObj),
+				body: JSON.stringify(courseEventObj),
 			});
-			const data = await res.json();
+			const jsonData = await res.json();
 			let id = null;
 			// console.log(data);
 			// console.log(res.status);
 			console.log(res);
 			if (res.status === 200) {
-				navigate(`/course/${courseId}/forum`);
-				console.log("Course forum added successfully!");
-				id = data.id;
+				console.log(jsonData.message);
+				// 		setEventType("");
+				// setEventDescription("");
+				// setEventTime(new Date());
+				// setEventSection([]);
+				// id = jsonData.data.id;
+				navigate(`/course/${courseId}/events`);
 			} else {
 				// alert(data.message);
-				console.log(data.message);
+				console.log(jsonData.message);
 			}
 		} catch (err) {
 			console.log(err);
@@ -165,6 +170,7 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
 		const eventSectionList = eventSection.map((s) => s.secno);
 		const courseEventObj = {
 			eventType: eventType,
+			eventFullMarks: eventFullMarks,
 			eventTime: eventTime,
 			eventDescription: eventDescription,
 			courseId: courseId,
@@ -172,14 +178,7 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
 			eventSectionList: eventSectionList,
 		};
 		console.log(courseEventObj);
-
-		setEventType("");
-		setEventDescription("");
-		setEventTime(new Date());
-		setEventSection([]);
-
-		// addCourseForum(courseForumObj);
-
+		addCourseEvent(courseEventObj);
 		console.log("onSubmitAction of add new course event");
 		return;
 	};
@@ -213,6 +212,18 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
 						<></>
 					) : (
 						<>
+							<TextField
+								fullWidth
+								type="number"
+								id="addcourse__event__marks"
+								label="Full Marks"
+								variant="outlined"
+								// InputProps={{ inputProps: { min: min_num, max: max_num } }}
+								value={eventFullMarks}
+								onChange={(e) => setEventFullMarks(parseInt(e.target.value))}
+								required
+							/>
+							<br /> <br />
 							<InputLabel id="mutiple-select-label">Select Section</InputLabel>
 							<SelectMui
 								fullWidth
@@ -259,6 +270,7 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
 									</MenuItem>
 								))}
 							</SelectMui>
+							<br /> <br />
 							{eventSection === "" ? (
 								<> </>
 							) : (

@@ -176,6 +176,76 @@ const addNewCourseTopic = async (req, res, next) => {
 		return next(new HttpError(err.message, 500));
 	}
 };
+
+const addNewCourseEvent = async (req, res, next) => {
+	try {
+		const {
+			courseId,
+			eventDescription,
+			eventFullMarks,
+			eventSectionList,
+			eventTime,
+			eventType,
+			teacherUserName,
+		} = req.body;
+
+		const eventTimeMoment = moment(eventTime);
+		const givenTime = eventTimeMoment.format("YYYY-MM-DD HH:mm:ssZZ");
+		// console.log(givenTime);
+		const givenTimePlusOneHour = eventTimeMoment
+			.add(1, "hours")
+			.format("YYYY-MM-DD HH:mm:ssZZ");
+		const currentTime = moment().format("YYYY-MM-DD HH:mm:ssZZ");
+		console.log(currentTime);
+
+		for (sec of eventSectionList) {
+			let start = null;
+			let end = null;
+			if (eventType !== 5) {
+				start = givenTime;
+				end = givenTimePlusOneHour;
+			} else {
+				start = currentTime;
+				end = givenTime;
+			}
+			console.log(
+				eventType,
+				sec,
+				teacherUserName,
+				null,
+				start,
+				end,
+				eventFullMarks,
+				eventDescription,
+				null
+			);
+			let result = await pool.query(
+				"select json_agg(t) FROM add_evaluation($1,$2,$3,$4,$5,$6,$7, $8, $9) as t",
+				[
+					eventType,
+					sec,
+					teacherUserName,
+					null,
+					start,
+					end,
+					eventFullMarks,
+					eventDescription,
+					null,
+				]
+			);
+
+			// const evaluationId = result.rows[0].json_agg;
+			// console.log(result);
+		}
+
+		res.json({ message: "new course event added", data: [] });
+	} catch (err) {
+		console.log(err);
+		return next(new HttpError(err.message, 500));
+	}
+};
+
+exports.addNewCourseEvent = addNewCourseEvent;
 exports.getEventDetails = getEventDetails;
 exports.getCourseById = getCourseById;
 exports.getCourseTopicsById = getCourseTopicsById;
