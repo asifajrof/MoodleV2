@@ -6,6 +6,7 @@ import {
   InputLabel,
   MenuItem,
 } from "@mui/material";
+import DateTimePicker from "react-datetime-picker";
 import { Select as SelectMui } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -36,7 +37,7 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
   const navigate = useNavigate();
   const [eventType, setEventType] = useState("");
   const [eventDescription, setEventDescription] = useState("");
-  const [eventTime, setEventTime] = useState("");
+  const [eventTime, setEventTime] = useState(new Date());
 
   const addCourseForum = async (courseForumObj) => {
     //post method here
@@ -69,16 +70,18 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
   };
   const onSubmitAction = (event) => {
     event.preventDefault();
-    const courseForumObj = {
-      forumName: eventType,
-      forumDescription: eventDescription,
+    const courseEventObj = {
+      eventType: eventType,
+      eventTime: eventTime,
+      eventDescription: eventDescription,
       courseId: courseId,
       teacherUserName: userName,
     };
-    console.log(courseForumObj);
+    console.log(courseEventObj);
 
     setEventType("");
     setEventDescription("");
+    setEventTime(new Date());
 
     // addCourseForum(courseForumObj);
 
@@ -116,23 +119,20 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
           ) : (
             <>
               {eventType == 5 ? <></> : <>schedule button</>}
-              <TextField
-                fullWidth
-                type="text"
-                id="addcoursetopic__topic__name"
-                label="Name"
-                variant="outlined"
-                value={eventType}
-                onChange={(e) => setEventType(e.target.value)}
-                required
-              />
+              <div className="date__time__picker__form">
+                <div className="date__time__picker__label">
+                  Select Event Time
+                </div>
+                <DateTimePicker onChange={setEventTime} value={eventTime} />
+              </div>
               <br />
               <br />
+              <InputLabel>Description</InputLabel>
               <TextField
                 fullWidth
                 type="text"
                 id="addcoursetopic__topic__desc"
-                label="Description"
+                // label="Description"
                 variant="outlined"
                 multiline
                 value={eventDescription}
