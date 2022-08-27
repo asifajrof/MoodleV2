@@ -1,18 +1,26 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const Message = ({ msg }) => {
+const Message = ({ msg, showVal }) => {
+  // const [show, setShow] = React.useState(showVal);
+  // console.log("arekbar call hoise", show);
+  console.log("arekbar call hoise", msg);
   return (
-    <div className="alert alert-info alert-dismissible fade show" role="alert">
-      {msg}
-      <button
-        type="button"
-        className="close"
-        data-dismiss="alert"
-        aria-label="Close"
-      >
-        <span aria-hidden="true">&times;</span>
-      </button>
+    <div style={{ height: "100%" }}>
+      {msg !== "" && (
+        <div
+          className="alert alert-info alert-dismissible fade show"
+          role="alert"
+        >
+          {msg}
+          <button
+            type="button"
+            onClick={() => {
+              console.log("kisui hoy na");
+            }}
+          ></button>
+        </div>
+      )}
     </div>
   );
 };

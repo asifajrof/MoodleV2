@@ -3,10 +3,10 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import CourseMenuBar from "../components/course_menu_bar";
-import StudentCourseEventDetail from "../components/course_event_detail";
+import TeacherCourseEventDetail from "../components/course_event_detail";
 // import "./course_home.css";
 
-const StudentCourseEvent = ({ studentNo }) => {
+const TeacherCourseEvent = ({ userName }) => {
   const [courseInfo, setcourseInfo] = useState([]);
   const params = useParams();
   const courseId = params.courseId;
@@ -27,15 +27,15 @@ const StudentCourseEvent = ({ studentNo }) => {
 
   return (
     <React.Fragment>
-      <CourseMenuBar studentNo={studentNo} courseId={courseId} />
+      <CourseMenuBar userName={userName} courseId={courseId} />
 
       <div className="course__home__container">
         <div className="course__home__container__item__1">
           {courseInfo._term} {courseInfo.__year} {courseInfo._dept_shortname}{" "}
           {courseInfo._course_code}: {courseInfo._course_name}
         </div>
-        <StudentCourseEventDetail
-          studentNo={studentNo}
+        <TeacherCourseEventDetail
+          userName={userName}
           courseId={courseId}
           eventId={eventId}
         />
@@ -44,4 +44,4 @@ const StudentCourseEvent = ({ studentNo }) => {
   );
 };
 
-export default StudentCourseEvent;
+export default TeacherCourseEvent;

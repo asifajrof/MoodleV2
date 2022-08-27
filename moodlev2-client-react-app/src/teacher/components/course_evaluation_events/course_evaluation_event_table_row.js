@@ -1,5 +1,6 @@
 import React from "react";
-
+import { Button } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { styled } from "@mui/material/styles";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
@@ -38,7 +39,7 @@ export default function CourseEvaluationEventTableRow({
   onClickHandler,
 }) {
   let dataIndex = 0;
-  function createData(isfinished, title, description, id, date) {
+  function createData(isfinished, title, description, id, date, fileLink) {
     dataIndex = dataIndex + 1;
 
     return {
@@ -47,6 +48,7 @@ export default function CourseEvaluationEventTableRow({
       description,
       id,
       date,
+      fileLink,
     };
   }
   const row = createData(
@@ -54,8 +56,10 @@ export default function CourseEvaluationEventTableRow({
     courseEvaluationEvent.event_type,
     courseEvaluationEvent.event_description,
     courseEvaluationEvent.id,
-    courseEvaluationEvent.event_date
+    courseEvaluationEvent.event_date,
+    courseEvaluationEvent.filelink
   );
+  // console.log(courseEvaluationEvent);
   // console.log(row);
   const linkto = `/course/${courseId}/event/${row.id}`;
 
@@ -73,6 +77,27 @@ export default function CourseEvaluationEventTableRow({
       <StyledTableCell align="center">
         {/* <Link to={linkto}>{row.description}</Link> */}
         {row.description}
+      </StyledTableCell>
+      <StyledTableCell align="center">
+        {row.fileLink === null ? (
+          <div className="course__event__add">
+            <Link to={`/course/${courseId}/event/${row.id}/addfile`}>
+              <Button variant="contained" size="small">
+                Add New
+                <AddIcon />
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <>show file</>
+        )}
+      </StyledTableCell>
+      <StyledTableCell align="center">
+        <Link
+          to={`/course/${courseId}/event/${courseEvaluationEvent.id}/submissions`}
+        >
+          See Submissions
+        </Link>
       </StyledTableCell>
     </StyledTableRow>
   );

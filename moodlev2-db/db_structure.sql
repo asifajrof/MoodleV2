@@ -2104,6 +2104,35 @@ create or replace function get_evaluation_types ()
 end
 $$ language plpgsql;
 
+create or replace function add_evaluation(typeID integer,sectionNo integer,uname varchar,caption_exten varchar,start_time timestamp with time zone,end_time timestamp with time zone,marks float,descrip varchar,fileLink varchar) returns integer as $$
+    declare
+        tid integer;
+        insID integer;
+        courseNO integer;
+        ans integer;
+    begin
+        select course_id into courseNO from section
+        where section_no=sectionNo;
+        tid:=get_teacher_id(uname);
+        select instructor_id into insID from instructor
+        where course_id=courseNO and teacher_id=tid;
+        insert into evaluation(evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, total_marks, description, link)
+        values(default,typeID,sectionNo,insID,caption_exten,start_time,end_time,marks,descrip,fileLink) returning evaluation_id into ans;
+        return ans;
+    end;
+$$ language plpgsql;
+
+create or replace function update_evaluation_link(eventID integer,fileLink varchar) returns void as $$
+    declare
+    begin
+        update evaluation
+        set link=fileLink
+        where evaluation_id=eventID;
+    end;
+$$ language plpgsql;
+
+-- drop function update_evaluation_link(eventID integer, fileLink varchar);
+-- drop function add_evaluation(typeID integer, sectionNo integer, uname varchar, caption_exten varchar, start_time timestamp with time zone, end_time timestamp with time zone, marks float, descrip varchar, fileLink varchar);
 --drop function get_evaluation_types();
 --drop function get_extra_class_notifications(std_id integer);
 --drop function get_extra_class_notifications_teacher(teacher_username varchar);

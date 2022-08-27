@@ -56,7 +56,7 @@ const CourseEvaluationEvents = ({ userName, courseId }) => {
         // console.log(res.status);
         if (res.status === 200) {
           setCourseEvaluationEventList(jsonData.data);
-          console.log(jsonData.data);
+          // console.log(jsonData.data);
         } else {
           // alert(data.message);
           console.log(jsonData.message);
@@ -83,6 +83,8 @@ const CourseEvaluationEvents = ({ userName, courseId }) => {
               {/* <StyledTableCell align="center"> </StyledTableCell> */}
               <StyledTableCell align="center">Event Type</StyledTableCell>
               <StyledTableCell align="center">Description</StyledTableCell>
+              <StyledTableCell align="center">Attachment</StyledTableCell>
+              <StyledTableCell align="center">Submissions</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>

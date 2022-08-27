@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 const Message = ({ msg, showVal }) => {
   // const [show, setShow] = React.useState(showVal);
   // console.log("arekbar call hoise", show);
-  console.log("arekbar call hoise", msg);
+  // console.log("arekbar call hoise", msg);
   return (
     <div style={{ height: "100%" }}>
       {msg !== "" && (
@@ -16,7 +16,7 @@ const Message = ({ msg, showVal }) => {
           <button
             type="button"
             onClick={() => {
-              console.log("kisui hoy na");
+              // console.log("kisui hoy na");
             }}
           ></button>
         </div>
