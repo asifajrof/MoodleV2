@@ -56,7 +56,7 @@ const CourseEvaluationEvents = ({ userName, courseId }) => {
         // console.log(res.status);
         if (res.status === 200) {
           setCourseEvaluationEventList(jsonData.data);
-          console.log(jsonData.data);
+          // console.log(jsonData.data);
         } else {
           // alert(data.message);
           console.log(jsonData.message);
