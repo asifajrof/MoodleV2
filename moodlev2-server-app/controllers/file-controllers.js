@@ -177,9 +177,71 @@ const TeacherEvaluationSubmit = async (req, res, next) => {
 		return next(new HttpError(error.message, 500));
 	}
 };
+
+const getEvaluationSubmittedFileInfo = async (req, res, next) => {
+	try {
+		const eventId = req.params.fileID;
+		// console.log("submissionId " + submissionId);
+
+		let result = await pool.query(
+			"select link from evaluation where evaluation_id = $1",
+			[eventId]
+		);
+		const path = result.rows[0].link;
+		const filePath = `${__dirname}${path}`;
+		// console.log(filePath);
+		// const fileInfo = fileInfoDummy;
+
+		if (!fs.existsSync(filePath)) {
+			// --> change it to filePath
+			res.json({ message: "No filePath!", data: [] });
+		} else {
+			const fileName = Path.basename(filePath);
+			// console.log(filenName);
+			const fileInfo = {
+				id: eventId,
+				file_name: fileName,
+			};
+			res.json({
+				message: "getEvaluationSubmittedFileInfo",
+				data: fileInfo,
+			});
+		}
+	} catch (error) {
+		return next(new HttpError(error.message, 500));
+	}
+};
+
+const getEvaluationSubmittedFile = async (req, res, next) => {
+	try {
+		const eventId = req.params.fileID;
+
+		let result = await pool.query(
+			"select link from evaluation where evaluation_id = $1",
+			[eventId]
+		);
+		const path = result.rows[0].link;
+		const filePath = `${__dirname}${path}`;
+		const fileName = Path.basename(filePath);
+		// console.log(filePath);
+
+		const stream = fs.createReadStream(filePath);
+		res.set({
+			"Content-Disposition": `attachment; filename='${fileName}'`,
+		});
+		res.contentType(`${fileName}`);
+		stream.pipe(res);
+	} catch (e) {
+		console.error(e);
+		res.status(500).end();
+	}
+};
+
 exports.getStudentCourseAssignmentSubmittedFile =
 	getStudentCourseAssignmentSubmittedFile;
 exports.getStudentAssignmentSubmittedFileInfo =
 	getStudentAssignmentSubmittedFileInfo;
 exports.StudentCourseAssignmentSubmit = StudentCourseAssignmentSubmit;
 exports.TeacherEvaluationSubmit = TeacherEvaluationSubmit;
+exports.getEvaluationSubmittedFileInfo = getEvaluationSubmittedFileInfo;
+exports.getEvaluationSubmittedFile = getEvaluationSubmittedFile;

@@ -8,6 +8,16 @@ fileRoutes.get(
 	"/edit/student/course/evaluation/:fileID",
 	fileControllers.getStudentAssignmentSubmittedFileInfo
 );
+
+fileRoutes.get(
+	"/info/course/evaluation/:fileID",
+	fileControllers.getEvaluationSubmittedFileInfo
+);
+
+fileRoutes.get(
+	"/download/course/evaluation/:fileID",
+	fileControllers.getEvaluationSubmittedFile
+);
 fileRoutes.get(
 	"/download/student/course/evaluation/:fileID",
 	fileControllers.getStudentCourseAssignmentSubmittedFile
