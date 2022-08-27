@@ -94,6 +94,7 @@ const SinglePost = ({ userName, courseId, forumId, postObj, onNewReply }) => {
       if (res.status === 200) {
         console.log("Course forum added successfully!");
         id = data.id;
+        // window.location.reload();
       } else {
         // alert(data.message);
         console.log(data.message);
