@@ -66,7 +66,7 @@ const CourseTopics = ({ userName, courseId }) => {
           <TableHead>
             <TableRow>
               <StyledTableCell align="center"> </StyledTableCell>
-              <StyledTableCell align="center"> </StyledTableCell>
+              {/* <StyledTableCell align="center"> </StyledTableCell> */}
               <StyledTableCell align="center">Teacher</StyledTableCell>
               <StyledTableCell align="center">Topic Name</StyledTableCell>
               <StyledTableCell align="center">Posted</StyledTableCell>
