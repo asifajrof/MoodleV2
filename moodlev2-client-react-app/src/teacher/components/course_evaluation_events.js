@@ -34,12 +34,12 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const CourseEvaluationEvents = ({ userName, courseId }) => {
-  // const [courseEvaluationEventList, setCourseEvaluationEventList] = useState(
-  //   []
-  // );
   const [courseEvaluationEventList, setCourseEvaluationEventList] = useState(
-    courseEvaluationEventListInit
+    []
   );
+  // const [courseEvaluationEventList, setCourseEvaluationEventList] = useState(
+  //   courseEvaluationEventListInit
+  // );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,11 +69,6 @@ const CourseEvaluationEvents = ({ userName, courseId }) => {
     fetchData();
   }, []);
 
-  const onClickHandler = (id) => {
-    console.log("click na hoitei?");
-    console.log(id);
-  };
-
   return (
     <div style={{ width: "100%", paddingRight: "4rem" }}>
       <TableContainer component={Paper}>
@@ -93,7 +88,6 @@ const CourseEvaluationEvents = ({ userName, courseId }) => {
                 key={index}
                 courseEvaluationEvent={courseEvaluationEvent}
                 courseId={courseId}
-                onClickHandler={onClickHandler}
               />
             ))}
           </TableBody>
