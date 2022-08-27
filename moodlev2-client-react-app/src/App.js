@@ -1,10 +1,10 @@
 // import React, { useState, useEffect } from "react";
 import React from "react";
 import {
-	BrowserRouter as Router,
-	Navigate,
-	Route,
-	Routes,
+  BrowserRouter as Router,
+  Navigate,
+  Route,
+  Routes,
 } from "react-router-dom";
 
 import StudentMenuBar from "./student/components/menu_bar";
@@ -20,6 +20,7 @@ import TeacherHome from "./teacher/pages/teacher_home";
 import TeacherCourseHome from "./teacher/pages/course_home";
 import TeacherCourseEvents from "./teacher/pages/course_events";
 import TeacherTimeline from "./teacher/pages/teacher_timeline";
+import TeacherSiteNews from "./teacher/pages/site_news";
 
 import AdminMenuBar from "./admin/components/menu_bar";
 import AdminHome from "./admin/pages/AdminHome";
@@ -36,13 +37,13 @@ import Login from "./shared/pages/login";
 import "./App.css";
 
 import {
-	courses_link,
-	course_events_link,
-	course_forum_link,
-	course_link,
-	home_link,
-	timeline_link,
-	siteNews_link,
+  courses_link,
+  course_events_link,
+  course_forum_link,
+  course_link,
+  home_link,
+  timeline_link,
+  siteNews_link,
 } from "./links";
 import useToken from "./shared/pages/useToken";
 import TeacherAddNewCourseTopic from "./teacher/pages/course_add_new_topic";
@@ -50,42 +51,44 @@ import StudentCoursePage from "./student/pages/course_page";
 import TeacherCoursePage from "./teacher/pages/course_page";
 import StudentCourseForums from "./student/pages/course_forums";
 import StudentSiteNewsList from "./student/pages/site_news_list";
+import TeacherSiteNewsList from "./teacher/pages/site_news_list";
 import StudentCourseForum from "./student/pages/course_forum";
 import TeacherCourseForums from "./teacher/pages/course_forums";
 import TeacherAddNewForum from "./teacher/pages/course_add_new_forum";
 import TeacherCourseForum from "./teacher/pages/course_forum";
 import AdminCourse from "./admin/pages/AdminCourse";
+import TeacherAddNewCourseEvents from "./teacher/pages/TeacherAddNewCourseEvents";
 
 const App = () => {
-	// const [backendData,setBackendData] = useState([{}])
-	// useEffect(() => {
-	//   fetch("/api/1705119").then(
-	//     response => response.json()
-	//   ).then(
-	//     data => {
-	//       setBackendData(data)
-	//     }
-	//   )
-	// },[]);
-	// console.log(backendData);
+  // const [backendData,setBackendData] = useState([{}])
+  // useEffect(() => {
+  //   fetch("/api/1705119").then(
+  //     response => response.json()
+  //   ).then(
+  //     data => {
+  //       setBackendData(data)
+  //     }
+  //   )
+  // },[]);
+  // console.log(backendData);
 
-	// const [token, setToken] = useState({});
-	const { token, setToken } = useToken();
+  // const [token, setToken] = useState({});
+  const { token, setToken } = useToken();
 
-	// if (!token) {
-	//   return <Login onLogin={setToken} />;
-	// }
+  // if (!token) {
+  //   return <Login onLogin={setToken} />;
+  // }
 
-	// const [userType, setUserType] = useState("nologin");
-	// useEffect(() => {
-	//   setToken({ id: 1705119, type: "student" });
-	//   // setUserType("student");
-	//   // setUserType("admin");
-	//   // setUserType("teacher");
-	// }, []);
+  // const [userType, setUserType] = useState("nologin");
+  // useEffect(() => {
+  //   setToken({ id: 1705119, type: "student" });
+  //   // setUserType("student");
+  //   // setUserType("admin");
+  //   // setUserType("teacher");
+  // }, []);
 
-	// const stdId = token.id;
-	// const adminId = token.id;
+  // const stdId = token.id;
+  // const adminId = token.id;
 
 	const loginElement = (
 		<Router>
@@ -279,6 +282,16 @@ const App = () => {
 							path={timeline_link}
 							element={
 								<TeacherTimeline userName={token.id} uType={token.type} />
+							}
+						/>
+            <Route
+							path={"/sitenews/:forumId"}
+							element={<TeacherSiteNews userName={token.id} />}
+						/>
+						<Route
+							path={siteNews_link}
+							element={
+								<TeacherSiteNewsList studentNo={token.id} uType={token.type} />
 							}
 						/>
 						<Route

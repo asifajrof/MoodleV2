@@ -62,7 +62,7 @@ export default function CourseEvaluationEventTableRow({
   return (
     // <StyledTableRow style={{ cursor: "pointer" }}>
     <StyledTableRow>
-      <StyledTableCell align="center">{row.dataIndex}</StyledTableCell>
+      {/* <StyledTableCell align="center">{row.dataIndex}</StyledTableCell> */}
       <StyledTableCell align="center" component="th" scope="row">
         {/* <div onClick={onClickHandler(row.id)}>{row.title}</div> */}
         <Link to={linkto}>

@@ -68,7 +68,7 @@ export default function CourseTopicTableRow({ courseTopic }) {
   return (
     <StyledTableRow>
       <StyledTableCell align="center">{row.checkBox}</StyledTableCell>
-      <StyledTableCell align="center">{row.dataIndex}</StyledTableCell>
+      {/* <StyledTableCell align="center">{row.dataIndex}</StyledTableCell> */}
       <StyledTableCell align="center">{row.teacherName}</StyledTableCell>
       <StyledTableCell align="center" component="th" scope="row">
         {row.topicName}

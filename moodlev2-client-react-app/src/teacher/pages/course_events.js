@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 // import { useLocation } from 'react-router-dom';
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { Button } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
 import CourseMenuBar from "../components/course_menu_bar";
 import CourseEvaluationEvents from "../components/course_evaluation_events";
-import FileUpload from "../components/file_upload/FileUpload";
 // import "./course_home.css";
 
 const TeacherCourseEvents = ({ userName }) => {
@@ -34,8 +35,20 @@ const TeacherCourseEvents = ({ userName }) => {
           {courseInfo._course_code}: {courseInfo._course_name}
         </div>
         <div className="course__home__container__divider">
-          {/* <FileUpload /> */}
-          <CourseEvaluationEvents userName={userName} courseId={courseId} />
+          <div className="course__home__item__left">
+            <div
+              className="course__container__add"
+              style={{ paddingRight: "4rem" }}
+            >
+              <Link to={`/course/${courseId}/events/addnew`}>
+                <Button variant="contained">
+                  Add New
+                  <AddIcon />
+                </Button>
+              </Link>
+            </div>
+            <CourseEvaluationEvents userName={userName} courseId={courseId} />
+          </div>
           <div></div>
         </div>
       </div>

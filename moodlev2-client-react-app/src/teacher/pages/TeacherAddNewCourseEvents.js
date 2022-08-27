@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
+import CourseEventsAddForm from "../components/CourseEventsAddForm";
 import CourseMenuBar from "../components/course_menu_bar";
-import CourseForumAddForm from "../components/add_course_forum_form";
 
-const TeacherAddNewForum = ({ userName }) => {
+const TeacherAddNewCourseEvents = ({ userName }) => {
   const [courseInfo, setcourseInfo] = useState([]);
   const params = useParams();
   const courseId = params.courseId;
@@ -38,9 +37,9 @@ const TeacherAddNewForum = ({ userName }) => {
               alignItems: "flex-start",
             }}
           >
-            <div className="addcourse__title">Add New Forum</div>
+            <div className="addcourse__title">Add New Event</div>
             <div className="addcourse__form__container">
-              <CourseForumAddForm userName={userName} courseId={courseId} />
+              <CourseEventsAddForm userName={userName} courseId={courseId} />
             </div>
           </div>
           <div></div>
@@ -50,4 +49,4 @@ const TeacherAddNewForum = ({ userName }) => {
   );
 };
 
-export default TeacherAddNewForum;
+export default TeacherAddNewCourseEvents;
