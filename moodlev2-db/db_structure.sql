@@ -1287,14 +1287,14 @@ create trigger evaluation_notification_update after update on evaluation
      for each row execute function notify_evaluation_update();
 
 create or replace function get_course_evaluations (std_id integer,crs_id integer)
-    returns table (id integer, event_type varchar,event_date date,event_description varchar,published boolean,completed boolean) as $$
+    returns table (id integer, event_type varchar,event_date date,event_description varchar,published boolean,completed boolean,fileLink varchar) as $$
     declare
     begin
     return query
-    select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp) from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join current_courses cc on cc._id=s.course_id
+    select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join current_courses cc on cc._id=s.course_id
 where cc._id=crs_id and et.notification_time_type=false and mod(_year,100)*100000+dept_code*1000+roll_num=std_id
 union
-select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp) from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join current_courses cc on cc._id=s.course_id
+select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join current_courses cc on cc._id=s.course_id
 where cc._id=crs_id and et.notification_time_type=true and mod(_year,100)*100000+dept_code*1000+roll_num=std_id
 order by _date;
 end
