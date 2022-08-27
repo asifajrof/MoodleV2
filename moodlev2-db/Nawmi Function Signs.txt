@@ -1,0 +1,11 @@
+create or replace function get_course_post_notifications (std_id integer)
+    returns table (eventType integer,eventNo integer,courseID integer,userID integer,dept_shortname varchar,course_code integer,eventTypeName varchar,posterName varchar, notificationTime timestamp with time zone,scheduledDate date) as $$
+
+create or replace function get_site_news_notifications_official (uname varchar)
+    returns table (eventType integer,eventNo integer,userName varchar,eventTypeName varchar,posterName varchar, notificationTime timestamp with time zone,scheduledDate date) as $$
+
+create or replace function get_extra_class_notifications_teacher (teacher_username varchar)
+    returns table (eventType integer,eventNo integer,courseID integer,teacherID integer,dept_shortname varchar,course_code integer,eventTypeName varchar,teacherNamr varchar, notificationTime timestamp with time zone,scheduledDate date) as $$
+
+create or replace function get_cancel_class_notifications_teacher (teacher_username varchar)
+    returns table (eventType integer,eventNo integer,courseID integer,teacherID integer,dept_shortname varchar,course_code integer,eventTypeName varchar,teacherNamr varchar, notificationTime timestamp with time zone,scheduledDate date) as $$

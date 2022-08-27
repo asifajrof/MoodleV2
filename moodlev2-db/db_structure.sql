@@ -1287,14 +1287,14 @@ create trigger evaluation_notification_update after update on evaluation
      for each row execute function notify_evaluation_update();
 
 create or replace function get_course_evaluations (std_id integer,crs_id integer)
-    returns table (id integer, event_type varchar,event_date date,event_description varchar,published boolean,completed boolean) as $$
+    returns table (id integer, event_type varchar,event_date date,event_description varchar,published boolean,completed boolean,fileLink varchar) as $$
     declare
     begin
     return query
-    select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp) from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join current_courses cc on cc._id=s.course_id
+    select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join current_courses cc on cc._id=s.course_id
 where cc._id=crs_id and et.notification_time_type=false and mod(_year,100)*100000+dept_code*1000+roll_num=std_id
 union
-select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp) from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join current_courses cc on cc._id=s.course_id
+select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join current_courses cc on cc._id=s.course_id
 where cc._id=crs_id and et.notification_time_type=true and mod(_year,100)*100000+dept_code*1000+roll_num=std_id
 order by _date;
 end
@@ -2168,6 +2168,64 @@ where ne.event_type=3 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_n
     end
 $$ language plpgsql;
 
+create or replace function get_classes_teacher (uname varchar,secNo integer,checkDate date)
+    returns table (classID integer,start_time time,end_time time) as $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(uname);
+    return query
+    select cr.class_id,cr.start,cr._end
+from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
+join instructor i on tr.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+where t.teacher_id=tid and cr.section_no=secNo and cr.day=extract(isodow from checkDate)-1
+and not exists(
+    select * from canceled_class
+    where class_id=cr.class_id and _date=checkDate
+);
+    end;
+$$ language plpgsql;
+
+create or replace function cancel_class_teacher (uname varchar,classNo integer,cancelDate date)
+    returns integer as $$
+    declare
+        courseNo integer;
+        tid integer;
+        insID integer;
+        ans integer;
+    begin
+        select s.course_id into courseNo from course_routine cr join section s on cr.section_no = s.section_no;
+        tid:=get_teacher_id(uname);
+        select instructor_id into insID from instructor
+        where course_id=courseNo and teacher_id=tid;
+        insert into canceled_class(canceled_class_id, class_id, _date, instructor_id)
+        values (default,classNo,cancelDate,insID) returning canceled_class_id into ans;
+        return  ans;
+    end;
+$$ language plpgsql;
+
+create or replace function add_extra_class (sectionNo integer,uname varchar,start_time timestamp with time zone,end_time timestamp with time zone) returns integer as $$
+    declare
+        tid integer;
+        insID integer;
+        courseNO integer;
+        ans integer;
+    begin
+        select course_id into courseNO from section
+        where section_no=sectionNo;
+        tid:=get_teacher_id(uname);
+        select instructor_id into insID from instructor
+        where course_id=courseNO and teacher_id=tid;
+        insert into extra_class(extra_class_id, section_no, instructor_id, start, _end)
+        values(default,sectionNo,insID,start_time,end_time) returning extra_class_id into ans;
+        return ans;
+    end;
+$$ language plpgsql;
+
+-- drop function add_extra_class(sectionNo integer, uname varchar, start_time timestamp with time zone, end_time timestamp with time zone);
+--drop function cancel_class_teacher(uname varchar, classNo integer, cancelDate date);
+-- drop function get_classes_teacher(uname varchar, secNo integer, checkDate date);
 -- drop function get_cancel_class_notifications(std_id integer);
 -- drop function get_cancel_class_notifications_teacher(teacher_username varchar);
 -- drop function update_evaluation_link(eventID integer, fileLink varchar);
