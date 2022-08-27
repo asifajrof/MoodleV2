@@ -88,7 +88,7 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
 
     // addCourseForum(courseForumObj);
 
-    console.log("onSubmitActionc of add new course forum");
+    console.log("onSubmitAction of add new course event");
     return;
   };
 
