@@ -2168,6 +2168,64 @@ where ne.event_type=3 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_n
     end
 $$ language plpgsql;
 
+create or replace function get_classes_teacher (uname varchar,secNo integer,checkDate date)
+    returns table (classID integer,start_time time,end_time time) as $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(uname);
+    return query
+    select cr.class_id,cr.start,cr._end
+from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
+join instructor i on tr.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+where t.teacher_id=tid and cr.section_no=secNo and cr.day=extract(isodow from checkDate)-1
+and not exists(
+    select * from canceled_class
+    where class_id=cr.class_id and _date=checkDate
+);
+    end;
+$$ language plpgsql;
+
+create or replace function cancel_class_teacher (uname varchar,classNo integer,cancelDate date)
+    returns integer as $$
+    declare
+        courseNo integer;
+        tid integer;
+        insID integer;
+        ans integer;
+    begin
+        select s.course_id into courseNo from course_routine cr join section s on cr.section_no = s.section_no;
+        tid:=get_teacher_id(uname);
+        select instructor_id into insID from instructor
+        where course_id=courseNo and teacher_id=tid;
+        insert into canceled_class(canceled_class_id, class_id, _date, instructor_id)
+        values (default,classNo,cancelDate,insID) returning canceled_class_id into ans;
+        return  ans;
+    end;
+$$ language plpgsql;
+
+create or replace function add_extra_class (sectionNo integer,uname varchar,start_time timestamp with time zone,end_time timestamp with time zone) returns integer as $$
+    declare
+        tid integer;
+        insID integer;
+        courseNO integer;
+        ans integer;
+    begin
+        select course_id into courseNO from section
+        where section_no=sectionNo;
+        tid:=get_teacher_id(uname);
+        select instructor_id into insID from instructor
+        where course_id=courseNO and teacher_id=tid;
+        insert into extra_class(extra_class_id, section_no, instructor_id, start, _end)
+        values(default,sectionNo,insID,start_time,end_time) returning extra_class_id into ans;
+        return ans;
+    end;
+$$ language plpgsql;
+
+-- drop function add_extra_class(sectionNo integer, uname varchar, start_time timestamp with time zone, end_time timestamp with time zone);
+--drop function cancel_class_teacher(uname varchar, classNo integer, cancelDate date);
+-- drop function get_classes_teacher(uname varchar, secNo integer, checkDate date);
 -- drop function get_cancel_class_notifications(std_id integer);
 -- drop function get_cancel_class_notifications_teacher(teacher_username varchar);
 -- drop function update_evaluation_link(eventID integer, fileLink varchar);
