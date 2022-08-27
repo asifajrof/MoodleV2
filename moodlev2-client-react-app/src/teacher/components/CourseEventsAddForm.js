@@ -117,6 +117,9 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
 		fetchData(courseId);
 	}, []);
 
+	// useefect
+	// dependency eventsection
+
 	const eventSectionChange = (event) => {
 		const value = event.target.value;
 		if (value[value.length - 1] === "all") {

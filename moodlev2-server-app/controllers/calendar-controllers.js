@@ -194,7 +194,37 @@ const getSectionList = async (req, res, next) => {
 		return next(new HttpError(error.message, 500));
 	}
 };
+const getSectionSchedule = async (req, res, next) => {
+	try {
+		const { date, month, year, sectionList } = req.body;
+
+		let result = null;
+		let events = null;
+		let eventList = [];
+		const givenDate = moment(new Date(year, month, date));
+
+		for (sec of sectionList) {
+			result = await pool.query(
+				"SELECT json_agg(t) FROM get_day_events_to_schedule($1,$2) as t",
+				[sec, givenDate.format("MM-DD-YYYY")]
+			);
+			events = result.rows[0].json_agg;
+			for (e of events) {
+				e.event_type_id = getIdEvent(e.event_type);
+				eventList.push(e);
+			}
+		}
+		res.json({
+			message: "getSectionSchedule",
+			data: eventList,
+		});
+	} catch (error) {
+		return next(new HttpError(error.message, 500));
+	}
+};
+
 exports.getMarkDateList = getMarkDateList;
 exports.getEventListMonthView = getEventListMonthView;
 exports.getEventType = getEventType;
 exports.getSectionList = getSectionList;
+exports.getSectionSchedule = getSectionSchedule;
