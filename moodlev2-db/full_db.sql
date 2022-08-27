@@ -4470,6 +4470,7 @@ INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id
 INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description, link) VALUES (6, 4, 7, 12, NULL, '2022-08-28 20:40:00+06', '2022-08-28 21:40:00+06', '2022-08-25', 20, NULL, NULL);
 INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description, link) VALUES (8, 5, 1, 1, NULL, '2022-08-25 16:42:50.59004+06', '2022-08-27 17:30:00+06', '2022-08-25', 20, 'This is a bonus assignment', NULL);
 INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description, link) VALUES (9, 5, 5, 6, NULL, '2022-08-27 19:00:18.176651+06', '2022-08-29 11:30:00+06', '2022-08-27', 20, NULL, NULL);
+INSERT INTO public.evaluation (evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, _date, total_marks, description, link) VALUES (10, 5, 2, 2, NULL, '2022-08-30 14:00:00+06', '2022-08-30 15:00:00+06', '2022-08-27', 50, NULL, NULL);
 
 
 --
@@ -4573,6 +4574,7 @@ INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _d
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (11, 1, 4, 4, '2022-08-26', '2022-08-26 11:40:25.914105+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (12, 1, 1, 8, '2022-08-26', '2022-08-26 11:52:23.045686+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (13, 1, 9, 2, '2022-08-27', '2022-08-27 19:00:18.176651+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (14, 1, 10, 2, '2022-08-30', '2022-08-27 22:40:33.499206+06');
 
 
 --
@@ -4811,7 +4813,7 @@ SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 48, true);
 -- Name: evaluation_evaluation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.evaluation_evaluation_id_seq', 9, true);
+SELECT pg_catalog.setval('public.evaluation_evaluation_id_seq', 10, true);
 
 
 --
@@ -4874,7 +4876,7 @@ SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 18, true);
 -- Name: notification_event_not_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.notification_event_not_id_seq', 13, true);
+SELECT pg_catalog.setval('public.notification_event_not_id_seq', 14, true);
 
 
 --
