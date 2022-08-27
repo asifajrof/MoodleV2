@@ -836,10 +836,10 @@ CREATE FUNCTION public.get_course_evaluations_teacher(uname character varying, c
         tid=get_teacher_id(uname);
     return query
     select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),s.section_no,s.section_name,ev.link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ev.instructor_id = i.instructor_id
-where cc._id=crs_id and i.teacher_id=tid
+where cc._id=crs_id and i.teacher_id=tid and et.notification_time_type=false
 union
 select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),s.section_no,s.section_name,ev.link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ev.instructor_id = i.instructor_id
-where cc._id=crs_id and i.teacher_id=tid
+where cc._id=crs_id and i.teacher_id=tid and et.notification_time_type=true
 order by _date;
 end
 $$;
