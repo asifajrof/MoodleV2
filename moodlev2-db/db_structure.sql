@@ -1595,10 +1595,10 @@ create or replace function get_course_evaluations_teacher (uname varchar,crs_id 
         tid=get_teacher_id(uname);
     return query
     select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),s.section_no,s.section_name,ev.link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ev.instructor_id = i.instructor_id
-where cc._id=crs_id and i.teacher_id=tid
+where cc._id=crs_id and i.teacher_id=tid and et.notification_time_type=false
 union
 select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),s.section_no,s.section_name,ev.link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ev.instructor_id = i.instructor_id
-where cc._id=crs_id and i.teacher_id=tid
+where cc._id=crs_id and i.teacher_id=tid and et.notification_time_type=true
 order by _date;
 end
 $$ language plpgsql;
@@ -2095,6 +2095,16 @@ order by ne.notifucation_time desc;
 end
 $$ language plpgsql;
 
+create or replace function get_evaluation_types ()
+    returns table (id integer,name varchar,isOverlapping boolean) as $$
+    declare
+    begin
+    return query
+    select * from evaluation_type;
+end
+$$ language plpgsql;
+
+--drop function get_evaluation_types();
 --drop function get_extra_class_notifications(std_id integer);
 --drop function get_extra_class_notifications_teacher(teacher_username varchar);
 -- drop function get_site_news_notifications();
