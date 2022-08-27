@@ -5,23 +5,10 @@ import FileEdit from "./file_edit/FileEdit";
 import ShowFile from "../../shared/components/ShowFile";
 // import "./course_home.css";
 
-// const courseEvalueationEventInfoInit = {
-// 	id: 1,
-// 	event_type: "Assignment",
-// 	event_description: "Homework on Chapter 1",
-// 	completed: false,
-// 	event_date: "2022-08-20",
-// 	submitted: false,
-// 	fileID: 1, // why array?
-// };
-
 const StudentCourseEventDetail = ({ studentNo, courseId, eventId }) => {
   const [courseEvalueationEventInfo, setCourseEvalueationEventInfo] = useState(
     {}
   );
-  //   const [courseEvalueationEventInfo, setCourseEvalueationEventInfo] = useState(
-  //     courseEvalueationEventInfoInit
-  //   );
   useEffect(() => {
     const fetchData = async (eventId) => {
       try {

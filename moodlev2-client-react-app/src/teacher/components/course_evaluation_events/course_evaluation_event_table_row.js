@@ -8,6 +8,8 @@ import TableRow from "@mui/material/TableRow";
 import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
 
+import ShowFile from "../../../shared/components/ShowFile";
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -36,7 +38,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export default function CourseEvaluationEventTableRow({
   courseEvaluationEvent,
   courseId,
-  onClickHandler,
 }) {
   let dataIndex = 0;
   function createData(isfinished, title, description, id, date, fileLink) {
@@ -59,7 +60,7 @@ export default function CourseEvaluationEventTableRow({
     courseEvaluationEvent.event_date,
     courseEvaluationEvent.filelink
   );
-  // console.log(courseEvaluationEvent);
+  console.log(courseEvaluationEvent);
   // console.log(row);
   const linkto = `/course/${courseId}/event/${row.id}`;
 
@@ -89,7 +90,7 @@ export default function CourseEvaluationEventTableRow({
             </Link>
           </div>
         ) : (
-          <>show file</>
+          <ShowFile fileID={row.id} />
         )}
       </StyledTableCell>
       <StyledTableCell align="center">
