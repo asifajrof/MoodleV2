@@ -30,6 +30,7 @@ import AdminTeachers from "./admin/pages/AdminTeachers";
 import AddNewTeacher from "./admin/pages/AddNewTeacher";
 import AdminStudents from "./admin/pages/AdminStudents";
 import AddNewStudent from "./admin/pages/AddNewStudent";
+import AdminSiteNews from "./admin/pages/site_news";
 
 import BlankMenuBar from "./shared/components/BlankMenuBar";
 import Login from "./shared/pages/login";
@@ -59,7 +60,8 @@ import TeacherAddNewSiteNews from "./teacher/pages/sitenews_add_new_post";
 import TeacherCourseForum from "./teacher/pages/course_forum";
 import AdminCourse from "./admin/pages/AdminCourse";
 import TeacherAddNewCourseEvents from "./teacher/pages/TeacherAddNewCourseEvents";
-
+import AdminAddNewSiteNews from "./admin/pages/sitenews_add_new_post";
+import AdminSiteNewsList from "./admin/pages/site_news_list";
 const App = () => {
 	// const [backendData,setBackendData] = useState([{}])
 	// useEffect(() => {
@@ -159,6 +161,20 @@ const App = () => {
 						<Route
 							path={"/dept/addnew"}
 							element={<DeptAddForm adminNo={token.id} />}
+						/>
+						<Route
+							path={"/sitenews/addnew"}
+							element={<AdminAddNewSiteNews userName={token.id} />}
+						/>
+						<Route
+							path={"/sitenews/:forumId"}
+							element={<AdminSiteNews userName={token.id} />}
+						/>
+						<Route
+							path={siteNews_link}
+							element={
+								<AdminSiteNewsList userName={token.id} uType={token.type} />
+							}
 						/>
 						<Route
 							path="*"
