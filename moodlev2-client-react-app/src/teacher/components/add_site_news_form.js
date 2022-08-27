@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FormHelperText, TextField, Button, InputLabel } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-const CourseForumAddForm = ({ userName, courseId }) => {
+const SiteNewsAddForm = ({ userName }) => {
 	const navigate = useNavigate();
 	// var offering, offered, _year, batch, level, term, course_num;
 	// var course_name;
@@ -13,7 +13,7 @@ const CourseForumAddForm = ({ userName, courseId }) => {
 		//post method here
 		//courseId, userName (for teacher info) available. other stuffs are input from form
 		try {
-			const res = await fetch(`/api/forum/course/addNewCourseForum`, {
+			const res = await fetch(`/api/forum/sitenews/addSiteNews`, {
 				method: "POST",
 				headers: {
 					"Content-type": "application/json",
@@ -22,13 +22,14 @@ const CourseForumAddForm = ({ userName, courseId }) => {
 			});
 			const jsonData = await res.json();
 			let id = null;
-			// console.log(data);
+			// console.log(jsonData);
 			// console.log(res.status);
 			console.log(res);
 			if (res.status === 200) {
-				navigate(`/course/${courseId}/forum/${jsonData.data.id}`);
-				console.log("Course forum added successfully!");
-				// id = data.id;
+				id = jsonData.data.id;
+				// console.log(jsonData);
+				navigate(`/sitenews/${id}`);
+				console.log("site news added successfully!");
 			} else {
 				// alert(data.message);
 				console.log(jsonData.message);
@@ -43,8 +44,7 @@ const CourseForumAddForm = ({ userName, courseId }) => {
 		const courseForumObj = {
 			forumName: forumName,
 			forumDescription: forumDescription,
-			courseId: courseId,
-			teacherUserName: userName,
+			userName: userName,
 		};
 		console.log(courseForumObj);
 
@@ -53,7 +53,7 @@ const CourseForumAddForm = ({ userName, courseId }) => {
 
 		addCourseForum(courseForumObj);
 
-		console.log("onSubmitActionc of add new course forum");
+		console.log("onSubmitActionc of add new site news");
 		return;
 	};
 
@@ -95,4 +95,4 @@ const CourseForumAddForm = ({ userName, courseId }) => {
 	);
 };
 
-export default CourseForumAddForm;
+export default SiteNewsAddForm;

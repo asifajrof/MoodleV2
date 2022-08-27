@@ -28,6 +28,8 @@ forumRoutes.post(
 	forumControllers.addNewCourseForum
 );
 
+forumRoutes.post("/sitenews/addSiteNews", forumControllers.addNewSiteNews);
+
 forumRoutes.post(
 	"/course/addCourseForumReply",
 	forumControllers.addCourseForumReply

@@ -6,7 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import SiteNewsTable from "../components/SiteNewsTable";
 // import "./course_home.css";
 
-const TeacherSiteNewsList = ({ userName }) => {
+const AdminSiteNewsList = ({ userName }) => {
 	const params = useParams();
 
 	return (
@@ -36,4 +36,4 @@ const TeacherSiteNewsList = ({ userName }) => {
 	);
 };
 
-export default TeacherSiteNewsList;
+export default AdminSiteNewsList;
