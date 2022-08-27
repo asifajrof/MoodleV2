@@ -50,15 +50,19 @@ const CourseForumsTable = ({ userName, courseId }) => {
 						<TableRow>
 							{/* <StyledTableCell align="center"> </StyledTableCell> */}
 							{/* <StyledTableCell align="center"> </StyledTableCell> */}
-							<StyledTableCell align="center">Discussion</StyledTableCell>
 							<StyledTableCell align="center">Started By</StyledTableCell>
-							<StyledTableCell align="center">Replies</StyledTableCell>
+							<StyledTableCell align="center">Discussion</StyledTableCell>
+							<StyledTableCell align="center">Time</StyledTableCell>
 							{/* <StyledTableCell align="center">Description</StyledTableCell> */}
 						</TableRow>
 					</TableHead>
 					<TableBody>
 						{courseForumsList.map((courseForum, index) => (
-							<CourseForumTableRow key={index} courseForum={courseForum} />
+							<CourseForumTableRow
+								key={index}
+								courseForum={courseForum}
+								courseId={courseId}
+							/>
 						))}
 					</TableBody>
 				</Table>

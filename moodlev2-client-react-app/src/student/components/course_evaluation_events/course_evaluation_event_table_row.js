@@ -8,23 +8,23 @@ import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
+	[`&.${tableCellClasses.head}`]: {
+		backgroundColor: theme.palette.common.black,
+		color: theme.palette.common.white,
+	},
+	[`&.${tableCellClasses.body}`]: {
+		fontSize: 14,
+	},
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
+	"&:nth-of-type(odd)": {
+		backgroundColor: theme.palette.action.hover,
+	},
+	// hide last border
+	"&:last-child td, &:last-child th": {
+		border: 0,
+	},
 }));
 
 // const rows = [
@@ -33,47 +33,47 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 // ];
 
 export default function CourseEvaluationEventTableRow({
-  courseEvaluationEvent,
-  courseId,
-  onClickHandler,
+	courseEvaluationEvent,
+	courseId,
+	// onClickHandler,
 }) {
-  let dataIndex = 0;
-  function createData(isfinished, title, description, id, date) {
-    dataIndex = dataIndex + 1;
+	let dataIndex = 0;
+	function createData(isfinished, title, description, id, date) {
+		dataIndex = dataIndex + 1;
 
-    return {
-      dataIndex,
-      title,
-      description,
-      id,
-      date,
-    };
-  }
-  const row = createData(
-    courseEvaluationEvent.completed,
-    courseEvaluationEvent.event_type,
-    courseEvaluationEvent.event_description,
-    courseEvaluationEvent.id,
-    courseEvaluationEvent.event_date
-  );
-  // console.log(row);
-  const linkto = `/course/${courseId}/event/${row.id}`;
+		return {
+			dataIndex,
+			title,
+			description,
+			id,
+			date,
+		};
+	}
+	const row = createData(
+		courseEvaluationEvent.completed,
+		courseEvaluationEvent.event_type,
+		courseEvaluationEvent.event_description,
+		courseEvaluationEvent.id,
+		courseEvaluationEvent.event_date
+	);
+	// console.log(row);
+	const linkto = `/course/${courseId}/event/${row.id}`;
 
-  return (
-    // <StyledTableRow style={{ cursor: "pointer" }}>
-    <StyledTableRow>
-      {/* <StyledTableCell align="center">{row.dataIndex}</StyledTableCell> */}
-      <StyledTableCell align="center" component="th" scope="row">
-        {/* <div onClick={onClickHandler(row.id)}>{row.title}</div> */}
-        <Link to={linkto}>
-          {row.title} <br></br> {row.date}
-        </Link>
-        {/* {row.title} */}
-      </StyledTableCell>
-      <StyledTableCell align="center">
-        {/* <Link to={linkto}>{row.description}</Link> */}
-        {row.description}
-      </StyledTableCell>
-    </StyledTableRow>
-  );
+	return (
+		// <StyledTableRow style={{ cursor: "pointer" }}>
+		<StyledTableRow>
+			{/* <StyledTableCell align="center">{row.dataIndex}</StyledTableCell> */}
+			<StyledTableCell align="center" component="th" scope="row">
+				{/* <div onClick={onClickHandler(row.id)}>{row.title}</div> */}
+				<Link to={linkto}>
+					{row.title} <br></br> {row.date}
+				</Link>
+				{/* {row.title} */}
+			</StyledTableCell>
+			<StyledTableCell align="center">
+				{/* <Link to={linkto}>{row.description}</Link> */}
+				{row.description}
+			</StyledTableCell>
+		</StyledTableRow>
+	);
 }
