@@ -146,15 +146,34 @@ const TileContent = ({ uId, date, view, uType }) => {
                           moment(hour, "h:mm a").subtract(1, "minutes"),
                           moment(hour, "h:mm a").add(1, "hour")
                         ) ? (
-                          <div
-                            className="calendar__monthly__event"
-                            style={{
-                              backgroundColor: eventColors[event.event_id - 1],
-                            }}
-                          >
-                            {event.dept_shortname} {event.course_code}{" "}
-                            {event.event_type}
-                          </div>
+                          <>
+                            <div
+                              className="calendar__monthly__event"
+                              style={{
+                                backgroundColor:
+                                  eventColors[event.event_id - 1],
+                              }}
+                            >
+                              {event.event_type_id === 1 ? (
+                                <>
+                                  {event.dept_shortname} {event.course_code}{" "}
+                                  {event.event_type}
+                                </>
+                              ) : (
+                                <>
+                                  <Link
+                                    to={`/course/${event.id}/event/${event.eventid}`}
+                                  >
+                                    {event.dept_shortname} {event.course_code}{" "}
+                                    {event.event_type}
+                                  </Link>
+                                </>
+                              )}
+                            </div>
+                            <div className="calendar__monthly__hourstamp">
+                              {hour}
+                            </div>
+                          </>
                         ) : (
                           <></>
                         )}
@@ -162,7 +181,6 @@ const TileContent = ({ uId, date, view, uType }) => {
                     );
                   })}
                 </div>
-                <div className="calendar__monthly__hourstamp">{hour}</div>
               </div>
             );
           })}

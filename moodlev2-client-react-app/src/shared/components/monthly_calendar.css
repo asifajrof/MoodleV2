@@ -25,8 +25,13 @@
   justify-content: flex-start;
   align-items: center;
 }
+.calendar__monthly__event__particular {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 .calendar__monthly__hourstamp {
-  /* align-self: flex-end; */
+  align-self: center;
   font-size: small;
   font-weight: lighter;
 }
