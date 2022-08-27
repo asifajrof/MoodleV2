@@ -127,8 +127,59 @@ const StudentCourseAssignmentSubmit = async (req, res, next) => {
 	}
 };
 
+const TeacherEvaluationSubmit = async (req, res, next) => {
+	try {
+		if (req.files === null) {
+			return new HttpError("No file uploaded", 400);
+		}
+		// console.log(req);
+		const userName = req.body.userName;
+		const courseId = req.body.courseId;
+		const eventId = req.body.eventId;
+		const file = req.files.file;
+
+		// console.log(studentNo, courseId, eventId);
+
+		const folderPath = `${__dirname}/../Files/course/${courseId}/event/${eventId}/teacher/${userName}/`;
+		if (!fs.existsSync(folderPath)) {
+			console.log("folder does not exist");
+			fs.mkdirSync(folderPath, { recursive: true });
+		}
+		let fileMovePath = `${folderPath}${file.name}`;
+		// check if already exists
+		if (fs.existsSync(fileMovePath)) {
+			// console.log("file exists");
+			// change filename
+			fileMovePath = `${folderPath}${Date.now()}_${file.name}`;
+		}
+		file.mv(
+			// `${__dirname}/../moodlev2-client-react-app/public/uploads/${file.name}`,
+			fileMovePath,
+			(err) => {
+				if (err) {
+					console.error(err);
+					return next(new HttpError(err.message, 500));
+				}
+				res.json({ message: "File uploaded!" });
+			}
+		);
+		// console.log(fileMovePath);
+		const submission_path = `/../Files/course/${courseId}/event/${eventId}/teacher/${userName}/${file.name}`;
+		const result = await pool.query(
+			"SELECT json_agg(t) FROM upload_evaluation($1, $2) as t",
+			[eventId, submission_path]
+		);
+		res.json({
+			message: "file successfully added",
+			data: { fileId: eventId },
+		});
+	} catch (error) {
+		return next(new HttpError(error.message, 500));
+	}
+};
 exports.getStudentCourseAssignmentSubmittedFile =
 	getStudentCourseAssignmentSubmittedFile;
 exports.getStudentAssignmentSubmittedFileInfo =
 	getStudentAssignmentSubmittedFileInfo;
 exports.StudentCourseAssignmentSubmit = StudentCourseAssignmentSubmit;
+exports.TeacherEvaluationSubmit = TeacherEvaluationSubmit;

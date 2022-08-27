@@ -20,7 +20,10 @@ fileRoutes.post(
 // fileRoutes.post("/upload/student/private/:fileID", fileControllers.getFile);
 // fileRoutes.post("/upload/teacher/course/resource/:fileID", fileControllers.getFile);
 // fileRoutes.post("/upload/teacher/private/:fileID", fileControllers.getFile);
-// fileRoutes.post("/upload/teacher/course/evaluation/:fileID", fileControllers.getFile);
+fileRoutes.post(
+	"/upload/teacher/course/evaluation",
+	fileControllers.TeacherEvaluationSubmit
+);
 // fileRoutes.post("/upload/teacher/course/forum/:fileID", fileControllers.getFile);
 // fileRoutes.post("/upload/teacher/forum/:fileID", fileControllers.getFile);
 
