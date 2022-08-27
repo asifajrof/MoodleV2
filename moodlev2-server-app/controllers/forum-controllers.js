@@ -161,20 +161,20 @@ const addNewCourseForum = async (req, res, next) => {
 		const { forumName, forumDescription, courseId, teacherUserName } = req.body;
 		const isStudent = false;
 		const parent = null;
-		// console.log(
-		// 	courseId,
-		// 	teacherUserName.userName,
-		// 	isStudent,
-		// 	forumName,
-		// 	forumDescription,
-		// 	parent
-		// );
+		console.log(
+			courseId,
+			teacherUserName,
+			isStudent,
+			forumName,
+			forumDescription,
+			parent
+		);
 		console.log("POST api/forum/course/addNewCourseForum");
 		let result = await pool.query(
 			"SELECT json_agg(t) FROM add_course_post($1, $2, $3, $4, $5, $6) as t",
 			[
 				courseId,
-				teacherUserName.userName,
+				teacherUserName,
 				isStudent,
 				forumName,
 				forumDescription,
@@ -190,6 +190,29 @@ const addNewCourseForum = async (req, res, next) => {
 		// } else {
 		// 	res.json({ message: "addNewCourseForum", data: forum });
 		// }
+	} catch (err) {
+		return next(new HttpError(err.message, 500));
+	}
+};
+
+const addNewSiteNews = async (req, res, next) => {
+	try {
+		const { forumName, forumDescription, userName } = req.body;
+		const parent = null;
+		// console.log(
+		// 	userName,
+		// 	forumName,
+		// 	forumDescription,
+		// 	parent
+		// );
+		console.log("POST api/forum/course/addNewCourseForum");
+		let result = await pool.query(
+			"SELECT json_agg(t) FROM add_forum_post($1, $2, $3, $4) as t",
+			[userName, forumName, forumDescription, parent]
+		);
+		const forum = result.rows[0].json_agg;
+		// console.log(forum);
+		res.json({ message: "added New site news", data: { id: forum[0] } });
 	} catch (err) {
 		return next(new HttpError(err.message, 500));
 	}
@@ -251,6 +274,7 @@ const addSiteNewsReply = async (req, res, next) => {
 	}
 };
 
+exports.addNewSiteNews = addNewSiteNews;
 exports.getSiteNewsRecursive = getSiteNewsRecursive;
 exports.getSiteNewsRootList = getSiteNewsRootList;
 exports.addCourseForumReply = addCourseForumReply;

@@ -55,6 +55,7 @@ import TeacherSiteNewsList from "./teacher/pages/site_news_list";
 import StudentCourseForum from "./student/pages/course_forum";
 import TeacherCourseForums from "./teacher/pages/course_forums";
 import TeacherAddNewForum from "./teacher/pages/course_add_new_forum";
+import TeacherAddNewSiteNews from "./teacher/pages/sitenews_add_new_post";
 import TeacherCourseForum from "./teacher/pages/course_forum";
 import AdminCourse from "./admin/pages/AdminCourse";
 import TeacherAddNewCourseEvents from "./teacher/pages/TeacherAddNewCourseEvents";
@@ -277,6 +278,10 @@ const App = () => {
 						<Route
 							path={"/course/:courseId/forum/addnew" + course_link}
 							element={<TeacherAddNewForum userName={token.id} />}
+						/>
+						<Route
+							path={"/sitenews/addnew"}
+							element={<TeacherAddNewSiteNews userName={token.id} />}
 						/>
 						<Route
 							path={"/course/:courseId/forum/:forumId"}
