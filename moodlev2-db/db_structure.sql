@@ -1764,10 +1764,10 @@ where event_id=event;
 $$ language plpgsql;
 
 create or replace function get_event_description (event integer)
-    returns table (eventID integer,eventType varchar,description varchar,subTime timestamp with time zone) as $$
+    returns table (eventID integer,eventType varchar,description varchar,subTime timestamp with time zone,fileLink varchar) as $$
     begin
     return query
-    select e.evaluation_id,et.type_name,e.description,e._end from evaluation e join evaluation_type et on et.type_id = e.type_id
+    select e.evaluation_id,et.type_name,e.description,e._end,e.link from evaluation e join evaluation_type et on et.type_id = e.type_id
     where e.evaluation_id=event;
     end
 $$ language plpgsql;
@@ -2151,6 +2151,24 @@ create or replace function get_cancel_class_notifications_teacher (teacher_usern
     end
 $$ language plpgsql;
 
+create or replace function get_cancel_class_notifications(std_id integer)
+    returns table (eventType integer,eventNo integer,courseID integer,teacherID integer,dept_shortname varchar,course_code integer,eventTypeName varchar,teacherNamr varchar, notificationTime timestamp with time zone,scheduledDate date) as $$
+    begin
+    return query
+        select ne.event_type,ne.event_no,c._id,tp.teacher_id,c._dept_shortname,c._course_code,cast('Canceled Class' as varchar),tp.teacher_name,ne.notifucation_time, ne._date
+from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.not_id
+join instructor i on cc.instructor_id = i.instructor_id
+join teacher tp on i.teacher_id = tp.teacher_id
+join current_courses c on c._id=i.course_id
+join course_routine cr on cc.class_id=cr.class_id
+join section s on cr.section_no=s.section_no
+join enrolment e on s.section_no=e.section_id
+join student s2 on e.student_id = s2.student_id
+where ne.event_type=3 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and s2.notification_last_seen<ne.notifucation_time;
+    end
+$$ language plpgsql;
+
+-- drop function get_cancel_class_notifications(std_id integer);
 -- drop function get_cancel_class_notifications_teacher(teacher_username varchar);
 -- drop function update_evaluation_link(eventID integer, fileLink varchar);
 -- drop function add_evaluation(typeID integer, sectionNo integer, uname varchar, caption_exten varchar, start_time timestamp with time zone, end_time timestamp with time zone, marks float, descrip varchar, fileLink varchar);

@@ -1404,12 +1404,12 @@ ALTER FUNCTION public.get_evaluation_notifications_teacher(teacher_username char
 -- Name: get_event_description(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_event_description(event integer) RETURNS TABLE(eventid integer, eventtype character varying, description character varying, subtime timestamp with time zone)
+CREATE FUNCTION public.get_event_description(event integer) RETURNS TABLE(eventid integer, eventtype character varying, description character varying, subtime timestamp with time zone, filelink character varying)
     LANGUAGE plpgsql
     AS $$
     begin
     return query
-    select e.evaluation_id,et.type_name,e.description,e._end from evaluation e join evaluation_type et on et.type_id = e.type_id
+    select e.evaluation_id,et.type_name,e.description,e._end,e.link from evaluation e join evaluation_type et on et.type_id = e.type_id
     where e.evaluation_id=event;
     end
 $$;
