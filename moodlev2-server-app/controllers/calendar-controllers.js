@@ -161,5 +161,40 @@ const getEventListMonthView = async (req, res, next) => {
 	}
 };
 
+const getEventType = async (req, res, next) => {
+	try {
+		let result = await pool.query(
+			"select json_agg(t) from evaluation_type as t"
+		);
+		const events = result.rows[0].json_agg;
+		// console.log(result);
+		res.json({
+			message: "get event types",
+			data: events,
+		});
+	} catch (error) {
+		return next(new HttpError(error.message, 500));
+	}
+};
+
+const getSectionList = async (req, res, next) => {
+	try {
+		const courseId = req.params.courseId;
+		let result = await pool.query(
+			"select json_agg(t) from get_sections($1) as t",
+			[courseId]
+		);
+		const events = result.rows[0].json_agg;
+		// console.log(result);
+		res.json({
+			message: "get event types",
+			data: events,
+		});
+	} catch (error) {
+		return next(new HttpError(error.message, 500));
+	}
+};
 exports.getMarkDateList = getMarkDateList;
 exports.getEventListMonthView = getEventListMonthView;
+exports.getEventType = getEventType;
+exports.getSectionList = getSectionList;
