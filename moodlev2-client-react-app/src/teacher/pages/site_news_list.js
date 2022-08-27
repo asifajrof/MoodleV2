@@ -5,23 +5,8 @@ import { useParams } from "react-router-dom";
 import SiteNewsTable from "../components/SiteNewsTable";
 // import "./course_home.css";
 
-const StudentSiteNewsList = ({ studentNo }) => {
-	// const [courseInfo, setcourseInfo] = useState([]);
+const TeacherSiteNewsList = ({ userName }) => {
 	const params = useParams();
-	// const courseId = params.courseId;
-
-	// useEffect(() => {
-	// 	const fetchData = async () => {
-	// 		try {
-	// 			const response = await fetch(`/api/course/${courseId}`);
-	// 			const jsonData = await response.json();
-	// 			setcourseInfo(jsonData.data);
-	// 		} catch (err) {
-	// 			console.log(err);
-	// 		}
-	// 	};
-	// 	fetchData();
-	// }, []);
 
 	return (
 		<React.Fragment>
@@ -29,7 +14,7 @@ const StudentSiteNewsList = ({ studentNo }) => {
 			<div className="course__home__container">
 				<div className="course__home__container__item__1">Site News</div>
 				<div className="course__home__container__divider">
-					<SiteNewsTable studentNo={studentNo} /*courseId={courseId}*/ />
+					<SiteNewsTable userName={userName} /*courseId={courseId}*/ />
 					<div>{/* upcoming */}</div>
 				</div>
 			</div>
@@ -37,4 +22,4 @@ const StudentSiteNewsList = ({ studentNo }) => {
 	);
 };
 
-export default StudentSiteNewsList;
+export default TeacherSiteNewsList;

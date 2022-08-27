@@ -25,7 +25,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 	},
 }));
 
-const SiteNewsTable = ({ studentNo }) => {
+const SiteNewsTable = ({ userName }) => {
 	const [siteNewsList, setSiteNewsList] = useState([]);
 	useEffect(() => {
 		const fetchData = async () => {

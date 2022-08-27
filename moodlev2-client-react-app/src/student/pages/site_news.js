@@ -8,7 +8,6 @@ import SiteNewsPage from "../components/site_news/SiteNewsPage";
 const StudentSiteNews = ({ studentNo }) => {
 	// const [courseInfo, setcourseInfo] = useState([]);
 	const params = useParams();
-	const courseId = params.courseId;
 	const forumId = params.forumId;
 
 	// useEffect(() => {
@@ -30,11 +29,7 @@ const StudentSiteNews = ({ studentNo }) => {
 
 			<div className="course__home__container">
 				<div className="course__home__container__item__1">Site News</div>
-				<SiteNewsPage
-					studentNo={studentNo}
-					courseId={courseId}
-					forumId={forumId}
-				/>
+				<SiteNewsPage studentNo={studentNo} forumId={forumId} />
 			</div>
 		</React.Fragment>
 	);

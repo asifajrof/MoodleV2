@@ -70,7 +70,7 @@ const siteNewsPagePostsInit = [
 	},
 ];
 
-const SinglePost = ({ studentNo, forumId, postObj, onNewReply }) => {
+const SinglePost = ({ userName, forumId, postObj, onNewReply }) => {
 	const [showReply, setShowReply] = useState(false);
 	const onClickReply = () => {
 		setShowReply(!showReply);
@@ -117,8 +117,8 @@ const SinglePost = ({ studentNo, forumId, postObj, onNewReply }) => {
 		const siteNewsReplyObj = {
 			forumName: `Re:${postObj.title}`,
 			forumDescription: replyBody,
-			userName: studentNo,
-			isStudent: true,
+			userName: userName,
+			isStudent: false,
 			parentId: postObj.id,
 		};
 		addSiteNewsReply(siteNewsReplyObj);
@@ -149,7 +149,7 @@ const SinglePost = ({ studentNo, forumId, postObj, onNewReply }) => {
 			</div>
 			{postObj.children?.length > 0 && (
 				<Post
-					studentNo={studentNo}
+					userName={userName}
 					forumId={forumId}
 					data={postObj.children}
 					onNewReply={onNewReply}
@@ -159,13 +159,13 @@ const SinglePost = ({ studentNo, forumId, postObj, onNewReply }) => {
 	);
 };
 
-const Post = ({ studentNo, forumId, data, onNewReply }) => {
+const Post = ({ userName, forumId, data, onNewReply }) => {
 	return (
 		<>
 			{data.map((item, index) => (
 				<SinglePost
 					key={index}
-					studentNo={studentNo}
+					userName={userName}
 					forumId={forumId}
 					postObj={item}
 					onNewReply={onNewReply}
@@ -175,7 +175,7 @@ const Post = ({ studentNo, forumId, data, onNewReply }) => {
 	);
 };
 
-const SiteNewsPage = ({ studentNo, forumId }) => {
+const SiteNewsPage = ({ userName, forumId }) => {
 	const [siteNewsPagePosts, setSiteNewsPagePosts] = useState([]);
 	// const [siteNewsPagePosts, setSiteNewsPagePosts] = useState(
 	// 	siteNewsPagePostsInit
@@ -203,7 +203,7 @@ const SiteNewsPage = ({ studentNo, forumId }) => {
 		<div className="course__event__container" style={{ width: "95%" }}>
 			<div className="course__event__info">
 				<Post
-					studentNo={studentNo}
+					userName={userName}
 					forumId={forumId}
 					data={siteNewsPagePosts}
 					onNewReply={onNewReply}
