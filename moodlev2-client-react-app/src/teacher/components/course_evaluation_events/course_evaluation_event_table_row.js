@@ -60,7 +60,7 @@ export default function CourseEvaluationEventTableRow({
     courseEvaluationEvent.event_date,
     courseEvaluationEvent.filelink
   );
-  console.log(courseEvaluationEvent);
+  // console.log(courseEvaluationEvent);
   // console.log(row);
   const linkto = `/course/${courseId}/event/${row.id}`;
 
