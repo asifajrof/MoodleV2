@@ -7,25 +7,27 @@ const studentRoutes = express.Router();
 // remember to keep order of route
 
 studentRoutes.get("/", (req, res, next) => {
-  console.log("GET /student");
-  res.json({ message: "it works!" });
+	console.log("GET /student");
+	res.json({ message: "it works!" });
 });
 
 // student home. get all current courses by student id
 studentRoutes.get(
-  "/courses/current/:student_id",
-  studentControllers.getCurrentCoursesByStudentId
+	"/courses/current/:student_id",
+	studentControllers.getCurrentCoursesByStudentId
 );
 
 studentRoutes.get(
-  "/courses/all/:student_id",
-  studentControllers.getAllCoursesByStudentId
+	"/courses/all/:student_id",
+	studentControllers.getAllCoursesByStudentId
 );
 
 studentRoutes.get(
-  "/upcoming/:student_id",
-  studentControllers.getUpcomingEventsByStudentId
+	"/upcoming/:student_id",
+	studentControllers.getUpcomingEventsByStudentId
 );
+
+studentRoutes.post("/course/grade", studentControllers.getEventGrade);
 
 // studentRoutes.get('/course/:course_id', studentControllers.getCourseById);
 
