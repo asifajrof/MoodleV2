@@ -303,7 +303,8 @@ insert into section(section_no, section_name, course_id) values(default,'CSE-201
 insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE463-2022',9);
 insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE408-2022',10);
 insert into section (section_no, section_name, course_id, cr_id) values (default,'CSE-2017-A-CSE405-2022',4,null);
-
+insert into section (section_no, section_name, course_id, cr_id)
+values (default,'CSE-2017-A-CSE409-2022',5,null);
 
 insert into enrolment(student_id, section_id) values (1,1);
 insert into enrolment(student_id, section_id) values (1,2);
