@@ -14,7 +14,7 @@ const AdminCourse = ({ adminNo }) => {
 				const response = await fetch(`/api/course/${courseId}`);
 				const jsonData = await response.json();
 				setcourseInfo(jsonData.data);
-				console.log(jsonData.data);
+				// console.log(jsonData.data);
 			} catch (err) {
 				console.log(err);
 			}

@@ -280,19 +280,23 @@ const getAllCourseCRs = async (req, res, next) => {
 		let cr_list = [];
 		// console.log(crs);
 
-		for (cr in crs) {
-			if (cr.crid == null && cr.crname == null) {
-				continue;
-			} else {
-				cr_list.push(cr);
+		if (crs != null) {
+			for (cr of crs) {
+				if (cr.crid === null && cr.crname === null) {
+					// console.log("here");
+					continue;
+				} else {
+					cr_list.push(cr);
+				}
 			}
 		}
-		// console.log(result);
-		if (!crs) {
-			next(new HttpError("CRs not found", 404));
-		} else {
-			res.json({ message: "getAllCourseCRs", data: cr_list });
-		}
+
+		// console.log(cr_list);
+		// if (cr_list.length === 0) {
+		// 	next(new HttpError("CRs not found", 404));
+		// } else {
+		res.json({ message: "getAllCourseCRs", data: cr_list });
+		// }
 	} catch (err) {
 		return next(new HttpError(err.message, 500));
 	}
