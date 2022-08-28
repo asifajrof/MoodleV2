@@ -84,7 +84,7 @@ export default function CourseEvaluationEventTableRow({
           <div className="course__event__add">
             <Link to={`/course/${courseId}/event/${row.id}/addfile`}>
               <Button variant="contained" size="small">
-                Add New
+                Add
                 <AddIcon />
               </Button>
             </Link>

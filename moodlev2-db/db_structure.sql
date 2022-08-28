@@ -882,7 +882,7 @@ where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section
+select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
 where iss.first_section=sec_id and overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp);
         if (ans>0) then
             return true;

@@ -617,7 +617,7 @@ where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i
         if (ans>0) then
             return true;
         end if;
-select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section
+select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
 where iss.first_section=sec_id and overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp);
         if (ans>0) then
             return true;
@@ -2976,6 +2976,17 @@ CREATE MATERIALIZED VIEW public.all_courses AS
 ALTER TABLE public.all_courses OWNER TO postgres;
 
 --
+-- Name: ans; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.ans (
+    count bigint
+);
+
+
+ALTER TABLE public.ans OWNER TO postgres;
+
+--
 -- Name: canceled_class; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -4403,6 +4414,13 @@ INSERT INTO public.admins (admin_id, name, user_no) VALUES (1, 'Nazmul Haque', 1
 
 
 --
+-- Data for Name: ans; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.ans (count) VALUES (0);
+
+
+--
 -- Data for Name: canceled_class; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -4893,7 +4911,7 @@ SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 48, true);
 -- Name: evaluation_evaluation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.evaluation_evaluation_id_seq', 10, true);
+SELECT pg_catalog.setval('public.evaluation_evaluation_id_seq', 14, true);
 
 
 --
@@ -6220,6 +6238,13 @@ ALTER TABLE ONLY public.teacher
 
 ALTER TABLE ONLY public.topic
     ADD CONSTRAINT topic_instructor_id_fkey FOREIGN KEY (instructor_id) REFERENCES public.instructor(instructor_id);
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
