@@ -13,6 +13,7 @@ export const students_link = "/students";
 export const course_link = "/";
 export const course_events_link = "/events";
 export const course_grades_link = "/grades";
+export const course_resched_link = "/rescheduling";
 export const course_resources_link = "/resources";
 export const course_forum_link = "/forum";
 

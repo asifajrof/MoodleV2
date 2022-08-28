@@ -4,6 +4,7 @@ import {
   course_forum_link,
   course_grades_link,
   course_link,
+  course_resched_link,
   course_resources_link,
 } from "../../links";
 
@@ -28,6 +29,10 @@ const CourseMenuBar = ({ studentNo, courseId }) => {
     {
       _name: "Grades",
       link: root_link + course_grades_link,
+    },
+    {
+      _name: "Rescheduling",
+      link: root_link + course_resched_link,
     },
     {
       _name: "Resource Sharing",
