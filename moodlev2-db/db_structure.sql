@@ -470,8 +470,8 @@ create or replace function get_course_topics (courseID integer)
     begin
 	return query
     select topic_num, t.teacher_id, i.instructor_id, topic_name,description,teacher_name,finished,started
-from topic tp join instructor i on tp.instructor_id = i.instructor_id join current_courses c on c._id = i.course_id join teacher t on i.teacher_id = t.teacher_id
-where course_id = courseID
+from topic tp join instructor i on tp.instructor_id = i.instructor_id join course c on c.course_id = i.course_id join teacher t on i.teacher_id = t.teacher_id
+where c.course_id = courseID
 order by started;
     end
 $$ language plpgsql;
@@ -1300,11 +1300,11 @@ create or replace function get_course_evaluations (std_id integer,crs_id integer
     declare
     begin
     return query
-    select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join current_courses cc on cc._id=s.course_id
-where cc._id=crs_id and et.notification_time_type=false and mod(_year,100)*100000+dept_code*1000+roll_num=std_id
+    select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join course cc on cc.course_id=s.course_id
+where cc.course_id=crs_id and et.notification_time_type=false and mod(s2._year,100)*100000+s2.dept_code*1000+roll_num=std_id
 union
-select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join current_courses cc on cc._id=s.course_id
-where cc._id=crs_id and et.notification_time_type=true and mod(_year,100)*100000+dept_code*1000+roll_num=std_id
+select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join course cc on cc.course_id=s.course_id
+where cc.course_id=crs_id and et.notification_time_type=true and mod(s2._year,100)*100000+s2.dept_code*1000+roll_num=std_id
 order by _date;
 end
 $$ language plpgsql;
@@ -2509,13 +2509,13 @@ create or replace function get_course_resources (crs_id integer)
         select res_id,res_name,res_link,owner_id,s2.student_name,cast(true as boolean)
 from student_resource sr join enrolment e on sr.owner_id = e.enrol_id
 join section s on e.section_id = s.section_no
-join current_courses cc on cc._id = s.course_id
+join course cc on cc.course_id = s.course_id
 join student s2 on s.cr_id = s2.student_id
 where s.course_id=crs_id
 union
 select res_id,res_name,res_link,owner_id,t.teacher_name,cast(false as boolean)
 from instructor_resource join instructor i on i.instructor_id = instructor_resource.owner_id
-join current_courses cc on cc._id = i.course_id
+join course cc on cc.course_id = i.course_id
 join teacher t on i.teacher_id = t.teacher_id
 where i.course_id=crs_id;
 end
