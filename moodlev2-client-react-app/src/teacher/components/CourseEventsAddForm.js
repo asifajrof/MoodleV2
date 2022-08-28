@@ -299,13 +299,15 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
                       </ToggleButtonGroup>
                       <br /> <br />
                       {scheduleShow === "schedule" && (
-                        <ShowSchedule
-                          userName={userName}
-                          courseId={courseId}
-                          sectionList={eventSection}
-                        />
+                        <>
+                          <ShowSchedule
+                            userName={userName}
+                            courseId={courseId}
+                            sectionList={eventSection}
+                          />
+                          <br /> <br />
+                        </>
                       )}
-                      <br /> <br />
                     </div>
                   )}
 
