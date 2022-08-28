@@ -213,10 +213,10 @@ const getSectionSchedule = async (req, res, next) => {
 			events = result.rows[0].json_agg;
 			// console.log(events);
 			if (events != null) {
-				for (e of events) {
-					e.event_type_id = getIdEvent(e.event_type);
-					eventList.push(e);
-					// console.log(e);
+				for (c of events) {
+					c.event_type_id = getIdEvent(c.event_type);
+					eventList.push(c);
+					// console.log(c);
 				}
 			}
 			///==========================self section data=================================
@@ -228,10 +228,10 @@ const getSectionSchedule = async (req, res, next) => {
 			events = result.rows[0].json_agg;
 			// console.log(events);
 			if (events != null) {
-				for (e of events) {
-					e.event_type_id = getIdEvent(e.event_type);
-					eventList.push(e);
-					// console.log(e);
+				for (c of events) {
+					c.event_type_id = getIdEvent(c.event_type);
+					eventList.push(c);
+					// console.log(c);
 				}
 			}
 		}
@@ -263,23 +263,24 @@ const getSelfSectionScheduleFiltered = async (req, res, next) => {
 			);
 			// console.log(sec, givenDate.format("MM-DD-YYYY"));
 			events = result.rows[0].json_agg;
-			// console.log(events);
+			console.log("events :", events);
 			if (events != null) {
-				for (e of events) {
-					e.event_type_id = getIdEvent(e.event_type);
-					if (e.event_type === "Class") {
-						eventList.push(e);
-						// console.log(e);
+				for (c of events) {
+					c.event_type_id = getIdEvent(c.event_type);
+					if (c.event_type === "Class") {
+						eventList.push(c);
+						// console.log(c);
 					}
 				}
 			}
 		}
-		// console.log(eventList);
+		console.log(eventList);
 		res.json({
 			message: "getSectionSchedule",
 			eventList: eventList,
 		});
 	} catch (error) {
+		console.log("===============================");
 		return next(new HttpError(error.message, 500));
 	}
 };

@@ -17,13 +17,13 @@ const getRescheduleEvents = async (req, res, next) => {
 		// console.log(result.rows[0].json_agg);
 		const extra = result.rows[0].json_agg;
 		if (extra != null) {
-			for (e of extra) {
+			for (c of extra) {
 				const obj = {
 					eventType: "Extra Class",
-					eventStartTime: e.start_time,
-					eventEndTime: e.end_time,
-					eventSectionName: e.sectionname,
-					eventTeacherName: e.teachername,
+					eventStartTime: c.start_time,
+					eventEndTime: c.end_time,
+					eventSectionName: c.sectionname,
+					eventTeacherName: c.teachername,
 				};
 				reschList.push(obj);
 			}
