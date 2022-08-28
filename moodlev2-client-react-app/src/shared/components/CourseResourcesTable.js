@@ -25,7 +25,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-const CourseResourceTable = ({ userName, courseId }) => {
+const CourseResourceTable = ({ userName, uType, courseId }) => {
   const [courseResourceList, setCourseResourceList] = useState([]);
   // fetch resource here
   //   useEffect(() => {
@@ -56,6 +56,7 @@ const CourseResourceTable = ({ userName, courseId }) => {
             {courseResourceList.map((courseResource, index) => (
               <CourseResourceTableRow
                 key={index}
+                uType={uType}
                 courseResource={courseResource}
                 courseId={courseId}
               />

@@ -47,7 +47,11 @@ const Resources = ({ userName, uType }) => {
                 </Button>
               </Link>
             </div>
-            <CourseResourceTable userName={userName} courseId={courseId} />
+            <CourseResourceTable
+              userName={userName}
+              uType={uType}
+              courseId={courseId}
+            />
           </div>
           <div>{/* upcoming */}</div>
         </div>
