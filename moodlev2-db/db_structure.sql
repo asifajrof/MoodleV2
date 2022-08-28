@@ -1764,13 +1764,14 @@ create or replace function mark_topic_done(top_num integer) returns void as $$
 $$ language plpgsql;
 
 create or replace function get_submissions (event integer)
-    returns table (subID integer,studentID integer,studentName varchar,subLink varchar,subTime timestamp with time zone) as $$
+    returns table (subID integer,studentID integer,studentName varchar,subLink varchar,subTime timestamp with time zone,totalMarks float,obtainedMarks float) as $$
     begin
     return query
-        select sub_id,(mod(_year,100)*100000+dept_code*1000+roll_num) as id,student_name,sub.link,sub_time from submission sub join enrolment e on e.enrol_id = sub.enrol_id join student s on e.student_id = s.student_id join evaluation e2 on sub.event_id = e2.evaluation_id
+        select sub.sub_id,(mod(_year,100)*100000+dept_code*1000+roll_num) as id,student_name,sub.link,sub_time,e2.total_marks,g.obtained_marks from submission sub join enrolment e on e.enrol_id = sub.enrol_id join student s on e.student_id = s.student_id join evaluation e2 on sub.event_id = e2.evaluation_id left outer join grading g on sub.sub_id = g.sub_id
 where event_id=event;
     end
 $$ language plpgsql;
+
 
 create or replace function get_event_description (event integer)
     returns table (eventID integer,eventType varchar,description varchar,subTime timestamp with time zone,fileLink varchar) as $$
@@ -2596,6 +2597,16 @@ where ne.event_type=5 and t2.teacher_id=tid and t.teacher_id!=tid;
     end
 $$ language plpgsql;
 
+create or replace function get_a_grade_student (event integer,std_id integer)
+    returns table (subID integer,studentID integer,studentName varchar,subLink varchar,subTime timestamp with time zone,totalMarks float,obtainedMarks float) as $$
+    begin
+    return query
+        select sub.sub_id,(mod(_year,100)*100000+dept_code*1000+roll_num) as id,student_name,sub.link,sub_time,e2.total_marks,g.obtained_marks from submission sub join enrolment e on e.enrol_id = sub.enrol_id join student s on e.student_id = s.student_id join evaluation e2 on sub.event_id = e2.evaluation_id left outer join grading g on sub.sub_id = g.sub_id
+where event_id=event and (mod(_year,100)*100000+dept_code*1000+roll_num)=std_id;
+    end
+$$ language plpgsql;
+
+--drop function get_a_grade_student(event integer, std_id integer);
 -- drop function get_tresource_notifications_teacher(uname varchar);
 -- drop function get_tresource_notifications_student(std_id integer);
 -- drop function get_sresource_notifications_student(std_id integer)
@@ -2650,7 +2661,7 @@ $$ language plpgsql;
 -- drop function get_root_forum_posts();
 --drop function get_root_course_posts(courseID integer);
 --drop function make_submission(eventID integer, stdID integer, subLink varchar);
--- drop function grade_submission(eventID integer, teacher_username varchar, courseID integer, totalMarks float, obtainedMarks float, remark varchar);
+-- drop function grade_submission(subID integer, teacher_username varchar, courseID integer, totalMarks float, obtainedMarks float, remark varchar);
 --drop function get_submitted_file_link (subID integer);
 --drop function get_submission_info(eventID integer, stdID integer);
 --drop function get_event_description(event integer);

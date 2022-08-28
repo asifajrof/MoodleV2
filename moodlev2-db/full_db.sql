@@ -842,6 +842,23 @@ $$;
 ALTER FUNCTION public.extra_teacher_check() OWNER TO postgres;
 
 --
+-- Name: get_a_grade_student(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_a_grade_student(event integer, std_id integer) RETURNS TABLE(subid integer, studentid integer, studentname character varying, sublink character varying, subtime timestamp with time zone, totalmarks double precision, obtainedmarks double precision)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+        select sub.sub_id,(mod(_year,100)*100000+dept_code*1000+roll_num) as id,student_name,sub.link,sub_time,e2.total_marks,g.obtained_marks from submission sub join enrolment e on e.enrol_id = sub.enrol_id join student s on e.student_id = s.student_id join evaluation e2 on sub.event_id = e2.evaluation_id left outer join grading g on sub.sub_id = g.sub_id
+where event_id=event and (mod(_year,100)*100000+dept_code*1000+roll_num)=std_id;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_a_grade_student(event integer, std_id integer) OWNER TO postgres;
+
+--
 -- Name: get_account_type(character varying); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -2158,12 +2175,12 @@ ALTER FUNCTION public.get_submission_info(eventid integer, stdid integer) OWNER 
 -- Name: get_submissions(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_submissions(event integer) RETURNS TABLE(subid integer, studentid integer, studentname character varying, sublink character varying, subtime timestamp with time zone)
+CREATE FUNCTION public.get_submissions(event integer) RETURNS TABLE(subid integer, studentid integer, studentname character varying, sublink character varying, subtime timestamp with time zone, totalmarks double precision, obtainedmarks double precision)
     LANGUAGE plpgsql
     AS $$
     begin
     return query
-        select sub_id,(mod(_year,100)*100000+dept_code*1000+roll_num) as id,student_name,sub.link,sub_time from submission sub join enrolment e on e.enrol_id = sub.enrol_id join student s on e.student_id = s.student_id join evaluation e2 on sub.event_id = e2.evaluation_id
+        select sub.sub_id,(mod(_year,100)*100000+dept_code*1000+roll_num) as id,student_name,sub.link,sub_time,e2.total_marks,g.obtained_marks from submission sub join enrolment e on e.enrol_id = sub.enrol_id join student s on e.student_id = s.student_id join evaluation e2 on sub.event_id = e2.evaluation_id left outer join grading g on sub.sub_id = g.sub_id
 where event_id=event;
     end
 $$;
