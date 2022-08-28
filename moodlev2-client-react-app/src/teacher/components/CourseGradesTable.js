@@ -28,19 +28,33 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 const CourseGradesTable = ({ userName, courseId }) => {
   const [courseEventGradesList, setCourseEventGradesList] = useState([]);
 
-  // fetch here
-  // useEffect(() => {
-  //     const fetchData = async () => {
-  //       try {
-  //         const response = await fetch(`/api/course/topics/${courseId}`);
-  //         const jsonData = await response.json();
-  //         setCourseEventGradesList(jsonData.data);
-  //       } catch (err) {
-  //         console.log(err);
-  //       }
-  //     };
-  //     fetchData();
-  //   }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/course/events_teacher`, {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({ userName, courseId }),
+        });
+        const jsonData = await res.json();
+        // console.log(data);
+        // console.log(res.status);
+        if (res.status === 200) {
+          setCourseEventGradesList(jsonData.data);
+          // console.log(jsonData.data);
+        } else {
+          // alert(data.message);
+          console.log(jsonData.message);
+        }
+      } catch (err) {
+        console.log(err);
+        // alert(err);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <div style={{ width: "100%", paddingRight: "4rem" }}>
       <TableContainer component={Paper}>

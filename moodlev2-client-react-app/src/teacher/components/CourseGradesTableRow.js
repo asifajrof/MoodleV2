@@ -30,21 +30,21 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const CourseGradesTableRow = ({ courseEventGrade, courseId }) => {
   // needed fields
-  //     courseEventGrade.eventId
-  //     courseEventGrade.eventType
-  //     courseEventGrade.eventDate
-  //     courseEventGrade.description
-  const linkto = `/course/${courseId}/grade/event/${courseEventGrade.eventId}}`;
-
+  //     courseEventGrade.id
+  //     courseEventGrade.event_type
+  //     courseEventGrade.event_date
+  //     courseEventGrade.event_description
+  const linkto = `/course/${courseId}/grade/event/${courseEventGrade.id}`;
+  // console.log("event", courseEventGrade.id);
   return (
     <StyledTableRow>
       <StyledTableCell align="center" component="th" scope="row">
         <Link to={linkto}>
-          {courseEventGrade.eventType} <br></br> {courseEventGrade.eventDate}
+          {courseEventGrade.event_type} <br></br> {courseEventGrade.event_date}
         </Link>
       </StyledTableCell>
       <StyledTableCell align="center">
-        {courseEventGrade.description}
+        {courseEventGrade.event_description}
       </StyledTableCell>
       <StyledTableCell align="center">
         <Link to={linkto}>
