@@ -2213,7 +2213,8 @@ create or replace function cancel_class_teacher (uname varchar,classNo integer,c
         insID integer;
         ans integer;
     begin
-        select s.course_id into courseNo from course_routine cr join section s on cr.section_no = s.section_no;
+        select s.course_id into courseNo from course_routine cr join section s on cr.section_no = s.section_no
+        where cr.class_id=classNo;
         tid:=get_teacher_id(uname);
         select instructor_id into insID from instructor
         where course_id=courseNo and teacher_id=tid;
@@ -2397,7 +2398,7 @@ create or replace function confirm_request (eventID integer) returns void as $$
         from request_event
         where req_id=eventID;
         insert into extra_class(extra_class_id, section_no, instructor_id, start, _end, _date)
-        values (default,secNo,insID,start_time,end_time,start::date);
+        values (default,secNo,insID,start_time,end_time,start_time::date);
         update request_event
         set type_id=2
         where req_id=eventID;
@@ -2448,6 +2449,83 @@ where sec.section_no=secNo and start::date = query_date);
 end
 $$ language plpgsql;
 
+create or replace function add_student_resource(courseID integer,std_id integer,fileName varchar,fileLink varchar) returns integer as $$
+    declare
+        ans integer;
+        entityPK integer;
+        coursePK integer;
+    begin
+        entityPK:=get_student_no(std_id);
+        select enrol_id into coursePK
+        from enrolment e join section s on s.section_no = e.section_id
+        join current_courses cc on cc._id=s.course_id
+        where s.course_id=courseID;
+        insert into student_resource(res_id, res_name, res_link, owner_id)
+        values (default,fileName,fileLink,coursePK)
+        returning res_id into ans;
+        return ans;
+    end;
+$$ language plpgsql;
+
+create or replace function add_student_resource(courseID integer,std_id integer,fileName varchar,fileLink varchar) returns integer as $$
+    declare
+        ans integer;
+        entityPK integer;
+        coursePK integer;
+    begin
+        entityPK:=get_student_no(std_id);
+        select enrol_id into coursePK
+        from enrolment e join section s on s.section_no = e.section_id
+        join current_courses cc on cc._id=s.course_id
+        where s.course_id=courseID;
+        insert into student_resource(res_id, res_name, res_link, owner_id)
+        values (default,fileName,fileLink,coursePK)
+        returning res_id into ans;
+        return ans;
+    end;
+$$ language plpgsql;
+
+create or replace function remove_resource_teacher(fileID integer) returns void as $$
+    declare
+    begin
+        delete from instructor_resource
+        where res_id=fileID;
+    end;
+$$ language plpgsql;
+
+create or replace function remove_resource_student(fileID integer) returns void as $$
+    declare
+    begin
+        delete from student_resource
+        where res_id=fileID;
+    end;
+$$ language plpgsql;
+
+create or replace function get_course_resources (crs_id integer)
+    returns table (fileID integer,fileName varchar,fileLink varchar,ownerID integer,uploaderName varchar,isStudent boolean) as $$
+    declare
+    begin
+    return query
+        select res_id,res_name,res_link,owner_id,s2.student_name,cast(true as boolean)
+from student_resource sr join enrolment e on sr.owner_id = e.enrol_id
+join section s on e.section_id = s.section_no
+join current_courses cc on cc._id = s.course_id
+join student s2 on s.cr_id = s2.student_id
+where s.course_id=crs_id
+union
+select res_id,res_name,res_link,owner_id,t.teacher_name,cast(false as boolean)
+from instructor_resource join instructor i on i.instructor_id = instructor_resource.owner_id
+join current_courses cc on cc._id = i.course_id
+join teacher t on i.teacher_id = t.teacher_id
+where i.course_id=crs_id;
+end
+$$ language plpgsql;
+
+-- drop function get_course_resources(crs_id integer);
+-- drop function remove_resource_student(fileID integer);
+-- drop function remove_resource_teacher(fileID integer);
+-- drop function add_student_resource(courseID integer, std_id integer, fileName varchar, fileLink varchar);
+-- drop function add_student_resource(courseID integer, std_id integer, fileName varchar, fileLink varchar);
 -- drop function get_day_events_section(secNo integer, query_date date)
 -- drop function update_notification_seen_time_teacher(uname varchar);
 -- drop function update_notification_seen_time(std_id integer);

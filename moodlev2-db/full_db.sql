@@ -299,6 +299,33 @@ $$;
 ALTER FUNCTION public.add_student(name character varying, hashed_password character varying, roll integer, dept integer, batch integer, email character varying) OWNER TO postgres;
 
 --
+-- Name: add_student_resource(integer, integer, character varying, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.add_student_resource(courseid integer, std_id integer, filename character varying, filelink character varying) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans integer;
+        entityPK integer;
+        coursePK integer;
+    begin
+        entityPK:=get_student_no(std_id);
+        select enrol_id into coursePK
+        from enrolment e join section s on s.section_no = e.section_id
+        join current_courses cc on cc._id=s.course_id
+        where s.course_id=courseID;
+        insert into student_resource(res_id, res_name, res_link, owner_id)
+        values (default,fileName,fileLink,coursePK)
+        returning res_id into ans;
+        return ans;
+    end;
+$$;
+
+
+ALTER FUNCTION public.add_student_resource(courseid integer, std_id integer, filename character varying, filelink character varying) OWNER TO postgres;
+
+--
 -- Name: add_teacher(character varying, character varying, character varying, integer, character varying); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -319,6 +346,32 @@ $$;
 
 
 ALTER FUNCTION public.add_teacher(name character varying, uname character varying, hashed_password character varying, dept integer, email character varying) OWNER TO postgres;
+
+--
+-- Name: add_teacher_resource(integer, character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.add_teacher_resource(courseid integer, uname character varying, filename character varying, filelink character varying) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans integer;
+        entityPK integer;
+        coursePK integer;
+    begin
+        entityPK:=get_teacher_id(uname);
+        select instructor_id into coursePK
+        from instructor
+        where course_id=courseID and teacher_id=entityPK;
+        insert into instructor_resource(res_id, res_name, res_link, owner_id)
+        values (default,fileName,fileLink,coursePK)
+        returning res_id into ans;
+        return ans;
+    end;
+$$;
+
+
+ALTER FUNCTION public.add_teacher_resource(courseid integer, uname character varying, filename character varying, filelink character varying) OWNER TO postgres;
 
 --
 -- Name: cancel_class_day_check(); Type: FUNCTION; Schema: public; Owner: postgres
@@ -357,7 +410,8 @@ CREATE FUNCTION public.cancel_class_teacher(uname character varying, classno int
         insID integer;
         ans integer;
     begin
-        select s.course_id into courseNo from course_routine cr join section s on cr.section_no = s.section_no;
+        select s.course_id into courseNo from course_routine cr join section s on cr.section_no = s.section_no
+        where cr.class_id=classNo;
         tid:=get_teacher_id(uname);
         select instructor_id into insID from instructor
         where course_id=courseNo and teacher_id=tid;
@@ -504,7 +558,7 @@ CREATE FUNCTION public.confirm_request(eventid integer) RETURNS void
         from request_event
         where req_id=eventID;
         insert into extra_class(extra_class_id, section_no, instructor_id, start, _end, _date)
-        values (default,secNo,insID,start_time,end_time,start::date);
+        values (default,secNo,insID,start_time,end_time,start_time::date);
         update request_event
         set type_id=2
         where req_id=eventID;
@@ -2976,6 +3030,40 @@ $$;
 ALTER FUNCTION public.remove_course_teacher(uname character varying, courseid integer) OWNER TO postgres;
 
 --
+-- Name: remove_resource_student(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.remove_resource_student(fileid integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    begin
+        delete from student_resource
+        where res_id=fileID;
+    end;
+$$;
+
+
+ALTER FUNCTION public.remove_resource_student(fileid integer) OWNER TO postgres;
+
+--
+-- Name: remove_resource_teacher(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.remove_resource_teacher(fileid integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    begin
+        delete from instructor_resource
+        where res_id=fileID;
+    end;
+$$;
+
+
+ALTER FUNCTION public.remove_resource_teacher(fileid integer) OWNER TO postgres;
+
+--
 -- Name: request_event_check(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -4799,6 +4887,7 @@ INSERT INTO public.ans (count) VALUES (0);
 -- Data for Name: canceled_class; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.canceled_class (canceled_class_id, class_id, _date, instructor_id) VALUES (2, 3, '2022-09-03', 2);
 
 
 --
@@ -5035,19 +5124,6 @@ INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALU
 -- Data for Name: notification_event; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (1, 1, 1, 9, '2022-08-25', '2022-08-25 16:41:43.379564+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (2, 1, 1, 2, '2022-08-20', '2022-08-25 16:41:43.399829+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (4, 1, 4, 2, '2022-08-22', '2022-08-25 16:42:31.224824+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (5, 1, 5, 2, '2022-08-27', '2022-08-25 16:42:31.247752+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (6, 1, 6, 2, '2022-08-28', '2022-08-25 16:42:37.375425+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (9, 1, 2, 4, '2022-08-26', '2022-08-26 11:33:47.547081+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (10, 1, 3, 4, '2022-08-26', '2022-08-26 11:38:59.623663+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (11, 1, 4, 4, '2022-08-26', '2022-08-26 11:40:25.914105+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (12, 1, 1, 8, '2022-08-26', '2022-08-26 11:52:23.045686+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (7, 1, 8, 2, '2022-08-27', '2022-08-25 16:42:50.59004+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (13, 1, 9, 2, '2022-08-29', '2022-08-27 19:00:18.176651+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (14, 1, 10, 2, '2022-08-30', '2022-08-27 22:40:33.499206+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (3, 1, 3, 2, '2022-08-27', '2022-08-25 16:42:31.213611+06');
 
 
 --
@@ -5115,7 +5191,6 @@ INSERT INTO public.request_type (type_id, type_name) VALUES (3, 'Confirm');
 --
 
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (3, 'CSE-2017-B2-HUM475-2022', 3, NULL);
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (4, 'CSE-2017-B2-CSE405-2022', 4, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (5, 'CSE-2017-B2-CSE409-2022', 5, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (6, 'CSE-2017-B2-CSE410-2022', 6, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (7, 'CSE-2017-B2-CSE406-2022', 7, NULL);
@@ -5125,6 +5200,7 @@ INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (11, 'CSE-2017-A2-CSE405-2022', 4, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (1, 'CSE-2017-B2-CSE423-2022', 1, 3);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (2, 'CSE-2017-B2-CSE453-2022', 2, 5);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (4, 'CSE-2017-B2-CSE405-2022', 4, 1);
 
 
 --
@@ -5252,7 +5328,7 @@ SELECT pg_catalog.setval('public.admins_admin_id_seq', 1, true);
 -- Name: canceled_class_canceled_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.canceled_class_canceled_class_id_seq', 1, false);
+SELECT pg_catalog.setval('public.canceled_class_canceled_class_id_seq', 2, true);
 
 
 --
@@ -5308,7 +5384,7 @@ SELECT pg_catalog.setval('public.evaluation_type_type_id_seq', 1, false);
 -- Name: extra_class_extra_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.extra_class_extra_class_id_seq', 1, false);
+SELECT pg_catalog.setval('public.extra_class_extra_class_id_seq', 1, true);
 
 
 --
@@ -5357,7 +5433,7 @@ SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 18, true);
 -- Name: notification_event_not_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.notification_event_not_id_seq', 14, true);
+SELECT pg_catalog.setval('public.notification_event_not_id_seq', 19, true);
 
 
 --
@@ -5385,7 +5461,7 @@ SELECT pg_catalog.setval('public.private_file_file_id_seq', 1, false);
 -- Name: request_event_req_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.request_event_req_id_seq', 1, false);
+SELECT pg_catalog.setval('public.request_event_req_id_seq', 5, true);
 
 
 --
