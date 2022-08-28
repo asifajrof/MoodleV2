@@ -111,11 +111,11 @@ const Notification = ({ onClick, notificationList, uId }) => {
       {notificationList.map((notificationitem, index) => (
         <NotificationItem key={index} notificationitem={notificationitem} />
       ))}
-      <div className="notification__centered__text">
+      {/* <div className="notification__centered__text">
         <Link onClick={onClick} to="/notification">
           <Button variant="contained">See All</Button>
         </Link>
-      </div>
+      </div> */}
     </div>
   );
 };
