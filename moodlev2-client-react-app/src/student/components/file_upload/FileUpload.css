@@ -3,6 +3,10 @@
   border: 0.1rem solid #000;
   border-radius: 0.3rem;
   padding-left: 0.1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 .custom-file-input {
   cursor: pointer;
