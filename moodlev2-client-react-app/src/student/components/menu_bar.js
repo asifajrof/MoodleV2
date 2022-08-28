@@ -27,10 +27,10 @@ const options = [
     _name: "Courses",
     link: courses_link,
   },
-  {
-    _name: "Private Files",
-    link: privateFiles_link,
-  },
+  // {
+  //   _name: "Private Files",
+  //   link: privateFiles_link,
+  // },
   {
     _name: "Site News",
     link: siteNews_link,
