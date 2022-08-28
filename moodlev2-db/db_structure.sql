@@ -2206,25 +2206,6 @@ and not exists(
     end;
 $$ language plpgsql;
 
-create or replace function cancel_class_teacher (uname varchar,classNo integer,cancelDate date)
-    returns integer as $$
-    declare
-        courseNo integer;
-        tid integer;
-        insID integer;
-        ans integer;
-    begin
-        select s.course_id into courseNo from course_routine cr join section s on cr.section_no = s.section_no
-        where cr.class_id=classNo;
-        tid:=get_teacher_id(uname);
-        select instructor_id into insID from instructor
-        where course_id=courseNo and teacher_id=tid;
-        insert into canceled_class(canceled_class_id, class_id, _date, instructor_id)
-        values (default,classNo,cancelDate,insID) returning canceled_class_id into ans;
-        return  ans;
-    end;
-$$ language plpgsql;
-
 create or replace function add_extra_class (sectionNo integer,uname varchar,start_time timestamp with time zone,end_time timestamp with time zone) returns integer as $$
     declare
         tid integer;
@@ -2681,6 +2662,24 @@ where c.course_id=crs_id and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll
     end
 $$ language plpgsql;
 
+create or replace function cancel_class (uname varchar, cdate date,ctime time)
+    returns void as $$
+    declare
+        tid integer;
+        classID integer;
+    begin
+        tid:=get_teacher_id(uname);
+        select cr.class_id into classID
+from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
+join instructor i on tr.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+where cr.day=extract(isodow from cdate) - 1 and start=ctime;
+        insert into canceled_class
+        values (default,classID,cdate);
+    end
+$$ language plpgsql;
+
+--drop function cancel_class(uname varchar, cdate date, ctime time);
 -- drop function get_cancel_class(std_id integer, crs_id integer);
 -- drop function get_extra_class_teacher(uname varchar, crs_id integer);
 -- drop function get_cancel_class_teacher(uname varchar, crs_id integer);
@@ -2710,7 +2709,6 @@ $$ language plpgsql;
 -- drop function get_parent_site(postID integer);
 -- drop function get_parent_forum(postID integer);
 -- drop function add_extra_class(sectionNo integer, uname varchar, start_time timestamp with time zone, end_time timestamp with time zone);
---drop function cancel_class_teacher(uname varchar, classNo integer, cancelDate date);
 -- drop function get_classes_teacher(uname varchar, secNo integer, checkDate date);
 -- drop function get_cancel_class_notifications(std_id integer);
 -- drop function get_cancel_class_notifications_teacher(teacher_username varchar);
