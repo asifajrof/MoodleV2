@@ -60,7 +60,7 @@ export default function CourseEvaluationEventTableRow({
     courseEvaluationEvent.event_date,
     courseEvaluationEvent.filelink
   );
-  console.log(courseEvaluationEvent);
+  // console.log(courseEvaluationEvent);
   // console.log(row);
   const linkto = `/course/${courseId}/event/${row.id}`;
 
@@ -84,7 +84,7 @@ export default function CourseEvaluationEventTableRow({
           <div className="course__event__add">
             <Link to={`/course/${courseId}/event/${row.id}/addfile`}>
               <Button variant="contained" size="small">
-                Add New
+                Add
                 <AddIcon />
               </Button>
             </Link>
