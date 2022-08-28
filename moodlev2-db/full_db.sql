@@ -1903,7 +1903,7 @@ CREATE FUNCTION public.get_grading_student(std_id integer, courseid integer) RET
     AS $$
     begin
     return query
-select g.grading_id,s.sub_id,e.evaluation_id,cast(type_name||e.caption_extension as varchar),e._end,g.obtained_marks,g.total_marks,t.teacher_name,g._date
+select g.grading_id,s.sub_id,e.evaluation_id,type_name,e._end,g.obtained_marks,g.total_marks,t.teacher_name,g._date
 from grading g join submission s on g.sub_id = s.sub_id join evaluation e on s.event_id = e.evaluation_id join evaluation_type et on e.type_id = et.type_id
 join enrolment en on s.enrol_id = en.enrol_id
 join student s2 on en.student_id = s2.student_id
