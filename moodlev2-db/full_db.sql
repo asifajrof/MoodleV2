@@ -5024,6 +5024,7 @@ INSERT INTO public.ans (count) VALUES (0);
 --
 
 INSERT INTO public.canceled_class (canceled_class_id, class_id, _date, instructor_id) VALUES (2, 3, '2022-09-03', 2);
+INSERT INTO public.canceled_class (canceled_class_id, class_id, _date, instructor_id) VALUES (3, 13, '2022-09-06', 9);
 
 
 --
@@ -5273,6 +5274,9 @@ INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _d
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (30, 1, 13, 9, '2022-08-28', '2022-08-28 19:34:31.492601+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (31, 1, 14, 9, '2022-08-28', '2022-08-28 19:36:23.268885+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (32, 1, 15, 9, '2022-08-28', '2022-08-28 19:37:42.603023+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (33, 1, 16, 9, '2022-08-28', '2022-08-28 19:52:06.718779+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (34, 1, 17, 9, '2022-08-28', '2022-08-28 19:52:35.216606+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (35, 1, 3, 3, '2022-09-06', '2022-08-28 20:20:01.531576+06');
 
 
 --
@@ -5380,7 +5384,6 @@ INSERT INTO public.student (student_id, student_name, password, _year, roll_num,
 -- Data for Name: submission; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.submission (sub_id, event_id, enrol_id, link, sub_time) VALUES (4, 1, 4, '\file.txt', '2022-08-25 20:52:59.548799+06');
 
 
 --
@@ -5467,6 +5470,8 @@ INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, descri
 INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (13, 'K-connectivity', 15, false, NULL, '2022-08-28 19:34:31.492601+06');
 INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (14, 'Genome Sequencing', 13, true, NULL, '2022-08-28 19:36:23.268885+06');
 INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (15, 'Phylogenetic Tree', 14, false, NULL, '2022-08-28 19:37:42.603023+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (16, 'Cryptography', 12, true, NULL, '2022-08-28 19:52:06.718779+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (17, 'Buffer Overflow', 11, true, NULL, '2022-08-28 19:52:35.216606+06');
 
 
 --
@@ -5490,7 +5495,7 @@ SELECT pg_catalog.setval('public.admins_admin_id_seq', 1, true);
 -- Name: canceled_class_canceled_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.canceled_class_canceled_class_id_seq', 2, true);
+SELECT pg_catalog.setval('public.canceled_class_canceled_class_id_seq', 3, true);
 
 
 --
@@ -5595,7 +5600,7 @@ SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 18, true);
 -- Name: notification_event_not_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.notification_event_not_id_seq', 32, true);
+SELECT pg_catalog.setval('public.notification_event_not_id_seq', 35, true);
 
 
 --
@@ -5679,7 +5684,7 @@ SELECT pg_catalog.setval('public.teacher_teacher_id_seq', 14, true);
 -- Name: topic_topic_num_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.topic_topic_num_seq', 15, true);
+SELECT pg_catalog.setval('public.topic_topic_num_seq', 17, true);
 
 
 --

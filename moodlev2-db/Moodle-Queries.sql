@@ -453,9 +453,13 @@ select add_course_topic('Bipartite Graphs',8,'saidur',null,true);
 select add_course_topic('K-connectivity',8,'saidur',null,false);
 select add_course_topic('Genome Sequencing',9,'saifur',null,true);
 select add_course_topic('Phylogenetic Tree',9,'bayzid',null,false);
+select add_course_topic('Cryptography',7,'mukit',null,true);
+select add_course_topic('Buffer Overflow',7,'shohrab',null,true);
+
+select cancel_class_teacher('shohrab',13,'06-09-2022');
 
 insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks)
-values (1,4,9,'20-08-2022 08:00:00','20-08-2022 08:40:00',20);
+values (1,4,9,'30-08-2022 08:00:00','30-08-2022 08:40:00',20);
 
 insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks)
 values (5,6,8,current_timestamp,'27-08-2022 14:20:00',100);
