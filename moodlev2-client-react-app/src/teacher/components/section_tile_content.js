@@ -12,21 +12,18 @@ const eventColors = [
   "#e5f5e5",
   "#e5e5e5",
 ];
-const TileContent = ({ uId, date, view, uType }) => {
+const SectionTileContent = ({ date, view, sectionIDList }) => {
   const [eventList, setEventList] = useState([]);
-  //   const [eventList, setEventList] = useState(events);
 
   const dateMoment = moment(date);
   const dateOnly = dateMoment.date();
   const monthOnly = dateMoment.month();
   const yearOnly = dateMoment.year();
-  //   console.log("date " + dateOnly, "month " + monthOnly, "year " + yearOnly);
 
   useEffect(() => {
     const fetchData = async (calendarPostBody) => {
-      // calendarPostBody -> uId, date, month, year
       try {
-        const res = await fetch(`/api/calendar/month`, {
+        const res = await fetch(`/api/calendar/getSectionSchedule`, {
           method: "POST",
           headers: {
             "Content-type": "application/json",
@@ -34,10 +31,9 @@ const TileContent = ({ uId, date, view, uType }) => {
           body: JSON.stringify(calendarPostBody),
         });
         const jsonData = await res.json();
-        // console.log(jsonData);
-        // console.log(res.status);
         if (res.status === 200) {
           setEventList(jsonData.eventList);
+          console.log(jsonData);
         } else {
           //   alert(jsonData.message);
           //   console.log(jsonData.message);
@@ -47,7 +43,12 @@ const TileContent = ({ uId, date, view, uType }) => {
         // alert(err);
       }
     };
-    fetchData({ uId, date: dateOnly, month: monthOnly, year: yearOnly, uType });
+    fetchData({
+      date: dateOnly,
+      month: monthOnly,
+      year: yearOnly,
+      sectionList: sectionIDList,
+    });
   }, []);
 
   // list of hours
@@ -126,4 +127,4 @@ const TileContent = ({ uId, date, view, uType }) => {
   );
 };
 
-export default TileContent;
+export default SectionTileContent;
