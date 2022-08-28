@@ -440,6 +440,20 @@ insert into teacher_routine(instructor_id, class_id) values (18,23);
 insert into topic(topic_num, topic_name, instructor_id, finished, description)
 values (default,'State-Space Modeling',1,false,'We learn making markov model here');
 
+select add_course_topic('Introduction',4,'shohrab','This is an introductory chapter',true);
+select add_course_topic('Computer Forensics',4,'shohrab','We will know about different methods about detecting crimes',true);
+select add_course_topic('Web Security',4,'mukit','Security issues while browsing web',false);
+select add_course_topic('View Projection',5,'nitripto',null,true);
+select add_course_topic('Rasterizaton',5,'ssaquib',null,false);
+select add_course_topic('Query Processing',2,'aadnan',null,true);
+select add_course_topic('Query Optimization',2,'aadnan',null,false);
+select add_course_topic('Economic Parameters',3,'rony',null,true);
+select add_course_topic('Microeconimy Features',3,'munshi',null,false);
+select add_course_topic('Bipartite Graphs',8,'saidur',null,true);
+select add_course_topic('K-connectivity',8,'saidur',null,false);
+select add_course_topic('Genome Sequencing',9,'saifur',null,true);
+select add_course_topic('Phylogenetic Tree',9,'bayzid',null,false);
+
 insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks)
 values (1,4,9,'20-08-2022 08:00:00','20-08-2022 08:40:00',20);
 

@@ -363,7 +363,7 @@ CREATE FUNCTION public.add_teacher_resource(courseid integer, uname character va
         select instructor_id into coursePK
         from instructor
         where course_id=courseID and teacher_id=entityPK;
-        insert into student_resource(res_id, res_name, res_link, owner_id)
+        insert into instructor_resource(res_id, res_name, res_link, owner_id)
         values (default,fileName,fileLink,coursePK)
         returning res_id into ans;
         return ans;
@@ -5260,6 +5260,19 @@ INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALU
 -- Data for Name: notification_event; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (20, 1, 2, 9, '2022-08-28', '2022-08-28 19:09:56.225249+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (21, 1, 3, 9, '2022-08-28', '2022-08-28 19:11:58.69674+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (22, 1, 4, 9, '2022-08-28', '2022-08-28 19:13:43.738649+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (23, 1, 5, 9, '2022-08-28', '2022-08-28 19:22:45.201566+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (24, 1, 6, 9, '2022-08-28', '2022-08-28 19:22:45.272414+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (25, 1, 7, 9, '2022-08-28', '2022-08-28 19:24:26.68676+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (26, 1, 8, 9, '2022-08-28', '2022-08-28 19:25:33.532538+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (27, 1, 9, 9, '2022-08-28', '2022-08-28 19:28:35.259844+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (28, 1, 11, 9, '2022-08-28', '2022-08-28 19:30:40.003751+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (29, 1, 12, 9, '2022-08-28', '2022-08-28 19:32:07.169428+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (30, 1, 13, 9, '2022-08-28', '2022-08-28 19:34:31.492601+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (31, 1, 14, 9, '2022-08-28', '2022-08-28 19:36:23.268885+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (32, 1, 15, 9, '2022-08-28', '2022-08-28 19:37:42.603023+06');
 
 
 --
@@ -5441,6 +5454,19 @@ INSERT INTO public.time_type (notification_time_type) VALUES (false);
 --
 
 INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (1, 'State-Space Modeling', 1, false, 'We learn making markov model here', '2022-08-25 16:41:43.379564+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (2, 'Introduction', 9, true, 'This is an introductory chapter', '2022-08-28 19:09:56.225249+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (3, 'Computer Forensics', 9, true, 'We will know about different methods about detecting crimes', '2022-08-28 19:11:58.69674+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (4, 'Web Security', 10, false, 'Security issues while browsing web', '2022-08-28 19:13:43.738649+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (5, 'View Projection', 5, true, NULL, '2022-08-28 19:22:45.201566+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (6, 'Rasterizaton', 6, false, NULL, '2022-08-28 19:22:45.272414+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (7, 'Query Processing', 2, true, NULL, '2022-08-28 19:24:26.68676+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (8, 'Query Optimization', 2, false, NULL, '2022-08-28 19:25:33.532538+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (9, 'Economic Parameters', 4, true, NULL, '2022-08-28 19:28:35.259844+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (11, 'Microeconimy Features', 3, false, NULL, '2022-08-28 19:30:40.003751+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (12, 'Bipartite Graphs', 15, true, NULL, '2022-08-28 19:32:07.169428+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (13, 'K-connectivity', 15, false, NULL, '2022-08-28 19:34:31.492601+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (14, 'Genome Sequencing', 13, true, NULL, '2022-08-28 19:36:23.268885+06');
+INSERT INTO public.topic (topic_num, topic_name, instructor_id, finished, description, started) VALUES (15, 'Phylogenetic Tree', 14, false, NULL, '2022-08-28 19:37:42.603023+06');
 
 
 --
@@ -5569,7 +5595,7 @@ SELECT pg_catalog.setval('public.instructor_instructor_id_seq', 18, true);
 -- Name: notification_event_not_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.notification_event_not_id_seq', 19, true);
+SELECT pg_catalog.setval('public.notification_event_not_id_seq', 32, true);
 
 
 --
@@ -5653,7 +5679,7 @@ SELECT pg_catalog.setval('public.teacher_teacher_id_seq', 14, true);
 -- Name: topic_topic_num_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.topic_topic_num_seq', 1, true);
+SELECT pg_catalog.setval('public.topic_topic_num_seq', 15, true);
 
 
 --

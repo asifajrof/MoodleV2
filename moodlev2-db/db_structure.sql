@@ -2459,7 +2459,7 @@ create or replace function add_teacher_resource(courseID integer,uname varchar,f
         select instructor_id into coursePK
         from instructor
         where course_id=courseID and teacher_id=entityPK;
-        insert into student_resource(res_id, res_name, res_link, owner_id)
+        insert into instructor_resource(res_id, res_name, res_link, owner_id)
         values (default,fileName,fileLink,coursePK)
         returning res_id into ans;
         return ans;
