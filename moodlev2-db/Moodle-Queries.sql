@@ -284,6 +284,14 @@ begin
 end
 $$;
 
+select add_student('Asif Ahmed Utsa','$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy',84,5,2017,null);
+select add_student('Apurba Saha','$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy',56,5,2017,null);
+select add_student('Rasman Mubtasim Swargo','$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy',51,5,2017,null);
+select add_student('Md. Sabbir Rahman','$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy',76,5,2017,null);
+select add_student('Tanzim Hossain Romel','$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy',69,5,2017,null);
+select add_student('Sheikh Azizul Hakim','$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy',2,5,2017,null);
+select add_student('Mahdi Hasnat Siyam','$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy',3,5,2017,null);
+
 insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE423-2022',1);
 insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE453-2022',2);
 insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-HUM475-2022',3);
@@ -294,6 +302,8 @@ insert into section(section_no, section_name, course_id) values(default,'CSE-201
 insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE421-2022',8);
 insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE463-2022',9);
 insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE408-2022',10);
+insert into section (section_no, section_name, course_id, cr_id) values (default,'CSE-2017-A-CSE405-2022',4,null);
+
 
 insert into enrolment(student_id, section_id) values (1,1);
 insert into enrolment(student_id, section_id) values (1,2);

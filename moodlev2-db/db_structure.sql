@@ -2673,7 +2673,7 @@ create or replace function cancel_class (uname varchar, cdate date,ctime time)
 from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
 join instructor i on tr.instructor_id = i.instructor_id
 join teacher t on i.teacher_id = t.teacher_id
-where cr.day=extract(isodow from cdate) - 1 and start=ctime;
+where cr.day=extract(isodow from cdate) - 1 and start=ctime and t.teacher_id=tid;
         insert into canceled_class
         values (default,classID,cdate);
     end

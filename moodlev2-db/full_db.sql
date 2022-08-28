@@ -389,7 +389,7 @@ CREATE FUNCTION public.cancel_class(uname character varying, cdate date, ctime t
 from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
 join instructor i on tr.instructor_id = i.instructor_id
 join teacher t on i.teacher_id = t.teacher_id
-where cr.day=extract(isodow from cdate) - 1 and start=ctime;
+where cr.day=extract(isodow from cdate) - 1 and start=ctime and t.teacher_id=tid;
         insert into canceled_class
         values (default,classID,cdate);
     end
@@ -5465,17 +5465,19 @@ INSERT INTO public.request_type (type_id, type_name) VALUES (3, 'Confirm');
 -- Data for Name: section; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (3, 'CSE-2017-B2-HUM475-2022', 3, NULL);
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (5, 'CSE-2017-B2-CSE409-2022', 5, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (6, 'CSE-2017-B2-CSE410-2022', 6, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (7, 'CSE-2017-B2-CSE406-2022', 7, NULL);
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (8, 'CSE-2017-B2-CSE421-2022', 8, NULL);
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (9, 'CSE-2017-B2-CSE463-2022', 9, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (10, 'CSE-2017-B2-CSE408-2022', 10, NULL);
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (11, 'CSE-2017-A2-CSE405-2022', 4, NULL);
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (1, 'CSE-2017-B2-CSE423-2022', 1, 3);
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (2, 'CSE-2017-B2-CSE453-2022', 2, 5);
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (4, 'CSE-2017-B2-CSE405-2022', 4, 1);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (3, 'CSE-2017-B-HUM475-2022', 3, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (5, 'CSE-2017-B-CSE409-2022', 5, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (8, 'CSE-2017-CSE421-2022', 8, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (9, 'CSE-2017-CSE463-2022', 9, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (11, 'CSE-2017-A-CSE405-2022', 4, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (1, 'CSE-2017-CSE423-2022', 1, 3);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (2, 'CSE-2017-CSE453-2022', 2, 5);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (4, 'CSE-2017-B-CSE405-2022', 4, 1);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (12, 'CSE-2017-A-CSE405-2022', 4, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (13, 'CSE-2017-A-CSE409-2022', 5, NULL);
 
 
 --
@@ -5488,6 +5490,13 @@ INSERT INTO public.student (student_id, student_name, password, _year, roll_num,
 INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (4, 'Saif Ahmed Khan', '$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy', 2017, 110, 5, '2022-08-25 16:41:37.990361+06', NULL);
 INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (5, 'Nazmul Takbir', '$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy', 2017, 103, 5, '2022-08-25 16:41:38.004547+06', NULL);
 INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (6, 'Sihat Afnan', '$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy', 2017, 98, 5, '2022-08-25 16:41:38.020103+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (7, 'Asif Ahmed Utsa', '$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy', 2017, 84, 5, '2022-08-29 02:12:07.469473+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (8, 'Apurba Saha', '$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy', 2017, 56, 5, '2022-08-29 02:13:28.686883+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (9, 'Rasman Mubtasim Swargo', '$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy', 2017, 51, 5, '2022-08-29 02:14:13.434513+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (10, 'Md. Sabbir Rahman', '$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy', 2017, 76, 5, '2022-08-29 02:14:53.119022+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (11, 'Tanzim Hossain Romel', '$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy', 2017, 69, 5, '2022-08-29 02:15:48.400896+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (12, 'Sheikh Azizul Hakim', '$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy', 2017, 2, 5, '2022-08-29 02:16:46.960712+06', NULL);
+INSERT INTO public.student (student_id, student_name, password, _year, roll_num, dept_code, notification_last_seen, email_address) VALUES (13, 'Mahdi Hasnat Siyam', '$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy', 2017, 3, 5, '2022-08-29 02:17:27.803616+06', NULL);
 
 
 --
@@ -5771,14 +5780,14 @@ SELECT pg_catalog.setval('public.resource_res_id_seq', 1, false);
 -- Name: section_section_no_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.section_section_no_seq', 11, true);
+SELECT pg_catalog.setval('public.section_section_no_seq', 13, true);
 
 
 --
 -- Name: student_student_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.student_student_id_seq', 6, true);
+SELECT pg_catalog.setval('public.student_student_id_seq', 13, true);
 
 
 --
