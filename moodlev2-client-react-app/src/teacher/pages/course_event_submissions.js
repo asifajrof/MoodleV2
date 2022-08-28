@@ -29,7 +29,9 @@ const TeacherCourseEventSubmissions = ({ userName }) => {
 	useEffect(() => {
 		const fetchData = async (eventId) => {
 			try {
-				const response = await fetch(`/api/course/event/${eventId}`);
+				const response = await fetch(
+					`/api/course/event/${eventId}/${userName}`
+				);
 				const jsonData = await response.json();
 				setCourseEvalueationEventInfo(jsonData.data);
 			} catch (err) {

@@ -61,6 +61,14 @@ const getCourseEvents = async (req, res, next) => {
 const getEventDetails = async (req, res, next) => {
 	try {
 		const eventId = req.params.eventId;
+		const uName = req.params.uId;
+
+		let result1 = await pool.query(
+			"SELECT json_agg(t) FROM get_account_type($1) as t",
+			[uName]
+		);
+		const user = result1.rows[0].json_agg;
+		const type = user[0].type;
 		// console.log(eventId);
 		let result = await pool.query(
 			"SELECT json_agg(t) FROM  get_event_description($1) as t",
@@ -84,12 +92,17 @@ const getEventDetails = async (req, res, next) => {
 		if (checkCompleted) {
 			completed = true;
 		}
-		let result2 = await pool.query(
-			"SELECT json_agg(t) FROM  get_submissions($1) as t",
-			[eventId]
-		);
 
-		const subDetails = result2.rows[0].json_agg;
+		let subDetails = null;
+		if (type === "Student") {
+			let result2 = await pool.query(
+				"SELECT json_agg(t) FROM  get_submission_info($1, $2) as t",
+				[eventId, uName]
+			);
+
+			subDetails = result2.rows[0].json_agg;
+		}
+
 		let submitted = false;
 		let submission_time = 0;
 
@@ -98,9 +111,10 @@ const getEventDetails = async (req, res, next) => {
 		if (subDetails != null) {
 			submitted = true;
 			submission_time = subDetails[0].subtime;
+			submission_time = moment(submission_time);
 			// console.log("submitted true");
 		}
-		submission_time = moment(submission_time);
+
 		// console.log("endtime", endtime.format("YYYY-MM-DD HH:mm:ss"));
 		// console.log("nowDate", nowDate.format("YYYY-MM-DD HH:mm:ss"));
 		// console.log(
@@ -122,7 +136,7 @@ const getEventDetails = async (req, res, next) => {
 				: moment.duration(endtime - nowDate).humanize(),
 		};
 
-		// console.log(eventObj.remaining_time);
+		console.log(eventObj);
 
 		if (!eventDetails) {
 			res.json({ message: "Error retriving eventdetails", data: [] });

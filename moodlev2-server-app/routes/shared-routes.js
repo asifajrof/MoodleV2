@@ -11,7 +11,7 @@ sharedRoutes.get("/", (req, res, next) => {
 	res.json({ message: "it works!" });
 });
 
-sharedRoutes.get("/event/:eventId", sharedControllers.getEventDetails);
+sharedRoutes.get("/event/:eventId/:uId", sharedControllers.getEventDetails);
 sharedRoutes.get("/topics/:course_id", sharedControllers.getCourseTopicsById);
 sharedRoutes.get("/:course_id", sharedControllers.getCourseById);
 sharedRoutes.post("/events", sharedControllers.getCourseEvents);
