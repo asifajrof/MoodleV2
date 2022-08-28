@@ -2449,17 +2449,16 @@ where sec.section_no=secNo and start::date = query_date);
 end
 $$ language plpgsql;
 
-create or replace function add_student_resource(courseID integer,std_id integer,fileName varchar,fileLink varchar) returns integer as $$
+create or replace function add_teacher_resource(courseID integer,uname varchar,fileName varchar,fileLink varchar) returns integer as $$
     declare
         ans integer;
         entityPK integer;
         coursePK integer;
     begin
-        entityPK:=get_student_no(std_id);
-        select enrol_id into coursePK
-        from enrolment e join section s on s.section_no = e.section_id
-        join current_courses cc on cc._id=s.course_id
-        where s.course_id=courseID;
+        entityPK:=get_teacher_id(uname);
+        select instructor_id into coursePK
+        from instructor
+        where course_id=courseID and teacher_id=entityPK;
         insert into student_resource(res_id, res_name, res_link, owner_id)
         values (default,fileName,fileLink,coursePK)
         returning res_id into ans;
@@ -2521,11 +2520,91 @@ where i.course_id=crs_id;
 end
 $$ language plpgsql;
 
+create or replace function get_sresource_notifications_teacher (teacher_username varchar)
+    returns table (eventType integer,eventNo integer,courseID integer,stdNo integer,dept_shortname varchar,course_code integer,eventTypeName varchar,uploaderName varchar, notificationTime timestamp with time zone,scheduledDate date) as $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+    return query
+    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Resource Upload by Student' as varchar),s2.student_name,ne.notifucation_time, ne._date
+from notification_event ne join student_resource sr on ne.event_no=sr.res_id
+join enrolment e on sr.owner_id = e.enrol_id
+join section s on e.section_id = s.section_no
+join current_courses cc on cc._id=s.course_id
+join instructor i on s.course_id = i.course_id
+join teacher t on i.teacher_id = t.teacher_id
+join student s2 on e.student_id = s2.student_id
+where ne.event_type=6 and t.teacher_id=tid;
+    end
+$$ language plpgsql;
+
+create or replace function get_sresource_notifications_student (std_id integer)
+    returns table (eventType integer,eventNo integer,courseID integer,stdNO integer,dept_shortname varchar,course_code integer,eventTypeName varchar,uploaderName varchar, notificationTime timestamp with time zone,scheduledDate date) as $$
+    declare
+        std_no integer;
+    begin
+        std_no:=get_student_no(std_id);
+    return query
+    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Resource Upload by Student' as varchar),s2.student_name,ne.notifucation_time, ne._date
+from notification_event ne join student_resource sr on ne.event_no=sr.res_id
+join enrolment e on sr.owner_id = e.enrol_id
+join section s on e.section_id = s.section_no
+join current_courses cc on cc._id=s.course_id
+join student s2 on e.student_id = s2.student_id
+join section s3 on s3.course_id=cc._id
+join enrolment e2 on e2.section_id=s3.section_no
+join student s3 on s3.student_id=e2.student_id
+where ne.event_type=6 and s2.student_id!=std_no and s3.student_id=std_no;
+    end
+$$ language plpgsql;
+
+create or replace function get_tresource_notifications_student (std_id integer)
+    returns table (eventType integer,eventNo integer,courseID integer,teacherNO integer,dept_shortname varchar,course_code integer,eventTypeName varchar,uploaderName varchar, notificationTime timestamp with time zone,scheduledDate date) as $$
+    declare
+        std_no integer;
+    begin
+        std_no:=get_student_no(std_id);
+    return query
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Resource Upload by Teacher' as varchar),t.teacher_name,ne.notifucation_time, ne._date
+from notification_event ne join instructor_resource sr on ne.event_no=sr.res_id
+join instructor i on i.instructor_id=sr.owner_id
+join current_courses cc on cc._id=i.course_id
+join teacher t on i.teacher_id = t.teacher_id
+join section s on i.course_id = s.course_id
+join enrolment e on s.section_no = e.section_id
+join student s2 on e.student_id = s2.student_id
+where ne.event_type=5 and s2.student_id=std_no;
+    end
+$$ language plpgsql;
+
+create or replace function get_tresource_notifications_teacher (uname varchar)
+    returns table (eventType integer,eventNo integer,courseID integer,teacherNO integer,dept_shortname varchar,course_code integer,eventTypeName varchar,uploaderName varchar, notificationTime timestamp with time zone,scheduledDate date) as $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(uname);
+    return query
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Resource Upload by Teacher' as varchar),t.teacher_name,ne.notifucation_time, ne._date
+from notification_event ne join instructor_resource sr on ne.event_no=sr.res_id
+join instructor i on i.instructor_id=sr.owner_id
+join current_courses cc on cc._id=i.course_id
+join teacher t on i.teacher_id = t.teacher_id
+join instructor i2 on i2.course_id=cc._id
+join teacher t2 on t2.teacher_id=i.teacher_id
+where ne.event_type=5 and t2.teacher_id=tid and t.teacher_id!=tid;
+    end
+$$ language plpgsql;
+
+-- drop function get_tresource_notifications_teacher(uname varchar);
+-- drop function get_tresource_notifications_student(std_id integer);
+-- drop function get_sresource_notifications_student(std_id integer)
+-- drop function get_sresource_notifications_teacher(teacher_username varchar);
 -- drop function get_course_resources(crs_id integer);
 -- drop function remove_resource_student(fileID integer);
 -- drop function remove_resource_teacher(fileID integer);
 -- drop function add_student_resource(courseID integer, std_id integer, fileName varchar, fileLink varchar);
--- drop function add_student_resource(courseID integer, std_id integer, fileName varchar, fileLink varchar);
+-- drop function add_teacher_resource(courseid integer, uname varchar, filename varchar, filelink varchar);
 -- drop function get_day_events_section(secNo integer, query_date date)
 -- drop function update_notification_seen_time_teacher(uname varchar);
 -- drop function update_notification_seen_time(std_id integer);
