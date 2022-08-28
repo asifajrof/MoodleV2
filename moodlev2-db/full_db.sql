@@ -2487,7 +2487,7 @@ CREATE FUNCTION public.notify_evaluation() RETURNS trigger
     AS $$
 declare
     type_no integer;
-    time_type integer;
+    time_type boolean;
     lookup date;
 begin
     select notification_time_type into time_type from evaluation_type
@@ -4431,6 +4431,17 @@ ALTER SEQUENCE public.teacher_teacher_id_seq OWNED BY public.teacher.teacher_id;
 
 
 --
+-- Name: time_type; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.time_type (
+    notification_time_type boolean
+);
+
+
+ALTER TABLE public.time_type OWNER TO postgres;
+
+--
 -- Name: topic; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -5177,6 +5188,13 @@ INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) V
 
 
 --
+-- Data for Name: time_type; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.time_type (notification_time_type) VALUES (false);
+
+
+--
 -- Data for Name: topic; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -5246,7 +5264,7 @@ SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 48, true);
 -- Name: evaluation_evaluation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.evaluation_evaluation_id_seq', 14, true);
+SELECT pg_catalog.setval('public.evaluation_evaluation_id_seq', 15, true);
 
 
 --

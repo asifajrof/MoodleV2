@@ -1260,7 +1260,7 @@ create trigger extra_class_notification_update after update on extra_class
 create or replace function notify_evaluation() returns trigger as $evaluation_notification$
 declare
     type_no integer;
-    time_type integer;
+    time_type boolean;
     lookup date;
 begin
     select notification_time_type into time_type from evaluation_type
