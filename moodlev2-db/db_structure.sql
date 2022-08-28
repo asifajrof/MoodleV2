@@ -2159,7 +2159,7 @@ create or replace function get_cancel_class_notifications_teacher (teacher_usern
         tid:=get_teacher_id(teacher_username);
     return query
         select ne.event_type,ne.event_no,c._id,tp.teacher_id,c._dept_shortname,c._course_code,cast('Canceled Class' as varchar),tp.teacher_name,ne.notifucation_time, ne._date
-        from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.not_id
+        from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.event_no
         join instructor ip on cc.instructor_id = ip.instructor_id
         join current_courses c on c._id=ip.course_id
         join teacher_routine tr on cc.class_id = tr.class_id
@@ -2175,7 +2175,7 @@ create or replace function get_cancel_class_notifications(std_id integer)
     begin
     return query
         select ne.event_type,ne.event_no,c._id,tp.teacher_id,c._dept_shortname,c._course_code,cast('Canceled Class' as varchar),tp.teacher_name,ne.notifucation_time, ne._date
-from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.not_id
+from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.event_no
 join instructor i on cc.instructor_id = i.instructor_id
 join teacher tp on i.teacher_id = tp.teacher_id
 join current_courses c on c._id=i.course_id
@@ -2667,15 +2667,16 @@ create or replace function cancel_class (uname varchar, cdate date,ctime time)
     declare
         tid integer;
         classID integer;
+        insID integer;
     begin
         tid:=get_teacher_id(uname);
-        select cr.class_id into classID
+        select cr.class_id,i.instructor_id into classID,insID
 from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
 join instructor i on tr.instructor_id = i.instructor_id
 join teacher t on i.teacher_id = t.teacher_id
-where cr.day=extract(isodow from cdate) - 1 and start=ctime;
-        insert into canceled_class
-        values (default,classID,cdate);
+where cr.day=extract(isodow from cdate) - 1 and start=ctime and t.teacher_id=tid;
+        insert into canceled_class(canceled_class_id, class_id, _date, instructor_id)
+        values (default,classID,cdate,insID);
     end
 $$ language plpgsql;
 
