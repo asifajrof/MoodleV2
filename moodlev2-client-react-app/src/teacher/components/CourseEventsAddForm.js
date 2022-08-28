@@ -193,7 +193,7 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
   return (
     <div className="addcourse__container">
       <div className="addcourse__form__container">
-        <form onSubmit={onSubmitAction} style={{ width: "80%" }}>
+        <form onSubmit={onSubmitAction} style={{ width: "100%" }}>
           <InputLabel id="addevent__select__type__label">
             Select Event Type
           </InputLabel>
