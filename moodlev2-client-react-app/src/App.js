@@ -233,7 +233,7 @@ const App = () => {
             />
             <Route
               path={"/course/:courseId" + course_resources_link}
-              element={<Resources userName={token.id} />}
+              element={<Resources userName={token.id} uType={token.type} />}
             />
             <Route
               path={"/course/:courseId/resource/addnew"}
@@ -321,7 +321,7 @@ const App = () => {
             />
             <Route
               path={"/course/:courseId" + course_resources_link}
-              element={<Resources userName={token.id} />}
+              element={<Resources userName={token.id} uType={token.type} />}
             />
             <Route
               path={"/course/:courseId/resource/addnew"}

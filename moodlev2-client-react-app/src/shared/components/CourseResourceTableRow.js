@@ -4,8 +4,6 @@ import moment from "moment";
 import { styled } from "@mui/material/styles";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
-// import moment from "moment";
-// import Checkbox from "@mui/material/Checkbox";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -27,7 +25,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function CourseResourceTableRow({ courseResource, courseId }) {
+export default function CourseResourceTableRow({
+  uType,
+  courseResource,
+  courseId,
+}) {
   let dataIndex = 0;
   function createData(title, fileID, uploader, uploadTime) {
     uploadTime = moment(uploadTime).format("LLL");
@@ -52,7 +54,7 @@ export default function CourseResourceTableRow({ courseResource, courseId }) {
     <StyledTableRow>
       <StyledTableCell align="center">{row.title}</StyledTableCell>
       <StyledTableCell align="center">
-        {/*<ShowFile fileID={row.id} />*/}{" "}
+        {/*<ShowResourceFile fileID={row.id} uType={uType} />*/}{" "}
       </StyledTableCell>
       <StyledTableCell align="center">
         {row.uploader}
