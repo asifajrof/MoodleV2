@@ -1610,6 +1610,29 @@ $$;
 ALTER FUNCTION public.get_forum_posts_teacher(uname character varying) OWNER TO postgres;
 
 --
+-- Name: get_grading_notifications(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_grading_notifications(std_id integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, notificationtime timestamp with time zone, scheduleddate date)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+        select ne.event_type,ne.event_no,c._id,t.teacher_id,c._dept_shortname,c._course_code,cast('Grade Published' as varchar),t.teacher_name,ne.notifucation_time, ne._date
+from notification_event ne join grading g on ne.event_no=g.grading_id join submission s on g.sub_id = s.sub_id
+join instructor i on g.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+join current_courses c on c._id=i.course_id
+join enrolment e on s.enrol_id = e.enrol_id
+join student s2 on e.student_id = s2.student_id
+where ne.event_type=7 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and s2.notification_last_seen<ne.notifucation_time;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_grading_notifications(std_id integer) OWNER TO postgres;
+
+--
 -- Name: get_my_marks(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1954,6 +1977,37 @@ $$;
 
 
 ALTER FUNCTION public.get_upcoming_events_teacher(teacher_username character varying) OWNER TO postgres;
+
+--
+-- Name: grade_submission(integer, character varying, integer, double precision, double precision, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.grade_submission(subid integer, teacher_username character varying, courseid integer, totalmarks double precision, obtainedmarks double precision, remark character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+        insID integer;
+        gid integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+        select instructor_id into insID from instructor where course_id=courseID and teacher_id=tid;
+        select grading_id into gid from grading
+        where sub_id=subID and instructor_id=insID;
+        if (insID is null) then
+            insert into grading(grading_id, sub_id, instructor_id, total_marks, obtained_marks, remarks)
+        values (default,subID,insID,totalMarks,obtainedMarks,remark);
+        else
+            update grading
+            set total_marks=totalMarks,obtained_marks=obtainedMarks,
+            remarks=remark,_date=current_date
+            where grading_id=gid;
+        end if;
+    end;
+$$;
+
+
+ALTER FUNCTION public.grade_submission(subid integer, teacher_username character varying, courseid integer, totalmarks double precision, obtainedmarks double precision, remark character varying) OWNER TO postgres;
 
 --
 -- Name: grading_check(); Type: FUNCTION; Schema: public; Owner: postgres
@@ -4709,17 +4763,17 @@ INSERT INTO public.instructor (instructor_id, teacher_id, course_id, _date) VALU
 
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (1, 1, 1, 9, '2022-08-25', '2022-08-25 16:41:43.379564+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (2, 1, 1, 2, '2022-08-20', '2022-08-25 16:41:43.399829+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (3, 1, 3, 2, '2022-08-25', '2022-08-25 16:42:31.213611+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (4, 1, 4, 2, '2022-08-22', '2022-08-25 16:42:31.224824+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (5, 1, 5, 2, '2022-08-27', '2022-08-25 16:42:31.247752+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (6, 1, 6, 2, '2022-08-28', '2022-08-25 16:42:37.375425+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (7, 1, 8, 2, '2022-08-25', '2022-08-25 16:42:50.59004+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (9, 1, 2, 4, '2022-08-26', '2022-08-26 11:33:47.547081+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (10, 1, 3, 4, '2022-08-26', '2022-08-26 11:38:59.623663+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (11, 1, 4, 4, '2022-08-26', '2022-08-26 11:40:25.914105+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (12, 1, 1, 8, '2022-08-26', '2022-08-26 11:52:23.045686+06');
-INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (13, 1, 9, 2, '2022-08-27', '2022-08-27 19:00:18.176651+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (7, 1, 8, 2, '2022-08-27', '2022-08-25 16:42:50.59004+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (13, 1, 9, 2, '2022-08-29', '2022-08-27 19:00:18.176651+06');
 INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (14, 1, 10, 2, '2022-08-30', '2022-08-27 22:40:33.499206+06');
+INSERT INTO public.notification_event (not_id, type_id, event_no, event_type, _date, notifucation_time) VALUES (3, 1, 3, 2, '2022-08-27', '2022-08-25 16:42:31.213611+06');
 
 
 --
@@ -4785,8 +4839,6 @@ INSERT INTO public.request_type (type_id, type_name) VALUES (2, 'Class Test');
 -- Data for Name: section; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (1, 'CSE-2017-B2-CSE423-2022', 1, NULL);
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (2, 'CSE-2017-B2-CSE453-2022', 2, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (3, 'CSE-2017-B2-HUM475-2022', 3, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (4, 'CSE-2017-B2-CSE405-2022', 4, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (5, 'CSE-2017-B2-CSE409-2022', 5, NULL);
@@ -4796,6 +4848,8 @@ INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (9, 'CSE-2017-B2-CSE463-2022', 9, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (10, 'CSE-2017-B2-CSE408-2022', 10, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (11, 'CSE-2017-A2-CSE405-2022', 4, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (1, 'CSE-2017-B2-CSE423-2022', 1, 3);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (2, 'CSE-2017-B2-CSE453-2022', 2, 5);
 
 
 --

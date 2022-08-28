@@ -1812,11 +1812,21 @@ create or replace function grade_submission(subID integer,teacher_username varch
     declare
         tid integer;
         insID integer;
+        gid integer;
     begin
         tid:=get_teacher_id(teacher_username);
         select instructor_id into insID from instructor where course_id=courseID and teacher_id=tid;
-        insert into grading(grading_id, sub_id, instructor_id, total_marks, obtained_marks, remarks)
+        select grading_id into gid from grading
+        where sub_id=subID and instructor_id=insID;
+        if (insID is null) then
+            insert into grading(grading_id, sub_id, instructor_id, total_marks, obtained_marks, remarks)
         values (default,subID,insID,totalMarks,obtainedMarks,remark);
+        else
+            update grading
+            set total_marks=totalMarks,obtained_marks=obtainedMarks,
+            remarks=remark,_date=current_date
+            where grading_id=gid;
+        end if;
     end;
 $$ language plpgsql;
 
@@ -2254,6 +2264,22 @@ create or replace function get_parent_site (postID integer)
     end;
 $$ language plpgsql;
 
+create or replace function get_grading_notifications(std_id integer)
+    returns table (eventType integer,eventNo integer,courseID integer,teacherID integer,dept_shortname varchar,course_code integer,eventTypeName varchar,teacherNamr varchar, notificationTime timestamp with time zone,scheduledDate date) as $$
+    begin
+    return query
+        select ne.event_type,ne.event_no,c._id,t.teacher_id,c._dept_shortname,c._course_code,cast('Grade Published' as varchar),t.teacher_name,ne.notifucation_time, ne._date
+from notification_event ne join grading g on ne.event_no=g.grading_id join submission s on g.sub_id = s.sub_id
+join instructor i on g.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+join current_courses c on c._id=i.course_id
+join enrolment e on s.enrol_id = e.enrol_id
+join student s2 on e.student_id = s2.student_id
+where ne.event_type=7 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and s2.notification_last_seen<ne.notifucation_time;
+    end
+$$ language plpgsql;
+
+-- drop function get_grading_notifications(std_id integer);
 -- drop function get_parent_site(postID integer);
 -- drop function get_parent_forum(postID integer);
 -- drop function add_extra_class(sectionNo integer, uname varchar, start_time timestamp with time zone, end_time timestamp with time zone);
