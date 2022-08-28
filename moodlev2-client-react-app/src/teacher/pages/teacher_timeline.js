@@ -18,7 +18,7 @@ const TeacherTimeline = ({ userName, currentView, uType }) => {
       <div className="timeline__title">Timeline</div>
       <div className="timeline__calendar__container">
         <div className="timeline__calendar__button__container">
-          <div></div>
+          {/* <div></div>
           <ToggleButtonGroup
             color="primary"
             value={view}
@@ -28,10 +28,10 @@ const TeacherTimeline = ({ userName, currentView, uType }) => {
             <ToggleButton value="week">Week</ToggleButton>
             <ToggleButton value="month">Month</ToggleButton>
           </ToggleButtonGroup>
-          <div> </div>
+          <div> </div> */}
         </div>
 
-        {view === "week" && (
+        {/* {view === "week" && (
           <div className="timeline__calendar__week">
             <WeeklyCalendar uId={userName} />
           </div>
@@ -40,7 +40,10 @@ const TeacherTimeline = ({ userName, currentView, uType }) => {
           <div className="timeline__calendar__month">
             <MonthlyCalendar uId={userName} uType={uType} />
           </div>
-        )}
+        )} */}
+        <div className="timeline__calendar__month">
+          <MonthlyCalendar uId={userName} uType={uType} />
+        </div>
       </div>
     </div>
   );
