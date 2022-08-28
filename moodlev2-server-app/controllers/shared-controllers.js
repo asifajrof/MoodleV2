@@ -136,7 +136,7 @@ const getEventDetails = async (req, res, next) => {
 				: moment.duration(endtime - nowDate).humanize(),
 		};
 
-		console.log(eventObj);
+		// console.log(eventObj);
 
 		if (!eventDetails) {
 			res.json({ message: "Error retriving eventdetails", data: [] });
@@ -290,6 +290,39 @@ const getSubmissions = async (req, res, next) => {
 	}
 };
 
+const teacherGradeList = async (req, res, next) => {
+	try {
+		const eventId = req.params.eventId;
+
+		let result = await pool.query(
+			"SELECT json_agg(t) FROM  get_submissions($1) as t",
+			[eventId]
+		);
+		const submissions = result.rows[0].json_agg;
+		let submissionList = [];
+		if (submissions != null) {
+			for (sub of submissions) {
+				const submittedInfo = {
+					studentID: sub.studentid,
+					subID: sub.subid,
+					mark: sub.obtainedmarks,
+					totalMark: sub.totalmarks,
+				};
+				submissionList.push(submittedInfo);
+			}
+		}
+		// console.log()
+		if (submissionList.length === 0) {
+			res.json({ message: "No submissions yet!", data: [] });
+		} else {
+			res.json({ message: "getSubmissions", data: submissionList });
+		}
+	} catch (error) {
+		return next(new HttpError(error.message, 500));
+	}
+};
+
+exports.teacherGradeList = teacherGradeList;
 exports.addNewCourseEvent = addNewCourseEvent;
 exports.getEventDetails = getEventDetails;
 exports.getCourseById = getCourseById;

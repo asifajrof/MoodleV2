@@ -19,4 +19,5 @@ sharedRoutes.post("/events_teacher", sharedControllers.getCourseEventsTeacher);
 sharedRoutes.post("/addNewCourseTopic", sharedControllers.addNewCourseTopic);
 sharedRoutes.post("/addNewEvent", sharedControllers.addNewCourseEvent);
 sharedRoutes.get("/getSubmissions/:eventId", sharedControllers.getSubmissions);
+sharedRoutes.get("/grade/:eventId", sharedControllers.teacherGradeList);
 module.exports = sharedRoutes;

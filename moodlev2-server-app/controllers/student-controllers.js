@@ -112,8 +112,8 @@ const getEventGrade = async (req, res, next) => {
 				const obj = {
 					eventName: e.eventname,
 					event_ended: e.event_ended,
-					totalMarks: e.totalMarks,
-					marks: e.obtainedMarks,
+					totalMarks: e.totalmarks,
+					marks: e.obtainedmarks,
 				};
 				grade_list.push(obj);
 			}
