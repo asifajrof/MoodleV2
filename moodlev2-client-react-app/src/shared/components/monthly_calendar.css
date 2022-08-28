@@ -32,7 +32,7 @@
 }
 .calendar__monthly__hourstamp {
   align-self: center;
-  font-size: small;
+  font-size: 0.7rem;
   font-weight: lighter;
 }
 .calendar__monthly__inside__content {
