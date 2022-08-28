@@ -97,7 +97,9 @@ export default function CourseEvaluationEventTableRow({
         <Link
           to={`/course/${courseId}/event/${courseEvaluationEvent.id}/submissions`}
         >
-          See Submissions
+          <Button variant="outlined" size="small">
+            See Submissions
+          </Button>
         </Link>
       </StyledTableCell>
     </StyledTableRow>

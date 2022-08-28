@@ -64,6 +64,7 @@ import AdminAddNewSiteNews from "./admin/pages/sitenews_add_new_post";
 import AdminSiteNewsList from "./admin/pages/site_news_list";
 import TeacherCourseEvent from "./teacher/pages/course_event";
 import TeacherCourseEventFileAdd from "./teacher/pages/course_event_file_add";
+import TeacherCourseEventSubmissions from "./teacher/pages/course_event_submissions";
 const App = () => {
   // const [backendData,setBackendData] = useState([{}])
   // useEffect(() => {
@@ -296,6 +297,10 @@ const App = () => {
             <Route
               path={"/course/:courseId/event/:eventId/addfile"}
               element={<TeacherCourseEventFileAdd userName={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId/event/:eventId/submissions"}
+              element={<TeacherCourseEventSubmissions userName={token.id} />}
             />
             <Route
               path={"/course/:courseId" + course_forum_link}

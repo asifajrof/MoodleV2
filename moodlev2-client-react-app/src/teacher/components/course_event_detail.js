@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import moment from "moment";
 // import FileUpload from "./file_upload/FileUpload";
 // import FileEdit from "./file_edit/FileEdit";
 import ShowFile from "../../shared/components/ShowFile";
+import { Button } from "@mui/material";
 // import "./course_home.css";
 
 const TeacherCourseEventDetail = ({ userName, courseId, eventId }) => {
@@ -59,7 +61,7 @@ const TeacherCourseEventDetail = ({ userName, courseId, eventId }) => {
           <div className="course__event__submission__info__col">
             <div>Due date:</div>
             <div>Time remaining:</div>
-            <div>File upload:</div>
+            <div>Submissions:</div>
           </div>
           <div className="course__event__submission__info__col">
             <div>
@@ -86,28 +88,14 @@ const TeacherCourseEventDetail = ({ userName, courseId, eventId }) => {
                   {courseEvalueationEventInfo.remaining_time}
                 </div>
               )}
-              {/* <div className="remaining__time" style={{}}>
-              {courseEvalueationEventInfo.remaining_time}
-            </div> */}
             </>
-            {!courseEvalueationEventInfo.submitted &&
-            !courseEvalueationEventInfo.completed ? (
-              // <FileUpload
-              //   studentNo={studentNo}
-              //   courseId={courseId}
-              //   eventId={eventId}
-              // />
-              <></>
-            ) : (
-              <>
-                {!courseEvalueationEventInfo.submitted ? (
-                  <>{/* blank */}</>
-                ) : (
-                  // <FileEdit fileID={courseEvalueationEventInfo.fileID} />
-                  <></>
-                )}
-              </>
-            )}
+            <div>
+              <Link to={`/course/${courseId}/event/${eventId}/submissions`}>
+                <Button variant="outlined" size="small">
+                  See Submissions
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
