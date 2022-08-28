@@ -14,9 +14,11 @@ insert into evaluation_type(type_id, type_name, notification_time_type)
 values (5,'Assignment',true);
 
 insert into request_type(type_id, type_name)
-values (1,'Extra Class');
+values (1,'Schedule');
 insert into request_type(type_id, type_name)
-values (2,'Class Test');
+values (2,'Reschedule');
+insert into request_type(type_id, type_name)
+values (3,'Confirm');
 
 insert into visibility(type_id, type_name) values(1,'All');
 insert into visibility(type_id, type_name) values(2,'Only Student');

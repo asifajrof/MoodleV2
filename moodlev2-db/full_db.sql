@@ -218,6 +218,33 @@ $$;
 ALTER FUNCTION public.add_extra_class(sectionno integer, uname character varying, start_time timestamp with time zone, end_time timestamp with time zone) OWNER TO postgres;
 
 --
+-- Name: add_extra_class_request(integer, character varying, timestamp with time zone, timestamp with time zone); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.add_extra_class_request(sectionno integer, uname character varying, start_time timestamp with time zone, end_time timestamp with time zone) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+        insID integer;
+        courseNO integer;
+        ans integer;
+    begin
+        select course_id into courseNO from section
+        where section_no=sectionNo;
+        tid:=get_teacher_id(uname);
+        select instructor_id into insID from instructor
+        where course_id=courseNO and teacher_id=tid;
+        insert into request_event(req_id,type_id, section_no, instructor_id, start, _end,_date,total_marks)
+        values(default,1,sectionNo,insID,start_time,end_time,start_time::date,1) returning req_id into ans;
+        return ans;
+    end;
+$$;
+
+
+ALTER FUNCTION public.add_extra_class_request(sectionno integer, uname character varying, start_time timestamp with time zone, end_time timestamp with time zone) OWNER TO postgres;
+
+--
 -- Name: add_forum_post(character varying, character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -458,6 +485,34 @@ $$;
 
 
 ALTER FUNCTION public.class_event_conflict_teacher(start_time time without time zone, end_time time without time zone, weekday integer, ins_id integer) OWNER TO postgres;
+
+--
+-- Name: confirm_request(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.confirm_request(eventid integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        insID integer;
+        secNo integer;
+        start_time timestamp with time zone;
+        end_time timestamp with time zone;
+    begin
+        select section_no,instructor_id,start,_end
+        into secNo,insID,start_time,end_time
+        from request_event
+        where req_id=eventID;
+        insert into extra_class(extra_class_id, section_no, instructor_id, start, _end, _date)
+        values (default,secNo,insID,start_time,end_time,start::date);
+        update request_event
+        set type_id=2
+        where req_id=eventID;
+    end;
+$$;
+
+
+ALTER FUNCTION public.confirm_request(eventid integer) OWNER TO postgres;
 
 --
 -- Name: course_routine_check(); Type: FUNCTION; Schema: public; Owner: postgres
@@ -867,7 +922,7 @@ join course_routine cr on cc.class_id=cr.class_id
 join section s on cr.section_no=s.section_no
 join enrolment e on s.section_no=e.section_id
 join student s2 on e.student_id = s2.student_id
-where ne.event_type=3 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and s2.notification_last_seen<ne.notifucation_time;
+where ne.event_type=3 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id;
     end
 $$;
 
@@ -894,8 +949,7 @@ CREATE FUNCTION public.get_cancel_class_notifications_teacher(teacher_username c
         join teacher tp on ip.teacher_id = tp.teacher_id
         join instructor iv on tr.instructor_id = iv.instructor_id
         join teacher tv on iv.teacher_id=tv.teacher_id
-        where ne.event_type=3 and tv.teacher_id!=tp.teacher_id and tv.teacher_id=tid
-        and tv.notification_last_seen<ne.notifucation_time;
+        where ne.event_type=3 and tv.teacher_id!=tp.teacher_id and tv.teacher_id=tid;
     end
 $$;
 
@@ -1060,7 +1114,7 @@ CREATE FUNCTION public.get_course_post_notifications(std_id integer) RETURNS TAB
     join current_courses c on i.course_id = c._id join section s on c._id = s.course_id
     join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
     join teacher t on i.teacher_id = t.teacher_id
-    where student_post=false and ne.event_type=4 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and s2.notification_last_seen<ne.notifucation_time)
+    where student_post=false and ne.event_type=4 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id)
     union
     (select ne.event_type,ne.event_no,c._id,ps.student_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),ps.student_name,ne.notifucation_time, ne._date
     from notification_event ne join course_post cp on ne.event_no=cp.post_id join enrolment ep on ep.enrol_id=cp.poster_id
@@ -1068,7 +1122,7 @@ CREATE FUNCTION public.get_course_post_notifications(std_id integer) RETURNS TAB
     join student ps on ps.student_id = ep.student_id
     join section s on s.course_id = c._id
     join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
-    where student_post=true and ps.student_id!=s2.student_id and ne.event_type=4 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and s2.notification_last_seen<ne.notifucation_time);
+    where student_post=true and ps.student_id!=s2.student_id and ne.event_type=4 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id);
 end
 $$;
 
@@ -1092,7 +1146,7 @@ CREATE FUNCTION public.get_course_post_notifications_teacher(uname character var
     join instructor iv on iv.course_id=c._id
     join teacher tv on tv.teacher_id=iv.teacher_id
     join official_users ou on ou.user_no=tv.user_no
-    where student_post=false and ne.event_type=4 and ou.username=uname and tv.teacher_id!=t.teacher_id and tv.notification_last_seen<ne.notifucation_time)
+    where student_post=false and ne.event_type=4 and ou.username=uname and tv.teacher_id!=t.teacher_id)
     union
     (select ne.event_type,ne.event_no,c._id,ps.student_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),ps.student_name,ne.notifucation_time, ne._date
     from notification_event ne join course_post cp on ne.event_no=cp.post_id join enrolment ep on ep.enrol_id=cp.poster_id
@@ -1101,7 +1155,7 @@ CREATE FUNCTION public.get_course_post_notifications_teacher(uname character var
     join instructor iv on iv.course_id=c._id
     join teacher tv on tv.teacher_id=iv.teacher_id
     join official_users ou on ou.user_no=tv.user_no
-    where student_post=true and ne.event_type=4 and ou.username=uname and  tv.notification_last_seen<ne.notifucation_time);
+    where student_post=true and ne.event_type=4 and ou.username=uname);
 end
 $$;
 
@@ -1452,7 +1506,7 @@ CREATE FUNCTION public.get_evaluation_notifications(std_id integer) RETURNS TABL
     return query
     select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,et.type_name,t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join evaluation ec on ne.event_no=ec.evaluation_id join evaluation_type et on ec.type_id = et.type_id
     join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ec.instructor_id = i.instructor_id join teacher t on i.teacher_id = t.teacher_id join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
-where ne.event_type=2 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and s2.notification_last_seen<ne.notifucation_time
+where ne.event_type=2 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id
 order by ne.notifucation_time desc;
 end
 $$;
@@ -1472,7 +1526,7 @@ CREATE FUNCTION public.get_evaluation_notifications_teacher(teacher_username cha
     return query
     select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,et.type_name,t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join evaluation ec on ne.event_no=ec.evaluation_id join evaluation_type et on ec.type_id = et.type_id
    join extra_evaluation_instructor eei on ec.evaluation_id = eei.evaluation_id join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on eei.instructor_id = i.instructor_id join instructor j on j.instructor_id=ec.instructor_id join teacher t on j.teacher_id = t.teacher_id join teacher t2 on t2.teacher_id=i.teacher_id join official_users ou on t2.user_no = ou.user_no
-where ne.event_type=2 and ou.username=teacher_username and t2.notification_last_seen<ne.notifucation_time
+where ne.event_type=2 and ou.username=teacher_username
 order by ne.notifucation_time desc;
 end
 $$;
@@ -1498,6 +1552,33 @@ $$;
 ALTER FUNCTION public.get_event_description(event integer) OWNER TO postgres;
 
 --
+-- Name: get_extra_class_confirm_notifications(character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_extra_class_confirm_notifications(teacher_username character varying) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, crno integer, dept_shortname character varying, course_code integer, eventtypename character varying, crname character varying, notificationtime timestamp with time zone, scheduleddate date)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+    return query
+    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Request Confirmation' as varchar),s2.student_name,ne.notifucation_time, ne._date
+from notification_event ne join request_event re on re.req_id=ne.event_no
+join request_type rt on rt.type_id=re.type_id
+join instructor i on re.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+join section s on re.section_no = s.section_no
+join current_courses cc on cc._id=s.course_id
+join student s2 on s.cr_id = s2.student_id
+where ne.event_type=0 and rt.type_id=3 and t.teacher_id=tid;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_extra_class_confirm_notifications(teacher_username character varying) OWNER TO postgres;
+
+--
 -- Name: get_extra_class_notifications(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1509,7 +1590,7 @@ CREATE FUNCTION public.get_extra_class_notifications(std_id integer) RETURNS TAB
     return query
     select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class' as varchar),t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join extra_class ec on ne.event_no=ec.extra_class_id
     join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ec.instructor_id = i.instructor_id join teacher t on i.teacher_id = t.teacher_id join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
-where ne.event_type=1 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and s2.notification_last_seen<ne.notifucation_time
+where ne.event_type=1 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id
 order by ne.notifucation_time desc;
 end
 $$;
@@ -1529,13 +1610,65 @@ CREATE FUNCTION public.get_extra_class_notifications_teacher(teacher_username ch
     return query
     select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class' as varchar),t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join evaluation ec on ne.event_no=ec.evaluation_id
    join extra_class_teacher eei on ec.evaluation_id = eei.extra_class_id join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on eei.instructor_id = i.instructor_id join instructor j on j.instructor_id=ec.instructor_id join teacher t on j.teacher_id = t.teacher_id join teacher t2 on t2.teacher_id=i.teacher_id join official_users ou on t2.user_no = ou.user_no
-where ne.event_type=1 and ou.username=teacher_username and t2.notification_last_seen<ne.notifucation_time
+where ne.event_type=1 and ou.username=teacher_username
 order by ne.notifucation_time desc;
 end
 $$;
 
 
 ALTER FUNCTION public.get_extra_class_notifications_teacher(teacher_username character varying) OWNER TO postgres;
+
+--
+-- Name: get_extra_class_request_notifications(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_extra_class_request_notifications(std_id integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, notificationtime timestamp with time zone, scheduleddate date)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    begin
+    return query
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class Request' as varchar),t.teacher_name,ne.notifucation_time, ne._date
+from notification_event ne join request_event re on re.req_id=ne.event_no
+join request_type rt on rt.type_id=re.type_id
+join instructor i on re.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+join section s on re.section_no = s.section_no
+join current_courses cc on cc._id=s.course_id
+join student s2 on s.cr_id = s2.student_id
+where ne.event_type=0 and rt.type_id=1 and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_extra_class_request_notifications(std_id integer) OWNER TO postgres;
+
+--
+-- Name: get_extra_class_reschedule_notifications(character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_extra_class_reschedule_notifications(teacher_username character varying) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, crno integer, dept_shortname character varying, course_code integer, eventtypename character varying, crname character varying, notificationtime timestamp with time zone, scheduleddate date)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+    return query
+    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,ne.notifucation_time, ne._date
+from notification_event ne join request_event re on re.req_id=ne.event_no
+join request_type rt on rt.type_id=re.type_id
+join instructor i on re.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+join section s on re.section_no = s.section_no
+join current_courses cc on cc._id=s.course_id
+join student s2 on s.cr_id = s2.student_id
+where ne.event_type=0 and rt.type_id=2 and t.teacher_id=tid;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_extra_class_reschedule_notifications(teacher_username character varying) OWNER TO postgres;
 
 --
 -- Name: get_forum_children_post(integer); Type: FUNCTION; Schema: public; Owner: postgres
@@ -1625,7 +1758,7 @@ join teacher t on i.teacher_id = t.teacher_id
 join current_courses c on c._id=i.course_id
 join enrolment e on s.enrol_id = e.enrol_id
 join student s2 on e.student_id = s2.student_id
-where ne.event_type=7 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and s2.notification_last_seen<ne.notifucation_time;
+where ne.event_type=7 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id;
     end
 $$;
 
@@ -2838,6 +2971,42 @@ $$;
 ALTER FUNCTION public.request_event_check() OWNER TO postgres;
 
 --
+-- Name: reschedule_extra_class(integer, timestamp with time zone, timestamp with time zone); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.reschedule_extra_class(eventid integer, start_time timestamp with time zone, end_time timestamp with time zone) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    begin
+        update request_event
+        set type_id=1,start=start_time,_end=end_time
+        where req_id=eventID;
+    end;
+$$;
+
+
+ALTER FUNCTION public.reschedule_extra_class(eventid integer, start_time timestamp with time zone, end_time timestamp with time zone) OWNER TO postgres;
+
+--
+-- Name: reschedule_request(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.reschedule_request(eventid integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    begin
+        update request_event
+        set type_id=2
+        where req_id=eventID;
+    end;
+$$;
+
+
+ALTER FUNCTION public.reschedule_request(eventid integer) OWNER TO postgres;
+
+--
 -- Name: section_to_course(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -2988,6 +3157,46 @@ $$;
 
 
 ALTER FUNCTION public.update_evaluation_link(eventid integer, filelink character varying) OWNER TO postgres;
+
+--
+-- Name: update_notification_seen_time(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.update_notification_seen_time(std_id integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    std_no integer;
+    begin
+        std_no:=get_student_no(std_id);
+        update student
+        set notification_last_seen=current_timestamp
+        where student_id=std_no;
+    end;
+$$;
+
+
+ALTER FUNCTION public.update_notification_seen_time(std_id integer) OWNER TO postgres;
+
+--
+-- Name: update_notification_seen_time_teacher(character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.update_notification_seen_time_teacher(uname character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(uname);
+        update teacher
+        set notification_last_seen=current_timestamp
+        where teacher_id=tid;
+    end;
+$$;
+
+
+ALTER FUNCTION public.update_notification_seen_time_teacher(uname character varying) OWNER TO postgres;
 
 --
 -- Name: upload_evaluation(integer, character varying); Type: FUNCTION; Schema: public; Owner: postgres
@@ -4849,8 +5058,9 @@ INSERT INTO public.official_users (user_no, username, password, email_address) V
 -- Data for Name: request_type; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.request_type (type_id, type_name) VALUES (1, 'Extra Class');
-INSERT INTO public.request_type (type_id, type_name) VALUES (2, 'Class Test');
+INSERT INTO public.request_type (type_id, type_name) VALUES (1, 'Schedule');
+INSERT INTO public.request_type (type_id, type_name) VALUES (2, 'Reschedule');
+INSERT INTO public.request_type (type_id, type_name) VALUES (3, 'Confirm');
 
 
 --
