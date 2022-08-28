@@ -29,34 +29,49 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const CourseGradeUpdateRow = ({
+  userName,
   student,
   courseId,
-  eventId,
   onChangeMark,
-  onMarkSubmit,
 }) => {
-  const [mark, setMark] = useState(student.mark);
+  const [mark, setMark] = useState(student.mark === null ? 0 : student.mark);
   // needed fields
   //     student.id
   //     student.mark
   return (
     <StyledTableRow>
       <StyledTableCell align="center" component="th" scope="row">
-        {student.id}
+        {student.studentID}
       </StyledTableCell>
       <StyledTableCell align="center">
-        <TextField
-          fullWidth
-          type="number"
-          id="marks"
-          label="Marks"
-          variant="outlined"
-          value={mark}
-          onChange={(e) => {
-            setMark(e.target.value);
-            onChangeMark(student.id, e.target.value);
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
           }}
-        />
+        >
+          <TextField
+            type="number"
+            id="marks"
+            label="Marks"
+            variant="outlined"
+            value={mark}
+            onChange={(e) => {
+              setMark(e.target.value);
+              onChangeMark(
+                student.studentID,
+                student.subID,
+                e.target.value,
+                student.totalMark,
+                userName,
+                courseId
+              );
+            }}
+          />{" "}
+          / {student.totalMark}
+        </div>
       </StyledTableCell>
     </StyledTableRow>
   );
