@@ -1,3 +1,4 @@
+const e = require("express");
 const moment = require("moment");
 const pool = require("../models/db_connect");
 const HttpError = require("../models/http-error");
@@ -245,6 +246,45 @@ const getSectionSchedule = async (req, res, next) => {
 	}
 };
 
+const getSelfSectionScheduleFiltered = async (req, res, next) => {
+	try {
+		const { date, month, year, sectionList } = req.body;
+		// console.log(date, month, year, sectionList);
+		let result = null;
+		let events = null;
+		let eventList = [];
+		const givenDate = moment(new Date(year, month, date));
+
+		for (sec of sectionList) {
+			///==========================self section data=================================
+			result = await pool.query(
+				"SELECT json_agg(t) FROM get_day_events_section($1,$2) as t",
+				[sec, givenDate.format("MM-DD-YYYY")]
+			);
+			// console.log(sec, givenDate.format("MM-DD-YYYY"));
+			events = result.rows[0].json_agg;
+			// console.log(events);
+			if (events != null) {
+				for (e of events) {
+					e.event_type_id = getIdEvent(e.event_type);
+					if (e.event_type === "Class") {
+						eventList.push(e);
+						// console.log(e);
+					}
+				}
+			}
+		}
+		// console.log(eventList);
+		res.json({
+			message: "getSectionSchedule",
+			eventList: eventList,
+		});
+	} catch (error) {
+		return next(new HttpError(error.message, 500));
+	}
+};
+
+exports.getSelfSectionScheduleFiltered = getSelfSectionScheduleFiltered;
 exports.getMarkDateList = getMarkDateList;
 exports.getEventListMonthView = getEventListMonthView;
 exports.getEventType = getEventType;

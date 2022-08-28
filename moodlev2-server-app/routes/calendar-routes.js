@@ -16,4 +16,8 @@ calendarRoutes.get(
 	calendarControllers.getSectionList
 );
 
+calendarRoutes.post(
+	"/section/class",
+	calendarControllers.getSelfSectionScheduleFiltered
+);
 module.exports = calendarRoutes;
