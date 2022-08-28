@@ -553,10 +553,10 @@ begin
         raise exception 'Invalid data insertion or update';
     end if;
     if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with a class';
     end if;
     if (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     end if;
     return new;
 end;
@@ -577,9 +577,9 @@ begin
     elsif (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
         raise exception 'Invalid data insertion or update line 11';
     elsif (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update line 16';
+        raise exception 'Conflicted with a class';
     elsif (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     end if;
     return new;
 end;
@@ -605,9 +605,9 @@ begin
     elsif (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null) or ins_id=new.instructor_id) then
         raise exception 'Invalid data insertion or update';
     elsif (event_event_conflict(start_timestamp,end_timestamp,sec_no,ins_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     elsif (event_class_conflict(start_timestamp::time,end_timestamp::time,start_timestamp::date,sec_no,ins_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with a class';
     end if;
     return new;
 end;
@@ -623,10 +623,10 @@ begin
         raise exception 'Invalid data insertion or update';
     end if;
     if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with a class';
     end if;
     if (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     end if;
     return new;
 end;
@@ -997,10 +997,10 @@ begin
         raise exception 'Invalid data insertion or update from line 12';
     end if;
     if (class_class_conflict_teacher(start_time,end_time,weekday,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with a class';
     end if;
     if (class_event_conflict_teacher(start_time,end_time,weekday,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     end if;
     return new;
 end;
@@ -1013,10 +1013,10 @@ create or replace function course_routine_check() returns trigger as $course_rou
 declare
 begin
     if (class_class_conflict_student(new.start,new._end,new.day,new.section_no)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with a class';
     end if;
     if (class_event_conflict_student(new.start,new._end,new.day,new.section_no)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     end if;
     return new;
 end;
@@ -1068,9 +1068,9 @@ begin
     elsif (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null) or ins_id=new.instructor_id) then
         raise exception 'Invalid data insertion or update';
     elsif (event_event_conflict(start_timestamp,end_timestamp,sec_no,ins_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     elsif (event_class_conflict(start_timestamp::time,end_timestamp::time,start_timestamp::date,sec_no,ins_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with a class';
     end if;
     return new;
 end;
@@ -1260,10 +1260,19 @@ create trigger extra_class_notification_update after update on extra_class
 create or replace function notify_evaluation() returns trigger as $evaluation_notification$
 declare
     type_no integer;
+    time_type integer;
+    lookup date;
 begin
+    select notification_time_type into time_type from evaluation_type
+    where type_id=new.type_id;
+    if (time_type) then
+        lookup:=new._end::date;
+    else
+        lookup:=new.start::date;
+    end if;
     select type_id into type_no from notification_type where type_name='New Declaration';
     insert into notification_event(not_id, type_id, event_no, event_type, _date)
-    values(default,type_no,new.evaluation_id,2,new.start::date);
+    values(default,type_no,new.evaluation_id,2,lookup);
     return null;
 end;
 $evaluation_notification$ language plpgsql;
@@ -2223,6 +2232,30 @@ create or replace function add_extra_class (sectionNo integer,uname varchar,star
     end;
 $$ language plpgsql;
 
+create or replace function get_parent_forum (postID integer)
+    returns integer as $$
+    declare
+        ans integer;
+    begin
+        select parent_post into ans from course_post
+        where post_id=postID;
+    return ans;
+    end;
+$$ language plpgsql;
+
+create or replace function get_parent_site (postID integer)
+    returns integer as $$
+    declare
+        ans integer;
+    begin
+        select parent_post into ans from forum_post
+        where post_id=postID;
+    return ans;
+    end;
+$$ language plpgsql;
+
+-- drop function get_parent_site(postID integer);
+-- drop function get_parent_forum(postID integer);
 -- drop function add_extra_class(sectionNo integer, uname varchar, start_time timestamp with time zone, end_time timestamp with time zone);
 --drop function cancel_class_teacher(uname varchar, classNo integer, cancelDate date);
 -- drop function get_classes_teacher(uname varchar, secNo integer, checkDate date);

@@ -469,10 +469,10 @@ CREATE FUNCTION public.course_routine_check() RETURNS trigger
 declare
 begin
     if (class_class_conflict_student(new.start,new._end,new.day,new.section_no)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with a class';
     end if;
     if (class_event_conflict_student(new.start,new._end,new.day,new.section_no)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     end if;
     return new;
 end;
@@ -546,9 +546,9 @@ begin
     elsif (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
         raise exception 'Invalid data insertion or update line 11';
     elsif (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update line 16';
+        raise exception 'Conflicted with a class';
     elsif (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     end if;
     return new;
 end;
@@ -652,10 +652,10 @@ begin
         raise exception 'Invalid data insertion or update';
     end if;
     if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with a class';
     end if;
     if (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     end if;
     return new;
 end;
@@ -687,9 +687,9 @@ begin
     elsif (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null) or ins_id=new.instructor_id) then
         raise exception 'Invalid data insertion or update';
     elsif (event_event_conflict(start_timestamp,end_timestamp,sec_no,ins_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     elsif (event_class_conflict(start_timestamp::time,end_timestamp::time,start_timestamp::date,sec_no,ins_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with a class';
     end if;
     return new;
 end;
@@ -721,9 +721,9 @@ begin
     elsif (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null) or ins_id=new.instructor_id) then
         raise exception 'Invalid data insertion or update';
     elsif (event_event_conflict(start_timestamp,end_timestamp,sec_no,ins_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     elsif (event_class_conflict(start_timestamp::time,end_timestamp::time,start_timestamp::date,sec_no,ins_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with a class';
     end if;
     return new;
 end;
@@ -1633,6 +1633,44 @@ $$;
 ALTER FUNCTION public.get_my_marks(userid integer, eid integer) OWNER TO postgres;
 
 --
+-- Name: get_parent_forum(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_parent_forum(postid integer) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans integer;
+    begin
+        select parent_post into ans from course_post
+        where post_id=postID;
+    return ans;
+    end;
+$$;
+
+
+ALTER FUNCTION public.get_parent_forum(postid integer) OWNER TO postgres;
+
+--
+-- Name: get_parent_site(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_parent_site(postid integer) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        ans integer;
+    begin
+        select parent_post into ans from forum_post
+        where post_id=postID;
+    return ans;
+    end;
+$$;
+
+
+ALTER FUNCTION public.get_parent_site(postid integer) OWNER TO postgres;
+
+--
 -- Name: get_root_course_posts(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -2238,10 +2276,19 @@ CREATE FUNCTION public.notify_evaluation() RETURNS trigger
     AS $$
 declare
     type_no integer;
+    time_type integer;
+    lookup date;
 begin
+    select notification_time_type into time_type from evaluation_type
+    where type_id=new.type_id;
+    if (time_type) then
+        lookup:=new._end::date;
+    else
+        lookup:=new.start::date;
+    end if;
     select type_id into type_no from notification_type where type_name='New Declaration';
     insert into notification_event(not_id, type_id, event_no, event_type, _date)
-    values(default,type_no,new.evaluation_id,2,new.start::date);
+    values(default,type_no,new.evaluation_id,2,lookup);
     return null;
 end;
 $$;
@@ -2700,10 +2747,10 @@ begin
         raise exception 'Invalid data insertion or update';
     end if;
     if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with a class';
     end if;
     if (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     end if;
     return new;
 end;
@@ -2793,10 +2840,10 @@ begin
         raise exception 'Invalid data insertion or update from line 12';
     end if;
     if (class_class_conflict_teacher(start_time,end_time,weekday,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with a class';
     end if;
     if (class_event_conflict_teacher(start_time,end_time,weekday,new.instructor_id)) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'Conflicted with an event';
     end if;
     return new;
 end;
