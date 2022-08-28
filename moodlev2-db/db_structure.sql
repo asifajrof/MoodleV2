@@ -2426,6 +2426,29 @@ create or replace function update_notification_seen_time_teacher(uname varchar) 
     end;
 $$ language plpgsql;
 
+create or replace function get_day_events_section (secNo integer,query_date date)
+    returns table (eventID integer,secID integer,courseID integer,dept_shortname varchar,course_code integer, start_time time,end_time time,event_type varchar) as $$
+begin
+    return query
+    (select class_id, cr.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time,cast('Class' as varchar) as _event_type
+from course_routine cr join section sec on cr.section_no=sec.section_no join current_courses cc on cc._id=sec.course_id
+where sec.section_no=secNo
+ and day = extract(isodow from query_date) - 1
+  and not exists (select class_id from canceled_class cc
+ where cc.class_id = cr.class_id and _date = query_date))
+union
+(select extra_class_id,ec.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time,cast('Extra Class' as varchar) as _event_type
+from extra_class ec join section sec on ec.section_no = sec.section_no join current_courses cc on cc._id=sec.course_id
+where sec.section_no=secNo and _date= query_date)
+union
+(select evaluation_id,e.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time, et.type_name as _event_type
+from evaluation e join evaluation_type et on (et.type_id = e.type_id and et.notification_time_type = false)
+join section sec on e.section_no = sec.section_no join current_courses cc on cc._id=sec.course_id
+where sec.section_no=secNo and start::date = query_date);
+end
+$$ language plpgsql;
+
+-- drop function get_day_events_section(secNo integer, query_date date)
 -- drop function update_notification_seen_time_teacher(uname varchar);
 -- drop function update_notification_seen_time(std_id integer);
 -- drop function confirm_request(eventID integer);
