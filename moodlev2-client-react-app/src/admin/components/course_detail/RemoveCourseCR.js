@@ -19,6 +19,7 @@ const RemoveCourseCR = ({ courseId, CRList }) => {
 
       if (res.status === 200) {
         console.log("CR removed successfully!");
+        setTimeout(() => window.location.reload(), 500);
       } else {
         console.log(data.message);
       }
