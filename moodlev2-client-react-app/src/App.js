@@ -70,6 +70,7 @@ import TeacherCourseEventFileAdd from "./teacher/pages/course_event_file_add";
 import TeacherCourseEventSubmissions from "./teacher/pages/course_event_submissions";
 import TeacherCourseGrades from "./teacher/pages/course_grades";
 import TeacherCourseGrade from "./teacher/pages/course_grade";
+import StudentCourseGrades from "./student/pages/course_grades";
 const App = () => {
   // const [backendData,setBackendData] = useState([{}])
   // useEffect(() => {
@@ -224,6 +225,10 @@ const App = () => {
             <Route
               path={"/course/:courseId/event/:eventId"}
               element={<StudentCourseEvent studentNo={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId/grades"}
+              element={<StudentCourseGrades studentNo={token.id} />}
             />
             <Route
               path={"/course/:courseId" + course_forum_link}
