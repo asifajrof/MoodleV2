@@ -13,6 +13,7 @@ const notificationRoutes = require("./routes/notification-routes");
 const calendarRoutes = require("./routes/calendar-routes");
 const fileRoutes = require("./routes/file-routes");
 const forumRoutes = require("./routes/forum-routes");
+const resourceRoutes = require("./routes/resource-routes");
 const HttpError = require("./models/http-error");
 
 const pool = require("./models/db_connect");
@@ -44,6 +45,7 @@ app.use("/api/login", loginRoutes);
 app.use("/api/notification", notificationRoutes);
 app.use("/api/calendar", calendarRoutes);
 app.use("/api/forum", forumRoutes);
+app.use("/api/resource", resourceRoutes);
 
 // download endpoint
 app.use("/api/file", fileRoutes);

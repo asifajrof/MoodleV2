@@ -14,58 +14,58 @@ import CourseResourceTableRow from "./CourseResourceTableRow";
 // import './course_home.css';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    //   backgroundColor: theme.palette.common.black,
-    backgroundColor: "#F4F7FC",
-    color: theme.palette.common.black,
-    fontWeight: "bold",
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
+	[`&.${tableCellClasses.head}`]: {
+		//   backgroundColor: theme.palette.common.black,
+		backgroundColor: "#F4F7FC",
+		color: theme.palette.common.black,
+		fontWeight: "bold",
+	},
+	[`&.${tableCellClasses.body}`]: {
+		fontSize: 14,
+	},
 }));
 
 const CourseResourceTable = ({ userName, uType, courseId }) => {
-  const [courseResourceList, setCourseResourceList] = useState([]);
-  // fetch resource here
-  //   useEffect(() => {
-  //     const fetchData = async (courseId) => {
-  //       try {
-  //         const response = await fetch(`/api/forum/course/${courseId}`);
-  //         const jsonData = await response.json();
-  //         setCourseResourceList(jsonData.data);
-  //       } catch (err) {
-  //         console.log(err);
-  //       }
-  //     };
-  //     fetchData(courseId);
-  //   }, [courseId]);
+	const [courseResourceList, setCourseResourceList] = useState([]);
+	// fetch resource here
+	useEffect(() => {
+		const fetchData = async (courseId) => {
+			try {
+				const response = await fetch(`/api/resource/view/${courseId}`);
+				const jsonData = await response.json();
+				setCourseResourceList(jsonData.data);
+			} catch (err) {
+				console.log(err);
+			}
+		};
+		fetchData(courseId);
+	}, [courseId]);
 
-  return (
-    <div style={{ width: "100%", paddingRight: "4rem" }}>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell align="center">Title</StyledTableCell>
-              <StyledTableCell align="center">File</StyledTableCell>
-              <StyledTableCell align="center">Uploader</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {courseResourceList.map((courseResource, index) => (
-              <CourseResourceTableRow
-                key={index}
-                uType={uType}
-                courseResource={courseResource}
-                courseId={courseId}
-              />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
-  );
+	return (
+		<div style={{ width: "100%", paddingRight: "4rem" }}>
+			<TableContainer component={Paper}>
+				<Table sx={{ minWidth: 700 }} aria-label="customized table">
+					<TableHead>
+						<TableRow>
+							<StyledTableCell align="center">Title</StyledTableCell>
+							<StyledTableCell align="center">File</StyledTableCell>
+							<StyledTableCell align="center">Uploader</StyledTableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{courseResourceList.map((courseResource, index) => (
+							<CourseResourceTableRow
+								key={index}
+								uType={uType}
+								courseResource={courseResource}
+								courseId={courseId}
+							/>
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
+		</div>
+	);
 };
 
 export default CourseResourceTable;
