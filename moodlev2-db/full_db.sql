@@ -388,7 +388,7 @@ begin
     select count(class_id) into cnt from course_routine
     where class_id=new.class_id and day=ccd;
     if (cnt=0 or new.class_id is null or ccd is null) then
-        raise exception 'Invalid data insertion or update';
+        raise exception 'This class is not available on this day';
     end if;
     return new;
 end;
@@ -976,6 +976,35 @@ $$;
 ALTER FUNCTION public.get_all_teacher_admin() OWNER TO postgres;
 
 --
+-- Name: get_cancel_class(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_cancel_class(std_id integer, crs_id integer) RETURNS TABLE(sectionname character varying, teachername character varying, start_time timestamp with time zone, end_time timestamp with time zone)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        std_no integer;
+    begin
+        std_no:=get_student_no(std_id);
+    return query
+
+select s.section_name,t.teacher_name,cast(cr.start::time+cc._date as timestamp with time zone),cast(cr._end::time+cc._date as timestamp with time zone)
+from canceled_class cc
+join course_routine cr on cc.class_id=cr.class_id
+join section s on cr.section_no = s.section_no
+join course c on s.course_id = c.course_id
+join instructor i on cc.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+join enrolment e on s.section_no = e.section_id
+join student s2 on e.student_id=s2.student_id
+where c.course_id=crs_id and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_cancel_class(std_id integer, crs_id integer) OWNER TO postgres;
+
+--
 -- Name: get_cancel_class_notifications(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1026,6 +1055,33 @@ $$;
 
 
 ALTER FUNCTION public.get_cancel_class_notifications_teacher(teacher_username character varying) OWNER TO postgres;
+
+--
+-- Name: get_cancel_class_teacher(character varying, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_cancel_class_teacher(uname character varying, crs_id integer) RETURNS TABLE(sectionname character varying, teachername character varying, start_time timestamp with time zone, end_time timestamp with time zone)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(uname);
+    return query
+
+select s.section_name,t.teacher_name,cast(cr.start::time+cc._date as timestamp with time zone),cast(cr._end::time+cc._date as timestamp with time zone)
+from canceled_class cc
+join course_routine cr on cc.class_id=cr.class_id
+join section s on cr.section_no = s.section_no
+join course c on s.course_id = c.course_id
+join instructor i on cc.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+where c.course_id=crs_id and t.teacher_id=tid;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_cancel_class_teacher(uname character varying, crs_id integer) OWNER TO postgres;
 
 --
 -- Name: get_classes_teacher(character varying, integer, date); Type: FUNCTION; Schema: public; Owner: postgres
@@ -1681,6 +1737,32 @@ $$;
 ALTER FUNCTION public.get_event_description(event integer) OWNER TO postgres;
 
 --
+-- Name: get_extra_class(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_extra_class(std_id integer, crs_id integer) RETURNS TABLE(sectionname character varying, teachername character varying, start_time timestamp with time zone, end_time timestamp with time zone)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        std_no integer;
+    begin
+        std_no:=get_student_no(std_id);
+    return query
+    select s.section_name,t.teacher_name,ec.start,ec._end
+from extra_class ec
+join section s on ec.section_no = s.section_no
+join enrolment e on s.section_no = e.section_id
+join instructor i on ec.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+join student s2 on s.cr_id = s2.student_id
+where s.course_id=crs_id and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=1705119;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_extra_class(std_id integer, crs_id integer) OWNER TO postgres;
+
+--
 -- Name: get_extra_class_confirm_notifications(character varying); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1798,6 +1880,31 @@ $$;
 
 
 ALTER FUNCTION public.get_extra_class_reschedule_notifications(teacher_username character varying) OWNER TO postgres;
+
+--
+-- Name: get_extra_class_teacher(character varying, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_extra_class_teacher(uname character varying, crs_id integer) RETURNS TABLE(sectionname character varying, teachername character varying, start_time timestamp with time zone, end_time timestamp with time zone)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(uname);
+    return query
+
+select s.section_name,t.teacher_name,ec.start,ec._end
+from extra_class ec
+join section s on ec.section_no = s.section_no
+join instructor i on ec.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+where s.course_id=crs_id and t.teacher_id=tid;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_extra_class_teacher(uname character varying, crs_id integer) OWNER TO postgres;
 
 --
 -- Name: get_forum_children_post(integer); Type: FUNCTION; Schema: public; Owner: postgres
