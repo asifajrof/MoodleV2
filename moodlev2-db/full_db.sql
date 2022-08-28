@@ -2377,7 +2377,7 @@ join instructor i on i.instructor_id=sr.owner_id
 join current_courses cc on cc._id=i.course_id
 join teacher t on i.teacher_id = t.teacher_id
 join instructor i2 on i2.course_id=cc._id
-join teacher t2 on t2.teacher_id=i.teacher_id
+join teacher t2 on t2.teacher_id=i2.teacher_id
 where ne.event_type=5 and t2.teacher_id=tid and t.teacher_id!=tid;
     end
 $$;
