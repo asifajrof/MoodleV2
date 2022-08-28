@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-// import ShowSchedule from "./show_schedule";
+import ShowScheduleReschedule from "./ShowScheduleReschedule";
 
 const typeListDummy = [
   {
@@ -157,12 +157,12 @@ const CourseEventsAddForm = ({ userName, courseId }) => {
                     <br /> <br />
                     {scheduleShow === "schedule" && (
                       <>
-                        {/* <ShowSchedule
+                        <ShowScheduleReschedule
                           userName={userName}
                           courseId={courseId}
                           sectionList={sectionList}
-                        /> */}{" "}
-                        dekhano hobe
+                          rescheduleType={rescheduleType}
+                        />
                         <br /> <br />
                       </>
                     )}
