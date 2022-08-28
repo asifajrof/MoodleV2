@@ -1633,6 +1633,30 @@ $$;
 ALTER FUNCTION public.get_grading_notifications(std_id integer) OWNER TO postgres;
 
 --
+-- Name: get_grading_student(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_grading_student(std_id integer, courseid integer) RETURNS TABLE(gradeid integer, subid integer, eventid integer, eventname character varying, event_ended timestamp with time zone, obtainedmarks double precision, totalmarks double precision, teachername character varying, gradingdate date)
+    LANGUAGE plpgsql
+    AS $$
+    begin
+    return query
+select g.grading_id,s.sub_id,e.evaluation_id,cast(type_name||e.caption_extension as varchar),e._end,g.obtained_marks,g.total_marks,t.teacher_name,g._date
+from grading g join submission s on g.sub_id = s.sub_id join evaluation e on s.event_id = e.evaluation_id join evaluation_type et on e.type_id = et.type_id
+join enrolment en on s.enrol_id = en.enrol_id
+join student s2 on en.student_id = s2.student_id
+join section s3 on en.section_id = s3.section_no
+join instructor i on g.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+where s3.course_id=courseID and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id
+order by e._end;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_grading_student(std_id integer, courseid integer) OWNER TO postgres;
+
+--
 -- Name: get_my_marks(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
