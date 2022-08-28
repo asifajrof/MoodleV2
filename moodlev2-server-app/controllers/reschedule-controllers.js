@@ -77,5 +77,35 @@ const addCancelClass = async (req, res, next) => {
 		return next(new HttpError(err.message, 500));
 	}
 };
+
+const addExtraClass = async (req, res, next) => {
+	try {
+		const { eventSectionList, eventTime, userName } = req.body;
+
+		const eventTimeMoment = moment(eventTime);
+		const givenTime = eventTimeMoment.format("YYYY-MM-DD HH:mm:ssZZ");
+		// console.log(givenTime);
+		const givenTimePlusOneHour = eventTimeMoment
+			.add(1, "hours")
+			.format("YYYY-MM-DD HH:mm:ssZZ");
+		// const currentTime = moment().format("YYYY-MM-DD HH:mm:ssZZ");
+		console.log(currentTime);
+
+		for (sec of eventSectionList) {
+			let result = await pool.query(
+				"select json_agg(t) FROM add_extra_class_request($1,$2,$3,$4) as t",
+				[sec, userName, givenTime, givenTimePlusOneHour]
+			);
+
+			// const evaluationId = result.rows[0].json_agg;
+			// console.log(result);
+		}
+
+		res.json({ message: "new extra class requested", data: [] });
+	} catch (err) {
+		return next(new HttpError(err.message, 500));
+	}
+};
 exports.getRescheduleEvents = getRescheduleEvents;
 exports.addCancelClass = addCancelClass;
+exports.addExtraClass = addExtraClass;
