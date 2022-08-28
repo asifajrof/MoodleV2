@@ -187,8 +187,8 @@ const SiteNewsPage = ({ userName, forumId }) => {
 			try {
 				const response = await fetch(`/api/forum/siteNews/post/${forumId}`);
 				const jsonData = await response.json();
-				setSiteNewsPagePosts(jsonData.data);
-				console.log(jsonData.data);
+				setSiteNewsPagePosts(jsonData.data.list);
+				console.log(jsonData.data.id);
 			} catch (err) {
 				console.log(err);
 			}
