@@ -60,14 +60,7 @@ const CourseGradeUpdateRow = ({
             value={mark}
             onChange={(e) => {
               setMark(e.target.value);
-              onChangeMark(
-                student.studentID,
-                student.subID,
-                e.target.value,
-                student.totalMark,
-                userName,
-                courseId
-              );
+              onChangeMark(student.studentID, e.target.value);
             }}
           />{" "}
           / {student.totalMark}
