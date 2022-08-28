@@ -1819,7 +1819,7 @@ create or replace function grade_submission(subID integer,teacher_username varch
         select instructor_id into insID from instructor where course_id=courseID and teacher_id=tid;
         select grading_id into gid from grading
         where sub_id=subID and instructor_id=insID;
-        if (insID is null) then
+        if (gid is null) then
             insert into grading(grading_id, sub_id, instructor_id, total_marks, obtained_marks, remarks)
         values (default,subID,insID,totalMarks,obtainedMarks,remark);
         else
