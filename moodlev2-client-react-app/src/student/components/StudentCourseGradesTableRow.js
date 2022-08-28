@@ -32,10 +32,10 @@ const StudentCourseGradesTableRow = ({ courseEventGrade, courseId }) => {
   return (
     <StyledTableRow>
       <StyledTableCell align="center" component="th" scope="row">
-        <Link to={linkto}>
-          {courseEventGrade.eventName} <br></br>{" "}
-          {moment(courseEventGrade.event_ended).format("LLL")}
-        </Link>
+        {/* <Link to={linkto}> */}
+        {courseEventGrade.eventName} <br></br>{" "}
+        {moment(courseEventGrade.event_ended).format("LLL")}
+        {/* </Link> */}
       </StyledTableCell>
       <StyledTableCell align="center">
         {courseEventGrade.marks} / {courseEventGrade.totalMarks}
