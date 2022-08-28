@@ -263,7 +263,7 @@ const getSelfSectionScheduleFiltered = async (req, res, next) => {
 			);
 			// console.log(sec, givenDate.format("MM-DD-YYYY"));
 			events = result.rows[0].json_agg;
-			console.log("events :", events);
+			// console.log("events :", events);
 			if (events != null) {
 				for (c of events) {
 					c.event_type_id = getIdEvent(c.event_type);
@@ -274,13 +274,13 @@ const getSelfSectionScheduleFiltered = async (req, res, next) => {
 				}
 			}
 		}
-		console.log(eventList);
+		// console.log(eventList);
 		res.json({
 			message: "getSectionSchedule",
 			eventList: eventList,
 		});
 	} catch (error) {
-		console.log("===============================");
+		// console.log("===============================");
 		return next(new HttpError(error.message, 500));
 	}
 };

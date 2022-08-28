@@ -39,7 +39,7 @@ const getRescheduleEvents = async (req, res, next) => {
 		// console.log(result.rows[0].json_agg);
 
 		if (cancel != null) {
-			console.log(cancel);
+			// console.log(cancel);
 			for (c of cancel) {
 				// console.log("==========================");
 				const obj = {
@@ -52,7 +52,7 @@ const getRescheduleEvents = async (req, res, next) => {
 				reschList.push(obj);
 			}
 		}
-		console.log(reschList);
+		// console.log(reschList);
 
 		res.json({ message: "getRescheduleEvents", data: reschList });
 	} catch (err) {
@@ -60,4 +60,22 @@ const getRescheduleEvents = async (req, res, next) => {
 	}
 };
 
+const addCancelClass = async (req, res, next) => {
+	try {
+		const { userName, reschTime } = req.body;
+		console.log("POST api/reschedule/add/cancel");
+		const result = await pool.query("SELECT cancel_class($1, $2, $3)", [
+			userName,
+			moment(reschTime).format("YYYY-MM-DD"),
+			moment(reschTime).format("HH:mm"),
+		]);
+		res.json({
+			message: "addCancelClass",
+			data: [],
+		});
+	} catch (err) {
+		return next(new HttpError(err.message, 500));
+	}
+};
 exports.getRescheduleEvents = getRescheduleEvents;
+exports.addCancelClass = addCancelClass;
