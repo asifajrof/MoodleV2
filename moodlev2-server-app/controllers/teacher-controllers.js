@@ -1,48 +1,6 @@
 const pool = require("../models/db_connect");
 const HttpError = require("../models/http-error");
 
-// const courses = [
-//   {
-//     id: 1,
-//     term: "January",
-//     _year: 2022,
-//     dept_shortname: "CSE",
-//     course_code: "405",
-//     course_name: "Computer Security",
-//   },
-//   {
-//     id: 2,
-//     term: "January",
-//     _year: 2022,
-//     dept_shortname: "CSE",
-//     course_code: "406",
-//     course_name: "Computer Security Sessional",
-//   },
-//   {
-//     id: 3,
-//     term: "January",
-//     _year: 2022,
-//     dept_shortname: "CSE",
-//     course_code: "408",
-//     course_name: "Software Development Sessional",
-//   },
-//   {
-//     id: 4,
-//     term: "January",
-//     _year: 2022,
-//     dept_shortname: "CSE",
-//     course_code: "409",
-//     course_name: "Computer Graphics",
-//   },
-//   {
-//     id: 5,
-//     term: "January",
-//     _year: 2022,
-//     dept_shortname: "CSE",
-//     course_code: "423",
-//     course_name: "FTS",
-//   },
-// ];
 const getCurrentCoursesByUsername = async (req, res, next) => {
 	try {
 		// console.log("GET api/teacher/courses/current/:username");
@@ -110,6 +68,36 @@ const getUpcomingEventsByUsername = async (req, res, next) => {
 	}
 };
 
+const updateGrade = async (req, res, next) => {
+	try {
+		// const { studentId, subId, mark, totalMark, tUserName, courseId } = req.body;
+		// console.log(req.body);
+		const arr = req.body;
+
+		if (arr.length !== 0 && arr != null) {
+			for (obj of arr) {
+				console.log(
+					obj.subId,
+					obj.tUserName,
+					obj.courseId,
+					obj.totalMark,
+					obj.mark
+				);
+				let result = await pool.query(
+					"select grade_submission($1, $2, $3, $4, $5, null)",
+					[obj.subId, obj.tUserName, obj.courseId, obj.totalMark, obj.mark]
+				);
+				const courses = result.rows[0].json_agg;
+			}
+		}
+
+		res.json({ message: `Grade Updated!`, data: [] });
+	} catch (error) {
+		next(new HttpError(error.message, 500));
+	}
+};
+
+exports.updateGrade = updateGrade;
 exports.getCurrentCoursesByUsername = getCurrentCoursesByUsername;
 exports.getUpcomingEventsByUsername = getUpcomingEventsByUsername;
 exports.getAllCoursesByUsername = getAllCoursesByUsername;
