@@ -45,6 +45,7 @@ import {
   home_link,
   timeline_link,
   siteNews_link,
+  course_resources_link,
 } from "./links";
 import useToken from "./shared/pages/useToken";
 import TeacherAddNewCourseTopic from "./teacher/pages/course_add_new_topic";
@@ -55,11 +56,13 @@ import StudentSiteNewsList from "./student/pages/site_news_list";
 import TeacherSiteNewsList from "./teacher/pages/site_news_list";
 import StudentCourseForum from "./student/pages/course_forum";
 import TeacherCourseForums from "./teacher/pages/course_forums";
+import Resources from "./shared/pages/course_resources";
 import TeacherAddNewForum from "./teacher/pages/course_add_new_forum";
 import TeacherAddNewSiteNews from "./teacher/pages/sitenews_add_new_post";
 import TeacherCourseForum from "./teacher/pages/course_forum";
 import AdminCourse from "./admin/pages/AdminCourse";
 import TeacherAddNewCourseEvents from "./teacher/pages/TeacherAddNewCourseEvents";
+import AddNewResource from "./shared/pages/AddNewResource";
 import AdminAddNewSiteNews from "./admin/pages/sitenews_add_new_post";
 import AdminSiteNewsList from "./admin/pages/site_news_list";
 import TeacherCourseEvent from "./teacher/pages/course_event";
@@ -229,6 +232,16 @@ const App = () => {
               element={<StudentCourseForum studentNo={token.id} />}
             />
             <Route
+              path={"/course/:courseId" + course_resources_link}
+              element={<Resources userName={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId/resource/addnew"}
+              element={
+                <AddNewResource userName={token.id} uType={token.type} />
+              }
+            />
+            <Route
               path={timeline_link}
               element={
                 <StudentTimeline studentNo={token.id} uType={token.type} />
@@ -305,6 +318,16 @@ const App = () => {
             <Route
               path={"/course/:courseId" + course_forum_link}
               element={<TeacherCourseForums userName={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId" + course_resources_link}
+              element={<Resources userName={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId/resource/addnew"}
+              element={
+                <AddNewResource userName={token.id} uType={token.type} />
+              }
             />
             <Route
               path={"/course/:courseId/forum/addnew" + course_link}

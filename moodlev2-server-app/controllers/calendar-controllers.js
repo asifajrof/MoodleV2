@@ -215,6 +215,22 @@ const getSectionSchedule = async (req, res, next) => {
 				for (e of events) {
 					e.event_type_id = getIdEvent(e.event_type);
 					eventList.push(e);
+					// console.log(e);
+				}
+			}
+			///==========================self section data=================================
+			result = await pool.query(
+				"SELECT json_agg(t) FROM get_day_events_section($1,$2) as t",
+				[sec, givenDate.format("MM-DD-YYYY")]
+			);
+			// console.log(sec, givenDate.format("MM-DD-YYYY"));
+			events = result.rows[0].json_agg;
+			// console.log(events);
+			if (events != null) {
+				for (e of events) {
+					e.event_type_id = getIdEvent(e.event_type);
+					eventList.push(e);
+					// console.log(e);
 				}
 			}
 		}
