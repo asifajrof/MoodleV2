@@ -120,7 +120,7 @@ const BuildRecursiveSiteNews = async (postId) => {
 		}
 
 		for (child of children_list) {
-			// console.log(child);
+			// console.log("child : ", child);
 			let childPostObj = await BuildRecursiveSiteNews(child);
 			// console.log(childPostObj);
 			currentPostObj.children.push(childPostObj);
@@ -134,10 +134,37 @@ const BuildRecursiveSiteNews = async (postId) => {
 const getCourseForumRecursive = async (req, res, next) => {
 	try {
 		const postId = req.params.postId;
+
+		let parent = null;
+
+		let result = await pool.query(
+			"SELECT json_agg(t) FROM get_parent_forum($1) as t",
+			[postId]
+		);
+
+		parent = result.rows[0].json_agg;
+		// console.log(parent);
+		let current = parent[0];
+
+		while (parent[0] != null) {
+			current = parent[0];
+			result = await pool.query(
+				"SELECT json_agg(t) FROM get_parent_forum($1) as t",
+				[parent[0]]
+			);
+
+			parent = result.rows[0].json_agg;
+		}
+
 		let courseForumPagePosts = await BuildRecursiveForum(postId);
+
+		const obj = {
+			id: current,
+			list: [courseForumPagePosts],
+		};
 		res.json({
 			message: "recursive course forum list",
-			data: [courseForumPagePosts],
+			data: obj,
 		});
 	} catch (err) {
 		return next(new HttpError(err.message, 500));
@@ -147,10 +174,43 @@ const getCourseForumRecursive = async (req, res, next) => {
 const getSiteNewsRecursive = async (req, res, next) => {
 	try {
 		const postId = req.params.postId;
+		// console.log(postId);
 		let siteNewsPagePosts = await BuildRecursiveSiteNews(postId);
+
+		let parent = null;
+
+		let result = await pool.query(
+			"SELECT json_agg(t) FROM get_parent_site($1) as t",
+			[postId]
+		);
+
+		parent = result.rows[0].json_agg;
+		// console.log(parent[0]);
+		let current = parent[0];
+
+		while (parent[0] != null) {
+			current = parent[0];
+			result = await pool.query(
+				"SELECT json_agg(t) FROM get_parent_site($1) as t",
+				[parent[0]]
+			);
+
+			parent = result.rows[0].json_agg;
+		}
+
+		// console.log(current);
+
+		// console.log("here");
+		const obj = {
+			id: current,
+			list: [siteNewsPagePosts],
+		};
+
+		// console.log(obj.list);
+
 		res.json({
 			message: "recursive site news list",
-			data: [siteNewsPagePosts],
+			data: obj,
 		});
 	} catch (err) {
 		return next(new HttpError(err.message, 500));
