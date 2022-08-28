@@ -84,8 +84,8 @@ const TileContent = ({ uId, date, view, uType }) => {
                             <div
                               className="calendar__monthly__event"
                               style={{
-                                backgroundColor:
-                                  eventColors[event.event_id - 1],
+                                background:
+                                  eventColors[event.event_type_id - 1],
                               }}
                             >
                               {event.event_type_id === 1 ? (
@@ -105,7 +105,7 @@ const TileContent = ({ uId, date, view, uType }) => {
                               )}
                             </div>
                             <div className="calendar__monthly__hourstamp">
-                              {hour}
+                              {event.lookup_time}
                             </div>
                           </>
                         ) : (
