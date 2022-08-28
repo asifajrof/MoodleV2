@@ -374,6 +374,31 @@ $$;
 ALTER FUNCTION public.add_teacher_resource(courseid integer, uname character varying, filename character varying, filelink character varying) OWNER TO postgres;
 
 --
+-- Name: cancel_class(character varying, date, time without time zone); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.cancel_class(uname character varying, cdate date, ctime time without time zone) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+        classID integer;
+    begin
+        tid:=get_teacher_id(uname);
+        select cr.class_id into classID
+from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
+join instructor i on tr.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+where cr.day=extract(isodow from cdate) - 1 and start=ctime;
+        insert into canceled_class
+        values (default,classID,cdate);
+    end
+$$;
+
+
+ALTER FUNCTION public.cancel_class(uname character varying, cdate date, ctime time without time zone) OWNER TO postgres;
+
+--
 -- Name: cancel_class_day_check(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -396,33 +421,6 @@ $$;
 
 
 ALTER FUNCTION public.cancel_class_day_check() OWNER TO postgres;
-
---
--- Name: cancel_class_teacher(character varying, integer, date); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION public.cancel_class_teacher(uname character varying, classno integer, canceldate date) RETURNS integer
-    LANGUAGE plpgsql
-    AS $$
-    declare
-        courseNo integer;
-        tid integer;
-        insID integer;
-        ans integer;
-    begin
-        select s.course_id into courseNo from course_routine cr join section s on cr.section_no = s.section_no
-        where cr.class_id=classNo;
-        tid:=get_teacher_id(uname);
-        select instructor_id into insID from instructor
-        where course_id=courseNo and teacher_id=tid;
-        insert into canceled_class(canceled_class_id, class_id, _date, instructor_id)
-        values (default,classNo,cancelDate,insID) returning canceled_class_id into ans;
-        return  ans;
-    end;
-$$;
-
-
-ALTER FUNCTION public.cancel_class_teacher(uname character varying, classno integer, canceldate date) OWNER TO postgres;
 
 --
 -- Name: class_class_conflict_student(time without time zone, time without time zone, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
