@@ -2555,8 +2555,8 @@ join current_courses cc on cc._id=s.course_id
 join student s2 on e.student_id = s2.student_id
 join section s3 on s3.course_id=cc._id
 join enrolment e2 on e2.section_id=s3.section_no
-join student s3 on s3.student_id=e2.student_id
-where ne.event_type=6 and s2.student_id!=std_no and s3.student_id=std_no;
+join student s4 on s4.student_id=e2.student_id
+where ne.event_type=6 and s2.student_id!=std_no and s4.student_id=std_no;
     end
 $$ language plpgsql;
 
