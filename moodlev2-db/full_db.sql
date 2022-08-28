@@ -383,15 +383,16 @@ CREATE FUNCTION public.cancel_class(uname character varying, cdate date, ctime t
     declare
         tid integer;
         classID integer;
+        insID integer;
     begin
         tid:=get_teacher_id(uname);
-        select cr.class_id into classID
+        select cr.class_id,i.instructor_id into classID,insID
 from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
 join instructor i on tr.instructor_id = i.instructor_id
 join teacher t on i.teacher_id = t.teacher_id
 where cr.day=extract(isodow from cdate) - 1 and start=ctime and t.teacher_id=tid;
-        insert into canceled_class
-        values (default,classID,cdate);
+        insert into canceled_class(canceled_class_id, class_id, _date, instructor_id)
+        values (default,classID,cdate,insID);
     end
 $$;
 
