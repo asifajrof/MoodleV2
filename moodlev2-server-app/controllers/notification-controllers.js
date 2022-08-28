@@ -314,7 +314,9 @@ const getNotificationsByUserName = async (req, res, next) => {
 			res.json({ message: "No notifications yet!", data: [] });
 		} else {
 			notificationListFinal.sort(function (a, b) {
-				return moment(b.notificationTime) - moment(a.notificationTime);
+				return (
+					moment(b.notificationTime, "LLL") - moment(a.notificationTime, "LLL")
+				);
 			});
 			res.json({
 				message: "getNotificationsByUserName",
