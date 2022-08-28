@@ -4,13 +4,13 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
 const eventColors = [
-	"#e6ffe5",
-	"#ffe5e5",
-	"#e5ffe5",
-	"#e5e5ff",
-	"#fae5e5",
-	"#e5f5e5",
-	"#e5e5e5",
+	"#cfe2f3",
+	"#f4cccc",
+	"#fff2cc",
+	"#d9ead3",
+	"#d9d2e9",
+	"#8cdf86",
+	"#f4d0ae",
 ];
 const SectionTileContent = ({ date, view, sectionIDList }) => {
 	const [eventList, setEventList] = useState([]);
