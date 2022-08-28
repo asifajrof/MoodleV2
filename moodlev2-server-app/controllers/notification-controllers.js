@@ -67,9 +67,7 @@ const getNotificationsByUserName = async (req, res, next) => {
 						n.course_code +
 						" : " +
 						n.teachernamr +
-						" Cancelled a " +
-						n.eventtypename +
-						" on " +
+						" Cancelled a class on " +
 						// moment(n.scheduleddate).calendar();
 						moment(n.scheduleddate).format("LLL");
 					let nTime = moment(n.notificationtime).format("LLL");
@@ -332,9 +330,7 @@ const getNotificationsByUserName = async (req, res, next) => {
 						n.course_code +
 						" : " +
 						n.teachernamr +
-						" Cancelled a " +
-						n.eventtypename +
-						" on " +
+						" Cancelled a class on " +
 						// moment(n.scheduleddate).calendar();
 						moment(n.scheduleddate).format("LLL");
 					let nTime = moment(n.notificationtime).format("LLL");
