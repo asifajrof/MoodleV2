@@ -245,6 +245,37 @@ const addNewCourseEvent = async (req, res, next) => {
 	}
 };
 
+const getSubmissions = async (req, res, next) => {
+	try {
+		const courseId = req.params.courseId;
+		const eventId = req.params.eventId;
+
+		let result = await pool.query(
+			"SELECT json_agg(t) FROM  get_submissions($1) as t",
+			[eventId]
+		);
+		const submissions = result.rows[0].json_agg;
+		let submissionList = [];
+		if (submissions != null) {
+			for (sub of submissions) {
+				const submittedInfo = {
+					studentID: sub.studentid,
+					fileID: sub.subid,
+				};
+				submissionList.push(submittedInfo);
+			}
+		}
+		// console.log()
+		if (submissionList.length === 0) {
+			res.json({ message: "No submissions yet!", data: [] });
+		} else {
+			res.json({ message: "getSubmissions", data: submissionList });
+		}
+	} catch (error) {
+		return next(new HttpError(error.message, 500));
+	}
+};
+
 exports.addNewCourseEvent = addNewCourseEvent;
 exports.getEventDetails = getEventDetails;
 exports.getCourseById = getCourseById;
@@ -252,3 +283,4 @@ exports.getCourseTopicsById = getCourseTopicsById;
 exports.getCourseEvents = getCourseEvents;
 exports.addNewCourseTopic = addNewCourseTopic;
 exports.getCourseEventsTeacher = getCourseEventsTeacher;
+exports.getSubmissions = getSubmissions;

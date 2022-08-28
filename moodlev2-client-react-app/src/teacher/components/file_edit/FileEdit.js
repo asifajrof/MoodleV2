@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import { Button } from "@mui/material";
 
 const FileEdit = ({ fileID }) => {
 	const [fileInfo, setFileInfo] = useState([]);
@@ -65,7 +67,10 @@ const FileEdit = ({ fileID }) => {
 	};
 	return (
 		<div>
-			<button onClick={() => downloadFile(fileID)}>{fileInfo.file_name}</button>
+			<Button variant="outlined" onClick={() => downloadFile(fileID)}>
+				<FileDownloadIcon />
+				{fileInfo.file_name}
+			</Button>
 		</div>
 	);
 };
