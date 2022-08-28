@@ -303,8 +303,8 @@ insert into section(section_no, section_name, course_id) values(default,'CSE-201
 insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE463-2022',9);
 insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE408-2022',10);
 insert into section (section_no, section_name, course_id, cr_id) values (default,'CSE-2017-A-CSE405-2022',4,null);
-insert into section (section_no, section_name, course_id, cr_id)
-values (default,'CSE-2017-A-CSE409-2022',5,null);
+insert into section (section_no, section_name, course_id, cr_id) values (default,'CSE-2017-A-CSE409-2022',5,null);
+insert into section (section_no, section_name, course_id, cr_id) values (default,'CSE-2017-A-HUM475-2022',3,null);
 
 insert into enrolment(student_id, section_id) values (1,1);
 insert into enrolment(student_id, section_id) values (1,2);
@@ -467,7 +467,6 @@ select add_course_topic('Phylogenetic Tree',9,'bayzid',null,false);
 select add_course_topic('Cryptography',7,'mukit',null,true);
 select add_course_topic('Buffer Overflow',7,'shohrab',null,true);
 
-select cancel_class_teacher('shohrab',13,'06-09-2022');
 
 insert into evaluation(type_id, section_no, instructor_id, start, _end, total_marks)
 values (1,4,9,'30-08-2022 08:00:00','30-08-2022 08:40:00',20);

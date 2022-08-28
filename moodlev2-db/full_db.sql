@@ -1013,7 +1013,7 @@ CREATE FUNCTION public.get_cancel_class_notifications(std_id integer) RETURNS TA
     begin
     return query
         select ne.event_type,ne.event_no,c._id,tp.teacher_id,c._dept_shortname,c._course_code,cast('Canceled Class' as varchar),tp.teacher_name,ne.notifucation_time, ne._date
-from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.not_id
+from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.event_no
 join instructor i on cc.instructor_id = i.instructor_id
 join teacher tp on i.teacher_id = tp.teacher_id
 join current_courses c on c._id=i.course_id
@@ -1041,7 +1041,7 @@ CREATE FUNCTION public.get_cancel_class_notifications_teacher(teacher_username c
         tid:=get_teacher_id(teacher_username);
     return query
         select ne.event_type,ne.event_no,c._id,tp.teacher_id,c._dept_shortname,c._course_code,cast('Canceled Class' as varchar),tp.teacher_name,ne.notifucation_time, ne._date
-        from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.not_id
+        from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.event_no
         join instructor ip on cc.instructor_id = ip.instructor_id
         join current_courses c on c._id=ip.course_id
         join teacher_routine tr on cc.class_id = tr.class_id
@@ -5477,8 +5477,9 @@ INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (1, 'CSE-2017-CSE423-2022', 1, 3);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (2, 'CSE-2017-CSE453-2022', 2, 5);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (4, 'CSE-2017-B-CSE405-2022', 4, 1);
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (12, 'CSE-2017-A-CSE405-2022', 4, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (13, 'CSE-2017-A-CSE409-2022', 5, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (14, 'CSE-2017-A-HUM475-2022', 3, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (15, 'CSE-2017-A2-CSE405-2022', 4, NULL);
 
 
 --
@@ -5781,7 +5782,7 @@ SELECT pg_catalog.setval('public.resource_res_id_seq', 1, false);
 -- Name: section_section_no_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.section_section_no_seq', 13, true);
+SELECT pg_catalog.setval('public.section_section_no_seq', 15, true);
 
 
 --
