@@ -71,6 +71,8 @@ import TeacherCourseEventSubmissions from "./teacher/pages/course_event_submissi
 import TeacherCourseGrades from "./teacher/pages/course_grades";
 import TeacherCourseGrade from "./teacher/pages/course_grade";
 import StudentCourseGrades from "./student/pages/course_grades";
+import TeacherCourseReschedules from "./teacher/pages/course_rechedules";
+import TeacherAddNewReschedule from "./teacher/pages/add_new_course_reschedule";
 const App = () => {
   // const [backendData,setBackendData] = useState([{}])
   // useEffect(() => {
@@ -329,6 +331,14 @@ const App = () => {
             <Route
               path={"/course/:courseId/grade/event/:eventId"}
               element={<TeacherCourseGrade userName={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId/reschedule"}
+              element={<TeacherCourseReschedules userName={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId/reschedule/addnew"}
+              element={<TeacherAddNewReschedule userName={token.id} />}
             />
             <Route
               path={"/course/:courseId" + course_forum_link}
