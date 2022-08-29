@@ -2037,39 +2037,22 @@ ALTER FUNCTION public.get_course_posts_teacher(uname character varying) OWNER TO
 CREATE FUNCTION public.get_course_resources(crs_id integer) RETURNS TABLE(fileid integer, filename character varying, filelink character varying, ownerid integer, uploadername character varying, isstudent boolean)
     LANGUAGE plpgsql
     AS $$
-
     declare
-
     begin
-
     return query
-
         select res_id,res_name,res_link,owner_id,s2.student_name,cast(true as boolean)
-
 from student_resource sr join enrolment e on sr.owner_id = e.enrol_id
-
 join section s on e.section_id = s.section_no
-
 join course cc on cc.course_id = s.course_id
-
-join student s2 on s.cr_id = s2.student_id
-
+join student s2 on e.student_id = s2.student_id
 where s.course_id=crs_id
-
 union
-
 select res_id,res_name,res_link,owner_id,t.teacher_name,cast(false as boolean)
-
 from instructor_resource join instructor i on i.instructor_id = instructor_resource.owner_id
-
 join course cc on cc.course_id = i.course_id
-
 join teacher t on i.teacher_id = t.teacher_id
-
 where i.course_id=crs_id;
-
 end
-
 $$;
 
 

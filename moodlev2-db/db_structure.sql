@@ -2491,7 +2491,7 @@ create or replace function get_course_resources (crs_id integer)
 from student_resource sr join enrolment e on sr.owner_id = e.enrol_id
 join section s on e.section_id = s.section_no
 join course cc on cc.course_id = s.course_id
-join student s2 on s.cr_id = s2.student_id
+join student s2 on e.student_id = s2.student_id
 where s.course_id=crs_id
 union
 select res_id,res_name,res_link,owner_id,t.teacher_name,cast(false as boolean)
