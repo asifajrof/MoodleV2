@@ -75,6 +75,7 @@ import TeacherCourseReschedules from "./teacher/pages/course_rechedules";
 import TeacherAddNewReschedule from "./teacher/pages/add_new_course_reschedule";
 import CRCourseRescheduleRequest from "./student/pages/course_reschedule_request";
 import TeacherCourseRescheduleRequest from "./teacher/pages/course_reschedule_request";
+import StudentCourseReschedules from "./student/pages/course_reschedule";
 const App = () => {
   // const [backendData,setBackendData] = useState([{}])
   // useEffect(() => {
@@ -239,6 +240,10 @@ const App = () => {
                 "/course/:courseId/reschedule/extra/request/:extraClassEventId"
               }
               element={<CRCourseRescheduleRequest studentNo={token.id} />}
+            />
+            <Route
+              path={"/course/:courseId/reschedule"}
+              element={<StudentCourseReschedules studentNo={token.id} />}
             />
             <Route
               path={"/course/:courseId" + course_forum_link}
