@@ -2704,7 +2704,7 @@ create or replace function get_extra_class_reschedule_information (teacher_usern
     begin
         tid:=get_teacher_id(teacher_username);
     return query
-    select ne.event_type,ne.event_no,s.section_no,s.section_name,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,re.start,re._end
+    select ne.event_type,ne.event_no,cc._id,s.section_no,s.section_name,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,re.start,re._end
 from notification_event ne join request_event re on re.req_id=ne.event_no
 join request_type rt on rt.type_id=re.type_id
 join instructor i on re.instructor_id = i.instructor_id

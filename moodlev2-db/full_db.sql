@@ -1890,7 +1890,7 @@ CREATE FUNCTION public.get_extra_class_reschedule_information(teacher_username c
     begin
         tid:=get_teacher_id(teacher_username);
     return query
-    select ne.event_type,ne.event_no,s.section_no,s.section_name,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,re.start,re._end
+    select ne.event_type,ne.event_no,cc._id,s.section_no,s.section_name,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,re.start,re._end
 from notification_event ne join request_event re on re.req_id=ne.event_no
 join request_type rt on rt.type_id=re.type_id
 join instructor i on re.instructor_id = i.instructor_id
@@ -5272,6 +5272,12 @@ INSERT INTO public.course_routine (class_id, section_no, alternation, start, _en
 INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (33, 16, 7, '14:00:00', '17:00:00', 0);
 INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (34, 17, 7, '14:00:00', '17:00:00', 0);
 INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (35, 18, 7, '14:00:00', '17:00:00', 6);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (36, 19, 7, '14:00:00', '17:00:00', 6);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (37, 20, 7, '14:00:00', '17:00:00', 6);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (38, 21, 7, '14:00:00', '17:00:00', 0);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (39, 22, 7, '14:00:00', '17:00:00', 2);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (40, 23, 7, '14:00:00', '17:00:00', 2);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (41, 24, 7, '14:00:00', '17:00:00', 5);
 
 
 --
@@ -5704,6 +5710,15 @@ INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) V
 INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (25, 16, 23);
 INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (26, 17, 23);
 INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (27, 18, 23);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (28, 3, 30);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (29, 4, 31);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (30, 3, 32);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (31, 6, 27);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (32, 6, 28);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (33, 6, 29);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (34, 9, 24);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (35, 9, 25);
+INSERT INTO public.teacher_routine (teacher_class_id, instructor_id, class_id) VALUES (36, 9, 26);
 
 
 --
@@ -5784,7 +5799,7 @@ SELECT pg_catalog.setval('public.course_post_post_id_seq', 4, true);
 -- Name: course_routine_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_routine_class_id_seq', 35, true);
+SELECT pg_catalog.setval('public.course_routine_class_id_seq', 41, true);
 
 
 --
@@ -5931,7 +5946,7 @@ SELECT pg_catalog.setval('public.submission_sub_id_seq', 4, true);
 -- Name: teacher_routine_teacher_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.teacher_routine_teacher_class_id_seq', 27, true);
+SELECT pg_catalog.setval('public.teacher_routine_teacher_class_id_seq', 36, true);
 
 
 --

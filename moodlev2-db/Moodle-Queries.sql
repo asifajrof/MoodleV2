@@ -504,6 +504,27 @@ values (default,14,7,'09:00:00','10:00:00',6);
 insert into course_routine(class_id, section_no, alternation, start, _end, day)
 values (default,14,7,'10:00:00','11:00:00',2);
 
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,16,7,'14:00:00','17:00:00',0);
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,17,7,'14:00:00','17:00:00',0);
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,18,7,'14:00:00','17:00:00',6);
+
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,19,7,'14:00:00','17:00:00',6);
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,20,7,'14:00:00','17:00:00',6);
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,21,7,'14:00:00','17:00:00',0);
+
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,22,7,'14:00:00','17:00:00',2);
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,23,7,'14:00:00','17:00:00',2);
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,24,7,'14:00:00','17:00:00',5);
+
 insert into teacher_routine(teacher_class_id, instructor_id, class_id) values(default,1,1);
 insert into teacher_routine(instructor_id, class_id) values(1,2);
 
@@ -540,6 +561,18 @@ insert into teacher_routine(instructor_id, class_id) values (14,8);
 insert into teacher_routine(instructor_id, class_id) values (16,23);
 insert into teacher_routine(instructor_id, class_id) values (17,23);
 insert into teacher_routine(instructor_id, class_id) values (18,23);
+
+insert into teacher_routine(instructor_id, class_id) values (3,30);
+insert into teacher_routine(instructor_id, class_id) values (4,31);
+insert into teacher_routine(instructor_id, class_id) values (3,32);
+
+insert into teacher_routine(instructor_id, class_id) values (6,27);
+insert into teacher_routine(instructor_id, class_id) values (6,28);
+insert into teacher_routine(instructor_id, class_id) values (6,29);
+
+insert into teacher_routine(instructor_id, class_id) values (9,24);
+insert into teacher_routine(instructor_id, class_id) values (9,25);
+insert into teacher_routine(instructor_id, class_id) values (9,26);
 
 insert into topic(topic_num, topic_name, instructor_id, finished, description)
 values (default,'State-Space Modeling',1,false,'We learn making markov model here');
