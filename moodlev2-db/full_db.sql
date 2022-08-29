@@ -26,28 +26,28 @@ SET row_security = off;
 
 CREATE FUNCTION public.add_admin(admin_name character varying, uname character varying, hashed_password character varying, email character varying) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        uno integer;
-
-    begin
-
-        insert into official_users(user_no, username, password, email_address)
-
-        values (default,uname,hashed_password,email);
-
-        select user_no into uno from official_users
-
-        where username=uname;
-
-        insert into admins(admin_id, name, user_no)
-
-        values (default,admin_name,uno);
-
-    end;
-
+    AS $$
+
+    declare
+
+        uno integer;
+
+    begin
+
+        insert into official_users(user_no, username, password, email_address)
+
+        values (default,uname,hashed_password,email);
+
+        select user_no into uno from official_users
+
+        where username=uname;
+
+        insert into admins(admin_id, name, user_no)
+
+        values (default,admin_name,uno);
+
+    end;
+
 $$;
 
 
@@ -59,16 +59,16 @@ ALTER FUNCTION public.add_admin(admin_name character varying, uname character va
 
 CREATE FUNCTION public.add_course(cname character varying, cnum integer, dept integer, offered_dept integer, offered_batch integer, offered_year integer, offered_level integer, offered_term integer) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-        insert into course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term)
-
-        values(default,cname,cnum,dept,offered_dept,offered_batch,offered_year,offered_level,offered_term);
-
-    end;
-
+    AS $$
+
+    begin
+
+        insert into course (course_id, course_name, course_num, dept_code, offered_dept_code, batch, _year, level, term)
+
+        values(default,cname,cnum,dept,offered_dept,offered_batch,offered_year,offered_level,offered_term);
+
+    end;
+
 $$;
 
 
@@ -80,44 +80,44 @@ ALTER FUNCTION public.add_course(cname character varying, cnum integer, dept int
 
 CREATE FUNCTION public.add_course_post(courseid integer, userid character varying, isstudent boolean, title character varying, content character varying, parentpost integer) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        posterID integer;
-
-        entityPK integer;
-
-        ans integer;
-
-    begin
-
-        if (isStudent) then
-
-            entityPK:=get_student_no(cast(userID as integer));
-
-            select enrol_id into posterID from enrolment e join section s on e.section_id = s.section_no
-
-            where e.student_id=entityPK and s.course_id=courseID;
-
-        else
-
-            entityPK:=get_teacher_id(userID);
-
-            select instructor_id into posterID from instructor
-
-            where teacher_id=entityPK and course_id=courseID;
-
-        end if;
-
-        insert into course_post(post_id, parent_post, poster_id, student_post, post_name, post_content)
-
-        values(default,parentPost,posterID,isStudent,title,content) returning post_id into ans;
-
-        return ans;
-
-    end;
-
+    AS $$
+
+    declare
+
+        posterID integer;
+
+        entityPK integer;
+
+        ans integer;
+
+    begin
+
+        if (isStudent) then
+
+            entityPK:=get_student_no(cast(userID as integer));
+
+            select enrol_id into posterID from enrolment e join section s on e.section_id = s.section_no
+
+            where e.student_id=entityPK and s.course_id=courseID;
+
+        else
+
+            entityPK:=get_teacher_id(userID);
+
+            select instructor_id into posterID from instructor
+
+            where teacher_id=entityPK and course_id=courseID;
+
+        end if;
+
+        insert into course_post(post_id, parent_post, poster_id, student_post, post_name, post_content)
+
+        values(default,parentPost,posterID,isStudent,title,content) returning post_id into ans;
+
+        return ans;
+
+    end;
+
 $$;
 
 
@@ -129,16 +129,16 @@ ALTER FUNCTION public.add_course_post(courseid integer, userid character varying
 
 CREATE FUNCTION public.add_course_post_file(postid integer, filename character varying, filelink character varying) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-        insert into course_post_file(file_id, post_id, file_name, file_link)
-
-        values(default,postID,fileName,fileLink);
-
-    end;
-
+    AS $$
+
+    begin
+
+        insert into course_post_file(file_id, post_id, file_name, file_link)
+
+        values(default,postID,fileName,fileLink);
+
+    end;
+
 $$;
 
 
@@ -150,22 +150,22 @@ ALTER FUNCTION public.add_course_post_file(postid integer, filename character va
 
 CREATE FUNCTION public.add_course_student(std_id integer, sectionno integer) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    std_no integer;
-
-    begin
-
-        std_no:=get_student_no(std_id);
-
-        insert into enrolment(enrol_id, student_id, section_id)
-
-        values (default,std_no,sectionNo);
-
-    end;
-
+    AS $$
+
+    declare
+
+    std_no integer;
+
+    begin
+
+        std_no:=get_student_no(std_id);
+
+        insert into enrolment(enrol_id, student_id, section_id)
+
+        values (default,std_no,sectionNo);
+
+    end;
+
 $$;
 
 
@@ -177,22 +177,22 @@ ALTER FUNCTION public.add_course_student(std_id integer, sectionno integer) OWNE
 
 CREATE FUNCTION public.add_course_teacher(uname character varying, courseid integer) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    tid integer;
-
-    begin
-
-        tid:=get_teacher_id(uname);
-
-        insert into instructor(instructor_id, teacher_id, course_id)
-
-        values (default,tid,courseID);
-
-    end;
-
+    AS $$
+
+    declare
+
+    tid integer;
+
+    begin
+
+        tid:=get_teacher_id(uname);
+
+        insert into instructor(instructor_id, teacher_id, course_id)
+
+        values (default,tid,courseID);
+
+    end;
+
 $$;
 
 
@@ -204,26 +204,26 @@ ALTER FUNCTION public.add_course_teacher(uname character varying, courseid integ
 
 CREATE FUNCTION public.add_course_topic(tname character varying, courseid integer, username character varying, topicdescription character varying, ended boolean) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    tid integer;
-
-    ins_id integer;
-
-begin
-
-    tid = get_teacher_id(username);
-
-    select instructor_id into ins_id from instructor where teacher_id=tid and course_id=courseID;
-
-    insert into topic(topic_num, topic_name, instructor_id, finished, description)
-
-    values (default,tname,ins_id,ended,topicDescription);
-
-end;
-
+    AS $$
+
+declare
+
+    tid integer;
+
+    ins_id integer;
+
+begin
+
+    tid = get_teacher_id(username);
+
+    select instructor_id into ins_id from instructor where teacher_id=tid and course_id=courseID;
+
+    insert into topic(topic_num, topic_name, instructor_id, finished, description)
+
+    values (default,tname,ins_id,ended,topicDescription);
+
+end;
+
 $$;
 
 
@@ -235,38 +235,38 @@ ALTER FUNCTION public.add_course_topic(tname character varying, courseid integer
 
 CREATE FUNCTION public.add_evaluation(typeid integer, sectionno integer, uname character varying, caption_exten character varying, start_time timestamp with time zone, end_time timestamp with time zone, marks double precision, descrip character varying, filelink character varying) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-        insID integer;
-
-        courseNO integer;
-
-        ans integer;
-
-    begin
-
-        select course_id into courseNO from section
-
-        where section_no=sectionNo;
-
-        tid:=get_teacher_id(uname);
-
-        select instructor_id into insID from instructor
-
-        where course_id=courseNO and teacher_id=tid;
-
-        insert into evaluation(evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, total_marks, description, link)
-
-        values(default,typeID,sectionNo,insID,caption_exten,start_time,end_time,marks,descrip,fileLink) returning evaluation_id into ans;
-
-        return ans;
-
-    end;
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+        insID integer;
+
+        courseNO integer;
+
+        ans integer;
+
+    begin
+
+        select course_id into courseNO from section
+
+        where section_no=sectionNo;
+
+        tid:=get_teacher_id(uname);
+
+        select instructor_id into insID from instructor
+
+        where course_id=courseNO and teacher_id=tid;
+
+        insert into evaluation(evaluation_id, type_id, section_no, instructor_id, caption_extension, start, _end, total_marks, description, link)
+
+        values(default,typeID,sectionNo,insID,caption_exten,start_time,end_time,marks,descrip,fileLink) returning evaluation_id into ans;
+
+        return ans;
+
+    end;
+
 $$;
 
 
@@ -278,38 +278,38 @@ ALTER FUNCTION public.add_evaluation(typeid integer, sectionno integer, uname ch
 
 CREATE FUNCTION public.add_extra_class(sectionno integer, uname character varying, start_time timestamp with time zone, end_time timestamp with time zone) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-        insID integer;
-
-        courseNO integer;
-
-        ans integer;
-
-    begin
-
-        select course_id into courseNO from section
-
-        where section_no=sectionNo;
-
-        tid:=get_teacher_id(uname);
-
-        select instructor_id into insID from instructor
-
-        where course_id=courseNO and teacher_id=tid;
-
-        insert into extra_class(extra_class_id, section_no, instructor_id, start, _end)
-
-        values(default,sectionNo,insID,start_time,end_time) returning extra_class_id into ans;
-
-        return ans;
-
-    end;
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+        insID integer;
+
+        courseNO integer;
+
+        ans integer;
+
+    begin
+
+        select course_id into courseNO from section
+
+        where section_no=sectionNo;
+
+        tid:=get_teacher_id(uname);
+
+        select instructor_id into insID from instructor
+
+        where course_id=courseNO and teacher_id=tid;
+
+        insert into extra_class(extra_class_id, section_no, instructor_id, start, _end)
+
+        values(default,sectionNo,insID,start_time,end_time) returning extra_class_id into ans;
+
+        return ans;
+
+    end;
+
 $$;
 
 
@@ -321,38 +321,38 @@ ALTER FUNCTION public.add_extra_class(sectionno integer, uname character varying
 
 CREATE FUNCTION public.add_extra_class_request(sectionno integer, uname character varying, start_time timestamp with time zone, end_time timestamp with time zone) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-        insID integer;
-
-        courseNO integer;
-
-        ans integer;
-
-    begin
-
-        select course_id into courseNO from section
-
-        where section_no=sectionNo;
-
-        tid:=get_teacher_id(uname);
-
-        select instructor_id into insID from instructor
-
-        where course_id=courseNO and teacher_id=tid;
-
-        insert into request_event(req_id,type_id, section_no, instructor_id, start, _end,_date,total_marks)
-
-        values(default,1,sectionNo,insID,start_time,end_time,start_time::date,1) returning req_id into ans;
-
-        return ans;
-
-    end;
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+        insID integer;
+
+        courseNO integer;
+
+        ans integer;
+
+    begin
+
+        select course_id into courseNO from section
+
+        where section_no=sectionNo;
+
+        tid:=get_teacher_id(uname);
+
+        select instructor_id into insID from instructor
+
+        where course_id=courseNO and teacher_id=tid;
+
+        insert into request_event(req_id,type_id, section_no, instructor_id, start, _end,_date,total_marks)
+
+        values(default,1,sectionNo,insID,start_time,end_time,start_time::date,1) returning req_id into ans;
+
+        return ans;
+
+    end;
+
 $$;
 
 
@@ -364,28 +364,28 @@ ALTER FUNCTION public.add_extra_class_request(sectionno integer, uname character
 
 CREATE FUNCTION public.add_forum_post(uname character varying, title character varying, content character varying, parentpost integer) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        posterID integer;
-
-        ans integer;
-
-    begin
-
-        select ou.user_no into posterID from official_users ou
-
-        where ou.username=uname;
-
-        insert into forum_post(post_id, parent_post, poster, post_name, post_content)
-
-        values(default,parentPost,posterID,title,content) returning post_id into ans;
-
-        return ans;
-
-    end;
-
+    AS $$
+
+    declare
+
+        posterID integer;
+
+        ans integer;
+
+    begin
+
+        select ou.user_no into posterID from official_users ou
+
+        where ou.username=uname;
+
+        insert into forum_post(post_id, parent_post, poster, post_name, post_content)
+
+        values(default,parentPost,posterID,title,content) returning post_id into ans;
+
+        return ans;
+
+    end;
+
 $$;
 
 
@@ -397,16 +397,16 @@ ALTER FUNCTION public.add_forum_post(uname character varying, title character va
 
 CREATE FUNCTION public.add_forum_post_file(postid integer, filename character varying, filelink character varying) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-        insert into forum_post_files(file_id, post_id, file_name, file_link)
-
-        values(default,postID,fileName,fileLink);
-
-    end;
-
+    AS $$
+
+    begin
+
+        insert into forum_post_files(file_id, post_id, file_name, file_link)
+
+        values(default,postID,fileName,fileLink);
+
+    end;
+
 $$;
 
 
@@ -418,16 +418,16 @@ ALTER FUNCTION public.add_forum_post_file(postid integer, filename character var
 
 CREATE FUNCTION public.add_student(name character varying, hashed_password character varying, roll integer, dept integer, batch integer, email character varying) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-        insert into student(student_id,student_name, password, _year, roll_num, dept_code, email_address)
-
-        values (default,name,hashed_password,batch,roll,dept,email);
-
-    end;
-
+    AS $$
+
+    begin
+
+        insert into student(student_id,student_name, password, _year, roll_num, dept_code, email_address)
+
+        values (default,name,hashed_password,batch,roll,dept,email);
+
+    end;
+
 $$;
 
 
@@ -439,38 +439,38 @@ ALTER FUNCTION public.add_student(name character varying, hashed_password charac
 
 CREATE FUNCTION public.add_student_resource(courseid integer, std_id integer, filename character varying, filelink character varying) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-        entityPK integer;
-
-        coursePK integer;
-
-    begin
-
-        entityPK:=get_student_no(std_id);
-
-        select enrol_id into coursePK
-
-        from enrolment e join section s on s.section_no = e.section_id
-
-        join current_courses cc on cc._id=s.course_id
-
-        where s.course_id=courseID;
-
-        insert into student_resource(res_id, res_name, res_link, owner_id)
-
-        values (default,fileName,fileLink,coursePK)
-
-        returning res_id into ans;
-
-        return ans;
-
-    end;
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+        entityPK integer;
+
+        coursePK integer;
+
+    begin
+
+        entityPK:=get_student_no(std_id);
+
+        select enrol_id into coursePK
+
+        from enrolment e join section s on s.section_no = e.section_id
+
+        join current_courses cc on cc._id=s.course_id
+
+        where s.course_id=courseID;
+
+        insert into student_resource(res_id, res_name, res_link, owner_id)
+
+        values (default,fileName,fileLink,coursePK)
+
+        returning res_id into ans;
+
+        return ans;
+
+    end;
+
 $$;
 
 
@@ -482,28 +482,28 @@ ALTER FUNCTION public.add_student_resource(courseid integer, std_id integer, fil
 
 CREATE FUNCTION public.add_teacher(name character varying, uname character varying, hashed_password character varying, dept integer, email character varying) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        uno integer;
-
-    begin
-
-        insert into official_users(user_no, username, password, email_address)
-
-        values (default,uname,hashed_password,email);
-
-        select user_no into uno from official_users
-
-        where username=uname;
-
-        insert into teacher(teacher_id, teacher_name, user_no, dept_code)
-
-        values (default,name,uno,dept);
-
-    end;
-
+    AS $$
+
+    declare
+
+        uno integer;
+
+    begin
+
+        insert into official_users(user_no, username, password, email_address)
+
+        values (default,uname,hashed_password,email);
+
+        select user_no into uno from official_users
+
+        where username=uname;
+
+        insert into teacher(teacher_id, teacher_name, user_no, dept_code)
+
+        values (default,name,uno,dept);
+
+    end;
+
 $$;
 
 
@@ -515,36 +515,36 @@ ALTER FUNCTION public.add_teacher(name character varying, uname character varyin
 
 CREATE FUNCTION public.add_teacher_resource(courseid integer, uname character varying, filename character varying, filelink character varying) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-        entityPK integer;
-
-        coursePK integer;
-
-    begin
-
-        entityPK:=get_teacher_id(uname);
-
-        select instructor_id into coursePK
-
-        from instructor
-
-        where course_id=courseID and teacher_id=entityPK;
-
-        insert into instructor_resource(res_id, res_name, res_link, owner_id)
-
-        values (default,fileName,fileLink,coursePK)
-
-        returning res_id into ans;
-
-        return ans;
-
-    end;
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+        entityPK integer;
+
+        coursePK integer;
+
+    begin
+
+        entityPK:=get_teacher_id(uname);
+
+        select instructor_id into coursePK
+
+        from instructor
+
+        where course_id=courseID and teacher_id=entityPK;
+
+        insert into instructor_resource(res_id, res_name, res_link, owner_id)
+
+        values (default,fileName,fileLink,coursePK)
+
+        returning res_id into ans;
+
+        return ans;
+
+    end;
+
 $$;
 
 
@@ -556,36 +556,36 @@ ALTER FUNCTION public.add_teacher_resource(courseid integer, uname character var
 
 CREATE FUNCTION public.cancel_class(uname character varying, cdate date, ctime time without time zone) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-        classID integer;
-
-        insID integer;
-
-    begin
-
-        tid:=get_teacher_id(uname);
-
-        select cr.class_id,i.instructor_id into classID,insID
-
-from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
-
-join instructor i on tr.instructor_id = i.instructor_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-where cr.day=extract(isodow from cdate) - 1 and start=ctime and t.teacher_id=tid;
-
-        insert into canceled_class(canceled_class_id, class_id, _date, instructor_id)
-
-        values (default,classID,cdate,insID);
-
-    end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+        classID integer;
+
+        insID integer;
+
+    begin
+
+        tid:=get_teacher_id(uname);
+
+        select cr.class_id,i.instructor_id into classID,insID
+
+from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
+
+join instructor i on tr.instructor_id = i.instructor_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+where cr.day=extract(isodow from cdate) - 1 and start=ctime and t.teacher_id=tid;
+
+        insert into canceled_class(canceled_class_id, class_id, _date, instructor_id)
+
+        values (default,classID,cdate,insID);
+
+    end
+
 $$;
 
 
@@ -597,32 +597,32 @@ ALTER FUNCTION public.cancel_class(uname character varying, cdate date, ctime ti
 
 CREATE FUNCTION public.cancel_class_day_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    ccd integer;
-
-	cnt integer;
-
-begin
-
-	ccd:=extract(isodow from new._date) - 1;
-
-    select count(class_id) into cnt from course_routine
-
-    where class_id=new.class_id and day=ccd;
-
-    if (cnt=0 or new.class_id is null or ccd is null) then
-
-        raise exception 'This class is not available on this day';
-
-    end if;
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+    ccd integer;
+
+	cnt integer;
+
+begin
+
+	ccd:=extract(isodow from new._date) - 1;
+
+    select count(class_id) into cnt from course_routine
+
+    where class_id=new.class_id and day=ccd;
+
+    if (cnt=0 or new.class_id is null or ccd is null) then
+
+        raise exception 'This class is not available on this day';
+
+    end if;
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -634,30 +634,30 @@ ALTER FUNCTION public.cancel_class_day_check() OWNER TO postgres;
 
 CREATE FUNCTION public.class_class_conflict_student(start_time time without time zone, end_time time without time zone, weekday integer, sec_id integer) RETURNS boolean
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-    begin
-
-        ans = 0;
-
-        select count(*) into ans from course_routine cr join intersected_sections iss on cr.section_no=iss.second_section
-
-where iss.first_section=sec_id and cr.day=weekday and overlapped_time(cr.start,cr._end,start_time,end_time);
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-        return false;
-
-    end
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+    begin
+
+        ans = 0;
+
+        select count(*) into ans from course_routine cr join intersected_sections iss on cr.section_no=iss.second_section
+
+where iss.first_section=sec_id and cr.day=weekday and overlapped_time(cr.start,cr._end,start_time,end_time);
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+        return false;
+
+    end
+
 $$;
 
 
@@ -669,34 +669,34 @@ ALTER FUNCTION public.class_class_conflict_student(start_time time without time 
 
 CREATE FUNCTION public.class_class_conflict_teacher(start_time time without time zone, end_time time without time zone, weekday integer, ins_id integer) RETURNS boolean
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-        tid integer;
-
-    begin
-
-        ans = 0;
-
-        tid = instructor_to_teacher(ins_id);
-
-        select count(*) into ans from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id join instructor i on tr.instructor_id = i.instructor_id
-
-where i.teacher_id=tid and i.instructor_id!=ins_id and cr.day=weekday and overlapped_time(cr.start,cr._end,start_time,end_time);
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-        return false;
-
-    end
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+        tid integer;
+
+    begin
+
+        ans = 0;
+
+        tid = instructor_to_teacher(ins_id);
+
+        select count(*) into ans from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id join instructor i on tr.instructor_id = i.instructor_id
+
+where i.teacher_id=tid and i.instructor_id!=ins_id and cr.day=weekday and overlapped_time(cr.start,cr._end,start_time,end_time);
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+        return false;
+
+    end
+
 $$;
 
 
@@ -708,40 +708,40 @@ ALTER FUNCTION public.class_class_conflict_teacher(start_time time without time 
 
 CREATE FUNCTION public.class_event_conflict_student(start_time time without time zone, end_time time without time zone, weekday integer, sec_id integer) RETURNS boolean
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-    begin
-
-        ans = 0;
-
-select count(*) into ans from extra_class ec join intersected_sections iss on ec.section_no=iss.second_section
-
-where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
-
-where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-        return false;
-
-    end
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+    begin
+
+        ans = 0;
+
+select count(*) into ans from extra_class ec join intersected_sections iss on ec.section_no=iss.second_section
+
+where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
+
+where iss.first_section=sec_id and extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time);
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+        return false;
+
+    end
+
 $$;
 
 
@@ -753,64 +753,64 @@ ALTER FUNCTION public.class_event_conflict_student(start_time time without time 
 
 CREATE FUNCTION public.class_event_conflict_teacher(start_time time without time zone, end_time time without time zone, weekday integer, ins_id integer) RETURNS boolean
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-        tid integer;
-
-    begin
-
-        ans = 0;
-
-        tid = instructor_to_teacher(ins_id);
-
-select count(*) into ans from extra_class ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
-
-where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-select count(*) into ans from extra_class_teacher ect join extra_class ec on ect.extra_class_id=ec.extra_class_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
-
-where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
-
-where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
-
-where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-        return false;
-
-    end
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+        tid integer;
+
+    begin
+
+        ans = 0;
+
+        tid = instructor_to_teacher(ins_id);
+
+select count(*) into ans from extra_class ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+
+where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+select count(*) into ans from extra_class_teacher ect join extra_class ec on ect.extra_class_id=ec.extra_class_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+
+where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
+
+where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
+
+where extract(isodow from ec._date)=weekday+1 and overlapped_time(ec.start::time,ec._end::time,start_time,end_time) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+        return false;
+
+    end
+
 $$;
 
 
@@ -822,40 +822,40 @@ ALTER FUNCTION public.class_event_conflict_teacher(start_time time without time 
 
 CREATE FUNCTION public.confirm_request(eventid integer) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        insID integer;
-
-        secNo integer;
-
-        start_time timestamp with time zone;
-
-        end_time timestamp with time zone;
-
-    begin
-
-        select section_no,instructor_id,start,_end
-
-        into secNo,insID,start_time,end_time
-
-        from request_event
-
-        where req_id=eventID;
-
-        insert into extra_class(extra_class_id, section_no, instructor_id, start, _end, _date)
-
-        values (default,secNo,insID,start_time,end_time,start_time::date);
-
-        update request_event
-
-        set type_id=2
-
-        where req_id=eventID;
-
-    end;
-
+    AS $$
+
+    declare
+
+        insID integer;
+
+        secNo integer;
+
+        start_time timestamp with time zone;
+
+        end_time timestamp with time zone;
+
+    begin
+
+        select section_no,instructor_id,start,_end
+
+        into secNo,insID,start_time,end_time
+
+        from request_event
+
+        where req_id=eventID;
+
+        insert into extra_class(extra_class_id, section_no, instructor_id, start, _end, _date)
+
+        values (default,secNo,insID,start_time,end_time,start_time::date);
+
+        update request_event
+
+        set type_id=2
+
+        where req_id=eventID;
+
+    end;
+
 $$;
 
 
@@ -867,28 +867,28 @@ ALTER FUNCTION public.confirm_request(eventid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.course_routine_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-begin
-
-    if (class_class_conflict_student(new.start,new._end,new.day,new.section_no)) then
-
-        raise exception 'Conflicted with a class';
-
-    end if;
-
-    if (class_event_conflict_student(new.start,new._end,new.day,new.section_no)) then
-
-        raise exception 'Conflicted with an event';
-
-    end if;
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+begin
+
+    if (class_class_conflict_student(new.start,new._end,new.day,new.section_no)) then
+
+        raise exception 'Conflicted with a class';
+
+    end if;
+
+    if (class_event_conflict_student(new.start,new._end,new.day,new.section_no)) then
+
+        raise exception 'Conflicted with an event';
+
+    end if;
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -900,42 +900,42 @@ ALTER FUNCTION public.course_routine_check() OWNER TO postgres;
 
 CREATE FUNCTION public.cr_assignment_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    course_cnt integer;
-
-begin
-
-    if (new.section_no is null) then
-
-        raise exception 'Invalid data insertion or update';
-
-    elsif (new.cr_id is null) then
-
-        return new;
-
-    else
-
-        select count(*) into course_cnt
-
-        from enrolment
-
-        where student_id=new.cr_id and section_id=new.section_no;
-
-        if (course_cnt=0) then
-
-            raise exception 'Invalid data insertion or update';
-
-        end if;
-
-    end if;
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+    course_cnt integer;
+
+begin
+
+    if (new.section_no is null) then
+
+        raise exception 'Invalid data insertion or update';
+
+    elsif (new.cr_id is null) then
+
+        return new;
+
+    else
+
+        select count(*) into course_cnt
+
+        from enrolment
+
+        where student_id=new.cr_id and section_id=new.section_no;
+
+        if (course_cnt=0) then
+
+            raise exception 'Invalid data insertion or update';
+
+        end if;
+
+    end if;
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -947,20 +947,20 @@ ALTER FUNCTION public.cr_assignment_check() OWNER TO postgres;
 
 CREATE FUNCTION public.curr_course_update() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-begin
-
-    refresh materialized view current_courses;
-
-	refresh materialized view all_courses;
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+begin
+
+    refresh materialized view current_courses;
+
+	refresh materialized view all_courses;
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -972,42 +972,42 @@ ALTER FUNCTION public.curr_course_update() OWNER TO postgres;
 
 CREATE FUNCTION public.evaluation_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    b boolean;
-
-begin
-
-    b:=true;
-
-    select et.notification_time_type into b from evaluation_type et
-
-    where et.type_id=new.type_id;
-
-    if (b=true) then
-
-        return new;
-
-    elsif (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
-
-        raise exception 'Invalid data insertion or update line 11';
-
-    elsif (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
-
-        raise exception 'Conflicted with a class';
-
-    elsif (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
-
-        raise exception 'Conflicted with an event';
-
-    end if;
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+    b boolean;
+
+begin
+
+    b:=true;
+
+    select et.notification_time_type into b from evaluation_type et
+
+    where et.type_id=new.type_id;
+
+    if (b=true) then
+
+        return new;
+
+    elsif (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
+
+        raise exception 'Invalid data insertion or update line 11';
+
+    elsif (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
+
+        raise exception 'Conflicted with a class';
+
+    elsif (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
+
+        raise exception 'Conflicted with an event';
+
+    end if;
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -1019,48 +1019,48 @@ ALTER FUNCTION public.evaluation_check() OWNER TO postgres;
 
 CREATE FUNCTION public.event_class_conflict(start_time time without time zone, end_time time without time zone, curr_date date, sec_id integer, ins_id integer) RETURNS boolean
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-        tid integer;
-
-    begin
-
-        ans = 0;
-
-        tid = instructor_to_teacher(ins_id);
-
-        select count(*) into ans from course_routine cr join intersected_sections iss on cr.section_no=iss.second_section
-
-where iss.first_section=sec_id and cr.day=extract(isodow from curr_date)-1 and overlapped_time(cr.start,cr._end,start_time,end_time) and not exists (select canceled_class_id from canceled_class cc
-
-    where cc.class_id=cr.class_id and cc._date=curr_date);
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-        select count(*) into ans from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id join instructor i on tr.instructor_id = i.instructor_id
-
-where i.teacher_id=tid and i.instructor_id!=ins_id and cr.day=extract(isodow from curr_date)-1 and overlapped_time(cr.start,cr._end,start_time,end_time) and not exists (select canceled_class_id from canceled_class cc
-
-    where cc.class_id=cr.class_id and cc._date=curr_date);
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-        return false;
-
-    end
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+        tid integer;
+
+    begin
+
+        ans = 0;
+
+        tid = instructor_to_teacher(ins_id);
+
+        select count(*) into ans from course_routine cr join intersected_sections iss on cr.section_no=iss.second_section
+
+where iss.first_section=sec_id and cr.day=extract(isodow from curr_date)-1 and overlapped_time(cr.start,cr._end,start_time,end_time) and not exists (select canceled_class_id from canceled_class cc
+
+    where cc.class_id=cr.class_id and cc._date=curr_date);
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+        select count(*) into ans from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id join instructor i on tr.instructor_id = i.instructor_id
+
+where i.teacher_id=tid and i.instructor_id!=ins_id and cr.day=extract(isodow from curr_date)-1 and overlapped_time(cr.start,cr._end,start_time,end_time) and not exists (select canceled_class_id from canceled_class cc
+
+    where cc.class_id=cr.class_id and cc._date=curr_date);
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+        return false;
+
+    end
+
 $$;
 
 
@@ -1072,84 +1072,84 @@ ALTER FUNCTION public.event_class_conflict(start_time time without time zone, en
 
 CREATE FUNCTION public.event_event_conflict(start_timestamp timestamp with time zone, end_timestamp timestamp with time zone, sec_id integer, ins_id integer) RETURNS boolean
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-        tid integer;
-
-    begin
-
-        ans = 0;
-
-        tid = instructor_to_teacher(ins_id);
-
-        select count(*) into ans from extra_class ec join intersected_sections iss on ec.section_no=iss.second_section
-
-where iss.first_section=sec_id and overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp);
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-    select count(*) into ans from extra_class ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
-
-where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-select count(*) into ans from extra_class_teacher ect join extra_class ec on ect.extra_class_id=ec.extra_class_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
-
-where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
-
-where iss.first_section=sec_id and overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp);
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
-
-where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
-
-where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
-
-        if (ans>0) then
-
-            return true;
-
-        end if;
-
-        return false;
-
-    end
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+        tid integer;
+
+    begin
+
+        ans = 0;
+
+        tid = instructor_to_teacher(ins_id);
+
+        select count(*) into ans from extra_class ec join intersected_sections iss on ec.section_no=iss.second_section
+
+where iss.first_section=sec_id and overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp);
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+    select count(*) into ans from extra_class ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+
+where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+select count(*) into ans from extra_class_teacher ect join extra_class ec on ect.extra_class_id=ec.extra_class_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id
+
+where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+select count(*) into ans from evaluation ec join intersected_sections iss on ec.section_no=iss.second_section join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
+
+where iss.first_section=sec_id and overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp);
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+select count(*) into ans from evaluation ec join teacher_routine tr on ec.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
+
+where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+select count(*) into ans from extra_evaluation_instructor ect join evaluation ec on ect.evaluation_id=ec.evaluation_id join teacher_routine tr on ect.instructor_id = tr.instructor_id join instructor i on tr.instructor_id = i.instructor_id join evaluation_type et on (et.type_id = ec.type_id and et.notification_time_type = false)
+
+where overlapped_timestamp(ec.start,ec._end,start_timestamp,end_timestamp) and i.teacher_id=tid and tr.instructor_id!=ins_id;
+
+        if (ans>0) then
+
+            return true;
+
+        end if;
+
+        return false;
+
+    end
+
 $$;
 
 
@@ -1161,34 +1161,34 @@ ALTER FUNCTION public.event_event_conflict(start_timestamp timestamp with time z
 
 CREATE FUNCTION public.extra_class_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-begin
-
-    if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
-
-        raise exception 'Conflicted with a class';
-
-    end if;
-
-    if (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
-
-        raise exception 'Conflicted with an event';
-
-    end if;
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+begin
+
+    if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
+
+        raise exception 'Conflicted with a class';
+
+    end if;
+
+    if (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
+
+        raise exception 'Conflicted with an event';
+
+    end if;
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -1200,52 +1200,52 @@ ALTER FUNCTION public.extra_class_check() OWNER TO postgres;
 
 CREATE FUNCTION public.extra_evaluation_instructor_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    sec_no integer;
-
-    ins_id integer;
-
-    start_timestamp timestamp with time zone;
-
-    end_timestamp timestamp with time zone;
-
-begin
-
-    if (new.evaluation_id is null or new.instructor_id is null) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    select section_no,instructor_id,start,_end into sec_no,ins_id,start_timestamp,end_timestamp from evaluation join evaluation_type et on et.type_id = evaluation.type_id
-
-    where evaluation_id=new.evaluation_id;
-
-    if (ins_id=new.instructor_id) then
-
-        raise exception 'Invalid data insertion or update';
-
-    elsif (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null) or ins_id=new.instructor_id) then
-
-        raise exception 'Invalid data insertion or update';
-
-    elsif (event_event_conflict(start_timestamp,end_timestamp,sec_no,ins_id)) then
-
-        raise exception 'Conflicted with an event';
-
-    elsif (event_class_conflict(start_timestamp::time,end_timestamp::time,start_timestamp::date,sec_no,ins_id)) then
-
-        raise exception 'Conflicted with a class';
-
-    end if;
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+    sec_no integer;
+
+    ins_id integer;
+
+    start_timestamp timestamp with time zone;
+
+    end_timestamp timestamp with time zone;
+
+begin
+
+    if (new.evaluation_id is null or new.instructor_id is null) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    select section_no,instructor_id,start,_end into sec_no,ins_id,start_timestamp,end_timestamp from evaluation join evaluation_type et on et.type_id = evaluation.type_id
+
+    where evaluation_id=new.evaluation_id;
+
+    if (ins_id=new.instructor_id) then
+
+        raise exception 'Invalid data insertion or update';
+
+    elsif (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null) or ins_id=new.instructor_id) then
+
+        raise exception 'Invalid data insertion or update';
+
+    elsif (event_event_conflict(start_timestamp,end_timestamp,sec_no,ins_id)) then
+
+        raise exception 'Conflicted with an event';
+
+    elsif (event_class_conflict(start_timestamp::time,end_timestamp::time,start_timestamp::date,sec_no,ins_id)) then
+
+        raise exception 'Conflicted with a class';
+
+    end if;
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -1257,52 +1257,52 @@ ALTER FUNCTION public.extra_evaluation_instructor_check() OWNER TO postgres;
 
 CREATE FUNCTION public.extra_teacher_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    sec_no integer;
-
-    ins_id integer;
-
-    start_timestamp timestamp with time zone;
-
-    end_timestamp timestamp with time zone;
-
-begin
-
-    if (new.extra_class_id is null or new.instructor_id is null) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    select section_no,instructor_id,start,_end into sec_no,ins_id,start_timestamp,end_timestamp from extra_class
-
-    where extra_class_id=new.extra_class_id;
-
-    if (ins_id=new.instructor_id) then
-
-        raise exception 'Invalid data insertion or update';
-
-    elsif (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null) or ins_id=new.instructor_id) then
-
-        raise exception 'Invalid data insertion or update';
-
-    elsif (event_event_conflict(start_timestamp,end_timestamp,sec_no,ins_id)) then
-
-        raise exception 'Conflicted with an event';
-
-    elsif (event_class_conflict(start_timestamp::time,end_timestamp::time,start_timestamp::date,sec_no,ins_id)) then
-
-        raise exception 'Conflicted with a class';
-
-    end if;
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+    sec_no integer;
+
+    ins_id integer;
+
+    start_timestamp timestamp with time zone;
+
+    end_timestamp timestamp with time zone;
+
+begin
+
+    if (new.extra_class_id is null or new.instructor_id is null) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    select section_no,instructor_id,start,_end into sec_no,ins_id,start_timestamp,end_timestamp from extra_class
+
+    where extra_class_id=new.extra_class_id;
+
+    if (ins_id=new.instructor_id) then
+
+        raise exception 'Invalid data insertion or update';
+
+    elsif (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null) or ins_id=new.instructor_id) then
+
+        raise exception 'Invalid data insertion or update';
+
+    elsif (event_event_conflict(start_timestamp,end_timestamp,sec_no,ins_id)) then
+
+        raise exception 'Conflicted with an event';
+
+    elsif (event_class_conflict(start_timestamp::time,end_timestamp::time,start_timestamp::date,sec_no,ins_id)) then
+
+        raise exception 'Conflicted with a class';
+
+    end if;
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -1314,18 +1314,18 @@ ALTER FUNCTION public.extra_teacher_check() OWNER TO postgres;
 
 CREATE FUNCTION public.get_a_grade_student(event integer, std_id integer) RETURNS TABLE(subid integer, studentid integer, studentname character varying, sublink character varying, subtime timestamp with time zone, totalmarks double precision, obtainedmarks double precision)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-        select sub.sub_id,(mod(_year,100)*100000+dept_code*1000+roll_num) as id,student_name,sub.link,sub_time,e2.total_marks,g.obtained_marks from submission sub join enrolment e on e.enrol_id = sub.enrol_id join student s on e.student_id = s.student_id join evaluation e2 on sub.event_id = e2.evaluation_id left outer join grading g on sub.sub_id = g.sub_id
-
-where event_id=event and (mod(_year,100)*100000+dept_code*1000+roll_num)=std_id;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+        select sub.sub_id,(mod(_year,100)*100000+dept_code*1000+roll_num) as id,student_name,sub.link,sub_time,e2.total_marks,g.obtained_marks from submission sub join enrolment e on e.enrol_id = sub.enrol_id join student s on e.student_id = s.student_id join evaluation e2 on sub.event_id = e2.evaluation_id left outer join grading g on sub.sub_id = g.sub_id
+
+where event_id=event and (mod(_year,100)*100000+dept_code*1000+roll_num)=std_id;
+
+    end
+
 $$;
 
 
@@ -1337,28 +1337,28 @@ ALTER FUNCTION public.get_a_grade_student(event integer, std_id integer) OWNER T
 
 CREATE FUNCTION public.get_account_type(uname character varying) RETURNS TABLE(id integer, type character varying, hashed_password character)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    select t.teacher_id as _id,cast('Teacher' as varchar) as _type, password from teacher t join official_users ou on t.user_no=ou.user_no
-
-where ou.username=uname
-
-union
-
-select a.admin_id as _id,cast('Admin' as varchar) as _type,password from admins a join official_users ou on a.user_no=ou.user_no
-
-where ou.username=uname
-
-union
-
-select student_id as _id, cast('Student' as varchar) as _type,password from student where cast((mod(_year,100)*100000+dept_code*1000+roll_num) as varchar)=uname;
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    select t.teacher_id as _id,cast('Teacher' as varchar) as _type, password from teacher t join official_users ou on t.user_no=ou.user_no
+
+where ou.username=uname
+
+union
+
+select a.admin_id as _id,cast('Admin' as varchar) as _type,password from admins a join official_users ou on a.user_no=ou.user_no
+
+where ou.username=uname
+
+union
+
+select student_id as _id, cast('Student' as varchar) as _type,password from student where cast((mod(_year,100)*100000+dept_code*1000+roll_num) as varchar)=uname;
+
+end
+
 $$;
 
 
@@ -1370,32 +1370,32 @@ ALTER FUNCTION public.get_account_type(uname character varying) OWNER TO postgre
 
 CREATE FUNCTION public.get_all_course(std_id integer) RETURNS TABLE(id integer, term character varying, _year integer, dept_shortname character varying, course_code integer, course_name character varying, submitted integer)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    select _id,_term,__year,_dept_shortname,_course_code,_course_name,count(ev.evaluation_id)::integer
-
-from ((
-
-    (select student_id from student
-
-    where (mod(student._year,100)*100000+dept_code*1000+roll_num)=std_id
-
-     ) s join (
-
-         select enrol_id,student_id,section_id from enrolment
-
-    ) e on s.student_id=e.student_id join section sec on e.section_id=sec.section_no join all_courses cc on sec.course_id=cc._id)
-
-left outer join evaluation ev on (ev.section_no=e.section_id and ev._end>current_timestamp)) left outer join submission s2 on (s2.enrol_id=e.enrol_id)
-
-group by _id,_term,__year,_dept_shortname,_course_code,_course_name;
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name,count(ev.evaluation_id)::integer
+
+from ((
+
+    (select student_id from student
+
+    where (mod(student._year,100)*100000+dept_code*1000+roll_num)=std_id
+
+     ) s join (
+
+         select enrol_id,student_id,section_id from enrolment
+
+    ) e on s.student_id=e.student_id join section sec on e.section_id=sec.section_no join all_courses cc on sec.course_id=cc._id)
+
+left outer join evaluation ev on (ev.section_no=e.section_id and ev._end>current_timestamp)) left outer join submission s2 on (s2.enrol_id=e.enrol_id)
+
+group by _id,_term,__year,_dept_shortname,_course_code,_course_name;
+
+end
+
 $$;
 
 
@@ -1407,20 +1407,20 @@ ALTER FUNCTION public.get_all_course(std_id integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_all_course_admin() RETURNS TABLE(id integer, term character varying, _year integer, dept_shortname character varying, course_code integer, course_name character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-    select _id,_term,__year,_dept_shortname,_course_code,_course_name
-
-    from all_courses cc
-
-    ;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name
+
+    from all_courses cc
+
+    ;
+
+    end
+
 $$;
 
 
@@ -1432,26 +1432,26 @@ ALTER FUNCTION public.get_all_course_admin() OWNER TO postgres;
 
 CREATE FUNCTION public.get_all_course_teacher(teacher_username character varying) RETURNS TABLE(id integer, term character varying, _year integer, dept_shortname character varying, course_code integer, course_name character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(teacher_username);
-
-    return query
-
-    select _id,_term,__year,_dept_shortname,_course_code,_course_name
-
-    from all_courses cc join instructor i on cc._id=i.course_id join teacher t on i.teacher_id = t.teacher_id
-
-    where t.teacher_id=tid;
-
-    end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(teacher_username);
+
+    return query
+
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name
+
+    from all_courses cc join instructor i on cc._id=i.course_id join teacher t on i.teacher_id = t.teacher_id
+
+    where t.teacher_id=tid;
+
+    end
+
 $$;
 
 
@@ -1463,16 +1463,16 @@ ALTER FUNCTION public.get_all_course_teacher(teacher_username character varying)
 
 CREATE FUNCTION public.get_all_student_admin() RETURNS TABLE(std_id integer, name character varying, dept character varying, email character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-    select (mod(_year,100)*100000+d.dept_code*1000+roll_num) as id,student_name,email_address,d.dept_shortname from student join department d on student.dept_code = d.dept_code;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+    select (mod(_year,100)*100000+d.dept_code*1000+roll_num) as id,student_name,email_address,d.dept_shortname from student join department d on student.dept_code = d.dept_code;
+
+    end
+
 $$;
 
 
@@ -1484,16 +1484,16 @@ ALTER FUNCTION public.get_all_student_admin() OWNER TO postgres;
 
 CREATE FUNCTION public.get_all_teacher_admin() RETURNS TABLE(teacher_username character varying, name character varying, dept character varying, email character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-    select ou.username,t.teacher_name, d.dept_shortname,ou.email_address from teacher t join department d on t.dept_code = d.dept_code join official_users ou on t.user_no = ou.user_no;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+    select ou.username,t.teacher_name, d.dept_shortname,ou.email_address from teacher t join department d on t.dept_code = d.dept_code join official_users ou on t.user_no = ou.user_no;
+
+    end
+
 $$;
 
 
@@ -1505,42 +1505,42 @@ ALTER FUNCTION public.get_all_teacher_admin() OWNER TO postgres;
 
 CREATE FUNCTION public.get_cancel_class(std_id integer, crs_id integer) RETURNS TABLE(sectionname character varying, teachername character varying, start_time timestamp with time zone, end_time timestamp with time zone)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        std_no integer;
-
-    begin
-
-        std_no:=get_student_no(std_id);
-
-    return query
-
-
-
-select s.section_name,t.teacher_name,cast(cr.start::time+cc._date as timestamp with time zone),cast(cr._end::time+cc._date as timestamp with time zone)
-
-from canceled_class cc
-
-join course_routine cr on cc.class_id=cr.class_id
-
-join section s on cr.section_no = s.section_no
-
-join course c on s.course_id = c.course_id
-
-join instructor i on cc.instructor_id = i.instructor_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-join enrolment e on s.section_no = e.section_id
-
-join student s2 on e.student_id=s2.student_id
-
-where c.course_id=crs_id and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id;
-
-    end
-
+    AS $$
+
+    declare
+
+        std_no integer;
+
+    begin
+
+        std_no:=get_student_no(std_id);
+
+    return query
+
+
+
+select s.section_name,t.teacher_name,cast(cr.start::time+cc._date as timestamp with time zone),cast(cr._end::time+cc._date as timestamp with time zone)
+
+from canceled_class cc
+
+join course_routine cr on cc.class_id=cr.class_id
+
+join section s on cr.section_no = s.section_no
+
+join course c on s.course_id = c.course_id
+
+join instructor i on cc.instructor_id = i.instructor_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+join enrolment e on s.section_no = e.section_id
+
+join student s2 on e.student_id=s2.student_id
+
+where c.course_id=crs_id and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id;
+
+    end
+
 $$;
 
 
@@ -1552,34 +1552,34 @@ ALTER FUNCTION public.get_cancel_class(std_id integer, crs_id integer) OWNER TO 
 
 CREATE FUNCTION public.get_cancel_class_notifications(std_id integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-        select ne.event_type,ne.event_no,c._id,tp.teacher_id,c._dept_shortname,c._course_code,cast('Canceled Class' as varchar),tp.teacher_name,ne.notifucation_time, ne._date
-
-from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.event_no
-
-join instructor i on cc.instructor_id = i.instructor_id
-
-join teacher tp on i.teacher_id = tp.teacher_id
-
-join current_courses c on c._id=i.course_id
-
-join course_routine cr on cc.class_id=cr.class_id
-
-join section s on cr.section_no=s.section_no
-
-join enrolment e on s.section_no=e.section_id
-
-join student s2 on e.student_id = s2.student_id
-
-where ne.event_type=3 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+        select ne.event_type,ne.event_no,c._id,tp.teacher_id,c._dept_shortname,c._course_code,cast('Canceled Class' as varchar),tp.teacher_name,ne.notifucation_time, ne._date
+
+from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.event_no
+
+join instructor i on cc.instructor_id = i.instructor_id
+
+join teacher tp on i.teacher_id = tp.teacher_id
+
+join current_courses c on c._id=i.course_id
+
+join course_routine cr on cc.class_id=cr.class_id
+
+join section s on cr.section_no=s.section_no
+
+join enrolment e on s.section_no=e.section_id
+
+join student s2 on e.student_id = s2.student_id
+
+where ne.event_type=3 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id;
+
+    end
+
 $$;
 
 
@@ -1591,38 +1591,38 @@ ALTER FUNCTION public.get_cancel_class_notifications(std_id integer) OWNER TO po
 
 CREATE FUNCTION public.get_cancel_class_notifications_teacher(teacher_username character varying) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(teacher_username);
-
-    return query
-
-        select ne.event_type,ne.event_no,c._id,tp.teacher_id,c._dept_shortname,c._course_code,cast('Canceled Class' as varchar),tp.teacher_name,ne.notifucation_time, ne._date
-
-        from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.event_no
-
-        join instructor ip on cc.instructor_id = ip.instructor_id
-
-        join current_courses c on c._id=ip.course_id
-
-        join teacher_routine tr on cc.class_id = tr.class_id
-
-        join teacher tp on ip.teacher_id = tp.teacher_id
-
-        join instructor iv on tr.instructor_id = iv.instructor_id
-
-        join teacher tv on iv.teacher_id=tv.teacher_id
-
-        where ne.event_type=3 and tv.teacher_id!=tp.teacher_id and tv.teacher_id=tid;
-
-    end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(teacher_username);
+
+    return query
+
+        select ne.event_type,ne.event_no,c._id,tp.teacher_id,c._dept_shortname,c._course_code,cast('Canceled Class' as varchar),tp.teacher_name,ne.notifucation_time, ne._date
+
+        from canceled_class cc join notification_event ne on cc.canceled_class_id=ne.event_no
+
+        join instructor ip on cc.instructor_id = ip.instructor_id
+
+        join current_courses c on c._id=ip.course_id
+
+        join teacher_routine tr on cc.class_id = tr.class_id
+
+        join teacher tp on ip.teacher_id = tp.teacher_id
+
+        join instructor iv on tr.instructor_id = iv.instructor_id
+
+        join teacher tv on iv.teacher_id=tv.teacher_id
+
+        where ne.event_type=3 and tv.teacher_id!=tp.teacher_id and tv.teacher_id=tid;
+
+    end
+
 $$;
 
 
@@ -1634,38 +1634,38 @@ ALTER FUNCTION public.get_cancel_class_notifications_teacher(teacher_username ch
 
 CREATE FUNCTION public.get_cancel_class_teacher(uname character varying, crs_id integer) RETURNS TABLE(sectionname character varying, teachername character varying, start_time timestamp with time zone, end_time timestamp with time zone)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(uname);
-
-    return query
-
-
-
-select s.section_name,t.teacher_name,cast(cr.start::time+cc._date as timestamp with time zone),cast(cr._end::time+cc._date as timestamp with time zone)
-
-from canceled_class cc
-
-join course_routine cr on cc.class_id=cr.class_id
-
-join section s on cr.section_no = s.section_no
-
-join course c on s.course_id = c.course_id
-
-join instructor i on cc.instructor_id = i.instructor_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-where c.course_id=crs_id and t.teacher_id=tid;
-
-    end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(uname);
+
+    return query
+
+
+
+select s.section_name,t.teacher_name,cast(cr.start::time+cc._date as timestamp with time zone),cast(cr._end::time+cc._date as timestamp with time zone)
+
+from canceled_class cc
+
+join course_routine cr on cc.class_id=cr.class_id
+
+join section s on cr.section_no = s.section_no
+
+join course c on s.course_id = c.course_id
+
+join instructor i on cc.instructor_id = i.instructor_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+where c.course_id=crs_id and t.teacher_id=tid;
+
+    end
+
 $$;
 
 
@@ -1677,38 +1677,38 @@ ALTER FUNCTION public.get_cancel_class_teacher(uname character varying, crs_id i
 
 CREATE FUNCTION public.get_classes_teacher(uname character varying, secno integer, checkdate date) RETURNS TABLE(classid integer, start_time time without time zone, end_time time without time zone)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(uname);
-
-    return query
-
-    select cr.class_id,cr.start,cr._end
-
-from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
-
-join instructor i on tr.instructor_id = i.instructor_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-where t.teacher_id=tid and cr.section_no=secNo and cr.day=extract(isodow from checkDate)-1
-
-and not exists(
-
-    select * from canceled_class
-
-    where class_id=cr.class_id and _date=checkDate
-
-);
-
-    end;
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(uname);
+
+    return query
+
+    select cr.class_id,cr.start,cr._end
+
+from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
+
+join instructor i on tr.instructor_id = i.instructor_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+where t.teacher_id=tid and cr.section_no=secNo and cr.day=extract(isodow from checkDate)-1
+
+and not exists(
+
+    select * from canceled_class
+
+    where class_id=cr.class_id and _date=checkDate
+
+);
+
+    end;
+
 $$;
 
 
@@ -1720,16 +1720,16 @@ ALTER FUNCTION public.get_classes_teacher(uname character varying, secno integer
 
 CREATE FUNCTION public.get_course_children_post(parent integer) RETURNS TABLE(postid integer)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-        select post_id from course_post where parent_post=parent;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+        select post_id from course_post where parent_post=parent;
+
+    end
+
 $$;
 
 
@@ -1741,16 +1741,16 @@ ALTER FUNCTION public.get_course_children_post(parent integer) OWNER TO postgres
 
 CREATE FUNCTION public.get_course_cr(courseid integer) RETURNS TABLE(sectionid integer, sectionname character varying, crid integer, crname character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-    select sec.section_no,sec.section_name,(mod(s._year,100)*100000+s.dept_code*1000+s.roll_num) as sid,s.student_name from section sec left outer join student s on sec.cr_id = s.student_id where sec.course_id=courseID;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+    select sec.section_no,sec.section_name,(mod(s._year,100)*100000+s.dept_code*1000+s.roll_num) as sid,s.student_name from section sec left outer join student s on sec.cr_id = s.student_id where sec.course_id=courseID;
+
+    end
+
 $$;
 
 
@@ -1762,28 +1762,28 @@ ALTER FUNCTION public.get_course_cr(courseid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_course_evaluations(std_id integer, crs_id integer) RETURNS TABLE(id integer, event_type character varying, event_date date, event_description character varying, published boolean, completed boolean, filelink character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-    return query
-
-    select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join course cc on cc.course_id=s.course_id
-
-where cc.course_id=crs_id and et.notification_time_type=false and mod(s2._year,100)*100000+s2.dept_code*1000+roll_num=std_id
-
-union
-
-select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join course cc on cc.course_id=s.course_id
-
-where cc.course_id=crs_id and et.notification_time_type=true and mod(s2._year,100)*100000+s2.dept_code*1000+roll_num=std_id
-
-order by _date;
-
-end
-
+    AS $$
+
+    declare
+
+    begin
+
+    return query
+
+    select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join course cc on cc.course_id=s.course_id
+
+where cc.course_id=crs_id and et.notification_time_type=false and mod(s2._year,100)*100000+s2.dept_code*1000+roll_num=std_id
+
+union
+
+select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id join course cc on cc.course_id=s.course_id
+
+where cc.course_id=crs_id and et.notification_time_type=true and mod(s2._year,100)*100000+s2.dept_code*1000+roll_num=std_id
+
+order by _date;
+
+end
+
 $$;
 
 
@@ -1795,32 +1795,32 @@ ALTER FUNCTION public.get_course_evaluations(std_id integer, crs_id integer) OWN
 
 CREATE FUNCTION public.get_course_evaluations_teacher(uname character varying, crs_id integer) RETURNS TABLE(id integer, event_type character varying, event_date date, event_description character varying, published boolean, completed boolean, sec_no integer, sec_name character varying, filelink character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid=get_teacher_id(uname);
-
-    return query
-
-    select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),s.section_no,s.section_name,ev.link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ev.instructor_id = i.instructor_id
-
-where cc._id=crs_id and i.teacher_id=tid and et.notification_time_type=false
-
-union
-
-select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),s.section_no,s.section_name,ev.link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ev.instructor_id = i.instructor_id
-
-where cc._id=crs_id and i.teacher_id=tid and et.notification_time_type=true
-
-order by _date;
-
-end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid=get_teacher_id(uname);
+
+    return query
+
+    select ev.evaluation_id as _id,et.type_name,ev.start::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),s.section_no,s.section_name,ev.link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ev.instructor_id = i.instructor_id
+
+where cc._id=crs_id and i.teacher_id=tid and et.notification_time_type=false
+
+union
+
+select ev.evaluation_id as _id,et.type_name,ev._end::date as _date,ev.description,(ev.start<=current_timestamp),(ev._end<=current_timestamp),s.section_no,s.section_name,ev.link from evaluation ev join evaluation_type et on ev.type_id = et.type_id join section s on ev.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ev.instructor_id = i.instructor_id
+
+where cc._id=crs_id and i.teacher_id=tid and et.notification_time_type=true
+
+order by _date;
+
+end
+
 $$;
 
 
@@ -1832,28 +1832,28 @@ ALTER FUNCTION public.get_course_evaluations_teacher(uname character varying, cr
 
 CREATE FUNCTION public.get_course_marks(uname character varying, eid integer) RETURNS TABLE(eventid integer, userid integer, studentname character varying, event_type character varying, event_desc character varying, term character varying, year integer, deptcode character varying, coursenum integer, event_date date, totalmarks double precision, obtainedmarks double precision)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    select e.evaluation_id, (mod(s2._year,100)*100000+s2.dept_code*1000+roll_num) as uid,s2.student_name,et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks,e.total_marks*(sum(g.obtained_marks)/sum(g.total_marks)) from evaluation e join evaluation_type et on et.type_id = e.type_id join submission s on e.evaluation_id = s.event_id join grading g on s.sub_id = g.sub_id join enrolment e2 on s.enrol_id = e2.enrol_id join student s2 on e2.student_id = s2.student_id join section s3 on e.section_no = s3.section_no join current_courses c on c._id=s3.course_id join instructor i on c._id = i.course_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no
-
-where et.notification_time_type=false and ou.username=uname and e.evaluation_id=eID
-
-group by e.evaluation_id,  (mod(s2._year,100)*100000+s2.dept_code*1000+roll_num),s2.student_name,et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks
-
-union
-
-    select e.evaluation_id, (mod(s2._year,100)*100000+s2.dept_code*1000+roll_num) as uid,s2.student_name,et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e._end::date,e.total_marks,e.total_marks*(sum(g.obtained_marks)/sum(g.total_marks)) from evaluation e join evaluation_type et on et.type_id = e.type_id join submission s on e.evaluation_id = s.event_id join grading g on s.sub_id = g.sub_id join enrolment e2 on s.enrol_id = e2.enrol_id join student s2 on e2.student_id = s2.student_id join section s3 on e.section_no = s3.section_no join current_courses c on c._id=s3.course_id join instructor i on c._id = i.course_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no
-
-where et.notification_time_type=true and ou.username=uname and e.evaluation_id=eID
-
-group by e.evaluation_id,  (mod(s2._year,100)*100000+s2.dept_code*1000+roll_num),s2.student_name,et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks;
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    select e.evaluation_id, (mod(s2._year,100)*100000+s2.dept_code*1000+roll_num) as uid,s2.student_name,et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks,e.total_marks*(sum(g.obtained_marks)/sum(g.total_marks)) from evaluation e join evaluation_type et on et.type_id = e.type_id join submission s on e.evaluation_id = s.event_id join grading g on s.sub_id = g.sub_id join enrolment e2 on s.enrol_id = e2.enrol_id join student s2 on e2.student_id = s2.student_id join section s3 on e.section_no = s3.section_no join current_courses c on c._id=s3.course_id join instructor i on c._id = i.course_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no
+
+where et.notification_time_type=false and ou.username=uname and e.evaluation_id=eID
+
+group by e.evaluation_id,  (mod(s2._year,100)*100000+s2.dept_code*1000+roll_num),s2.student_name,et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks
+
+union
+
+    select e.evaluation_id, (mod(s2._year,100)*100000+s2.dept_code*1000+roll_num) as uid,s2.student_name,et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e._end::date,e.total_marks,e.total_marks*(sum(g.obtained_marks)/sum(g.total_marks)) from evaluation e join evaluation_type et on et.type_id = e.type_id join submission s on e.evaluation_id = s.event_id join grading g on s.sub_id = g.sub_id join enrolment e2 on s.enrol_id = e2.enrol_id join student s2 on e2.student_id = s2.student_id join section s3 on e.section_no = s3.section_no join current_courses c on c._id=s3.course_id join instructor i on c._id = i.course_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no
+
+where et.notification_time_type=true and ou.username=uname and e.evaluation_id=eID
+
+group by e.evaluation_id,  (mod(s2._year,100)*100000+s2.dept_code*1000+roll_num),s2.student_name,et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks;
+
+end
+
 $$;
 
 
@@ -1865,16 +1865,16 @@ ALTER FUNCTION public.get_course_marks(uname character varying, eid integer) OWN
 
 CREATE FUNCTION public.get_course_post_file(pid integer) RETURNS TABLE(fileid integer, filename character varying, filelink character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-        select file_id,file_name,file_link from course_post_file where post_id=pID;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+        select file_id,file_name,file_link from course_post_file where post_id=pID;
+
+    end
+
 $$;
 
 
@@ -1886,44 +1886,44 @@ ALTER FUNCTION public.get_course_post_file(pid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_course_post_notifications(std_id integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, userid integer, dept_shortname character varying, course_code integer, eventtypename character varying, postername character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-    return query
-
-    (select ne.event_type,ne.event_no,c._id,t.teacher_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),t.teacher_name,ne.notifucation_time, ne._date
-
-    from notification_event ne join course_post cp on ne.event_no=cp.post_id join instructor i on i.instructor_id=cp.poster_id
-
-    join current_courses c on i.course_id = c._id join section s on c._id = s.course_id
-
-    join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
-
-    join teacher t on i.teacher_id = t.teacher_id
-
-    where student_post=false and ne.event_type=4 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id)
-
-    union
-
-    (select ne.event_type,ne.event_no,c._id,ps.student_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),ps.student_name,ne.notifucation_time, ne._date
-
-    from notification_event ne join course_post cp on ne.event_no=cp.post_id join enrolment ep on ep.enrol_id=cp.poster_id
-
-    join section sec1 on ep.section_id = sec1.section_no join current_courses c on sec1.course_id=c._id
-
-    join student ps on ps.student_id = ep.student_id
-
-    join section s on s.course_id = c._id
-
-    join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
-
-    where student_post=true and ps.student_id!=s2.student_id and ne.event_type=4 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id);
-
-end
-
+    AS $$
+
+    declare
+
+    begin
+
+    return query
+
+    (select ne.event_type,ne.event_no,c._id,t.teacher_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),t.teacher_name,ne.notifucation_time, ne._date
+
+    from notification_event ne join course_post cp on ne.event_no=cp.post_id join instructor i on i.instructor_id=cp.poster_id
+
+    join current_courses c on i.course_id = c._id join section s on c._id = s.course_id
+
+    join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
+
+    join teacher t on i.teacher_id = t.teacher_id
+
+    where student_post=false and ne.event_type=4 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id)
+
+    union
+
+    (select ne.event_type,ne.event_no,c._id,ps.student_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),ps.student_name,ne.notifucation_time, ne._date
+
+    from notification_event ne join course_post cp on ne.event_no=cp.post_id join enrolment ep on ep.enrol_id=cp.poster_id
+
+    join section sec1 on ep.section_id = sec1.section_no join current_courses c on sec1.course_id=c._id
+
+    join student ps on ps.student_id = ep.student_id
+
+    join section s on s.course_id = c._id
+
+    join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
+
+    where student_post=true and ps.student_id!=s2.student_id and ne.event_type=4 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id);
+
+end
+
 $$;
 
 
@@ -1935,50 +1935,50 @@ ALTER FUNCTION public.get_course_post_notifications(std_id integer) OWNER TO pos
 
 CREATE FUNCTION public.get_course_post_notifications_teacher(uname character varying) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, userid integer, dept_shortname character varying, course_code integer, eventtypename character varying, postername character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-    return query
-
-    (select ne.event_type,ne.event_no,c._id,t.teacher_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),t.teacher_name,ne.notifucation_time, ne._date
-
-    from notification_event ne join course_post cp on ne.event_no=cp.post_id join instructor i on i.instructor_id=cp.poster_id
-
-    join current_courses c on i.course_id = c._id
-
-    join teacher t on i.teacher_id = t.teacher_id
-
-    join instructor iv on iv.course_id=c._id
-
-    join teacher tv on tv.teacher_id=iv.teacher_id
-
-    join official_users ou on ou.user_no=tv.user_no
-
-    where student_post=false and ne.event_type=4 and ou.username=uname and tv.teacher_id!=t.teacher_id)
-
-    union
-
-    (select ne.event_type,ne.event_no,c._id,ps.student_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),ps.student_name,ne.notifucation_time, ne._date
-
-    from notification_event ne join course_post cp on ne.event_no=cp.post_id join enrolment ep on ep.enrol_id=cp.poster_id
-
-    join section sec1 on ep.section_id = sec1.section_no join current_courses c on sec1.course_id=c._id
-
-    join student ps on ps.student_id = ep.student_id
-
-    join instructor iv on iv.course_id=c._id
-
-    join teacher tv on tv.teacher_id=iv.teacher_id
-
-    join official_users ou on ou.user_no=tv.user_no
-
-    where student_post=true and ne.event_type=4 and ou.username=uname);
-
-end
-
+    AS $$
+
+    declare
+
+    begin
+
+    return query
+
+    (select ne.event_type,ne.event_no,c._id,t.teacher_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),t.teacher_name,ne.notifucation_time, ne._date
+
+    from notification_event ne join course_post cp on ne.event_no=cp.post_id join instructor i on i.instructor_id=cp.poster_id
+
+    join current_courses c on i.course_id = c._id
+
+    join teacher t on i.teacher_id = t.teacher_id
+
+    join instructor iv on iv.course_id=c._id
+
+    join teacher tv on tv.teacher_id=iv.teacher_id
+
+    join official_users ou on ou.user_no=tv.user_no
+
+    where student_post=false and ne.event_type=4 and ou.username=uname and tv.teacher_id!=t.teacher_id)
+
+    union
+
+    (select ne.event_type,ne.event_no,c._id,ps.student_id,c._dept_shortname,c._course_code,cast('Course Forum Post' as varchar),ps.student_name,ne.notifucation_time, ne._date
+
+    from notification_event ne join course_post cp on ne.event_no=cp.post_id join enrolment ep on ep.enrol_id=cp.poster_id
+
+    join section sec1 on ep.section_id = sec1.section_no join current_courses c on sec1.course_id=c._id
+
+    join student ps on ps.student_id = ep.student_id
+
+    join instructor iv on iv.course_id=c._id
+
+    join teacher tv on tv.teacher_id=iv.teacher_id
+
+    join official_users ou on ou.user_no=tv.user_no
+
+    where student_post=true and ne.event_type=4 and ou.username=uname);
+
+end
+
 $$;
 
 
@@ -1990,18 +1990,18 @@ ALTER FUNCTION public.get_course_post_notifications_teacher(uname character vary
 
 CREATE FUNCTION public.get_course_posts(userid integer) RETURNS TABLE(teacherid integer, courseid integer, coursedept character varying, coursenum integer, courseterm character varying, courseyear integer, name character varying, postid integer, postname character varying, postcontent character varying, posttime timestamp with time zone)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    select t.teacher_id,c._id,c._dept_shortname,c._course_code,c._term,c.__year,t.teacher_name,cp.post_id,cp.post_name,cp.post_content,cp.post_time from course_post cp join instructor i on i.instructor_id=cp.poster_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no join current_courses c on i.course_id = c._id join section s on i.course_id = s.course_id join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
-
-where cp.parent_post is null and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=userID;
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    select t.teacher_id,c._id,c._dept_shortname,c._course_code,c._term,c.__year,t.teacher_name,cp.post_id,cp.post_name,cp.post_content,cp.post_time from course_post cp join instructor i on i.instructor_id=cp.poster_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no join current_courses c on i.course_id = c._id join section s on i.course_id = s.course_id join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
+
+where cp.parent_post is null and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=userID;
+
+end
+
 $$;
 
 
@@ -2013,18 +2013,18 @@ ALTER FUNCTION public.get_course_posts(userid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_course_posts_teacher(uname character varying) RETURNS TABLE(teacherid integer, courseid integer, coursedept character varying, coursenum integer, courseterm character varying, courseyear integer, name character varying, postid integer, postname character varying, postcontent character varying, posttime timestamp with time zone)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    select t.teacher_id,c._id,c._dept_shortname,c._course_code,c._term,c.__year,t.teacher_name,cp.post_id,cp.post_name,cp.post_content,cp.post_time from course_post cp join instructor i on i.instructor_id=cp.poster_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no join current_courses c on i.course_id = c._id
-
-where ou.username!=uname and cp.parent_post is null;
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    select t.teacher_id,c._id,c._dept_shortname,c._course_code,c._term,c.__year,t.teacher_name,cp.post_id,cp.post_name,cp.post_content,cp.post_time from course_post cp join instructor i on i.instructor_id=cp.poster_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no join current_courses c on i.course_id = c._id
+
+where ou.username!=uname and cp.parent_post is null;
+
+end
+
 $$;
 
 
@@ -2036,40 +2036,40 @@ ALTER FUNCTION public.get_course_posts_teacher(uname character varying) OWNER TO
 
 CREATE FUNCTION public.get_course_resources(crs_id integer) RETURNS TABLE(fileid integer, filename character varying, filelink character varying, ownerid integer, uploadername character varying, isstudent boolean)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-    return query
-
-        select res_id,res_name,res_link,owner_id,s2.student_name,cast(true as boolean)
-
-from student_resource sr join enrolment e on sr.owner_id = e.enrol_id
-
-join section s on e.section_id = s.section_no
-
-join course cc on cc.course_id = s.course_id
-
-join student s2 on s.cr_id = s2.student_id
-
-where s.course_id=crs_id
-
-union
-
-select res_id,res_name,res_link,owner_id,t.teacher_name,cast(false as boolean)
-
-from instructor_resource join instructor i on i.instructor_id = instructor_resource.owner_id
-
-join course cc on cc.course_id = i.course_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-where i.course_id=crs_id;
-
-end
-
+    AS $$
+
+    declare
+
+    begin
+
+    return query
+
+        select res_id,res_name,res_link,owner_id,s2.student_name,cast(true as boolean)
+
+from student_resource sr join enrolment e on sr.owner_id = e.enrol_id
+
+join section s on e.section_id = s.section_no
+
+join course cc on cc.course_id = s.course_id
+
+join student s2 on s.cr_id = s2.student_id
+
+where s.course_id=crs_id
+
+union
+
+select res_id,res_name,res_link,owner_id,t.teacher_name,cast(false as boolean)
+
+from instructor_resource join instructor i on i.instructor_id = instructor_resource.owner_id
+
+join course cc on cc.course_id = i.course_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+where i.course_id=crs_id;
+
+end
+
 $$;
 
 
@@ -2081,18 +2081,18 @@ ALTER FUNCTION public.get_course_resources(crs_id integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_course_students(courseid integer) RETURNS TABLE(std_id integer, std_name character varying, enrolid integer, sec_no integer, sec_name character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-    select (mod(s._year,100)*100000+s.dept_code*1000+s.roll_num) as sid, s.student_name,e.enrol_id,s2.section_no,s2.section_name from student s join enrolment e on s.student_id = e.student_id join section s2 on e.section_id = s2.section_no join course c on s2.course_id = c.course_id
-
-where c.course_id=courseID;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+    select (mod(s._year,100)*100000+s.dept_code*1000+s.roll_num) as sid, s.student_name,e.enrol_id,s2.section_no,s2.section_name from student s join enrolment e on s.student_id = e.student_id join section s2 on e.section_id = s2.section_no join course c on s2.course_id = c.course_id
+
+where c.course_id=courseID;
+
+    end
+
 $$;
 
 
@@ -2104,18 +2104,18 @@ ALTER FUNCTION public.get_course_students(courseid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_course_teachers(courseid integer) RETURNS TABLE(uname character varying, teachername character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-    select ou.username, t.teacher_name from teacher t join official_users ou on t.user_no = ou.user_no join instructor i on t.teacher_id = i.teacher_id join course c on i.course_id = c.course_id
-
-where c.course_id=courseID;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+    select ou.username, t.teacher_name from teacher t join official_users ou on t.user_no = ou.user_no join instructor i on t.teacher_id = i.teacher_id join course c on i.course_id = c.course_id
+
+where c.course_id=courseID;
+
+    end
+
 $$;
 
 
@@ -2127,22 +2127,22 @@ ALTER FUNCTION public.get_course_teachers(courseid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_course_topics(courseid integer) RETURNS TABLE(topic_number integer, teacher_number integer, instructor_number integer, title character varying, topic_description character varying, teachername character varying, isfinished boolean, start_time timestamp with time zone)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-	return query
-
-    select topic_num, t.teacher_id, i.instructor_id, topic_name,description,teacher_name,finished,started
-
-from topic tp join instructor i on tp.instructor_id = i.instructor_id join course c on c.course_id = i.course_id join teacher t on i.teacher_id = t.teacher_id
-
-where c.course_id = courseID
-
-order by started;
-
-    end
-
+    AS $$
+
+    begin
+
+	return query
+
+    select topic_num, t.teacher_id, i.instructor_id, topic_name,description,teacher_name,finished,started
+
+from topic tp join instructor i on tp.instructor_id = i.instructor_id join course c on c.course_id = i.course_id join teacher t on i.teacher_id = t.teacher_id
+
+where c.course_id = courseID
+
+order by started;
+
+    end
+
 $$;
 
 
@@ -2154,32 +2154,32 @@ ALTER FUNCTION public.get_course_topics(courseid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_current_course(std_id integer) RETURNS TABLE(id integer, term character varying, _year integer, dept_shortname character varying, course_code integer, course_name character varying, submitted integer)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    select _id,_term,__year,_dept_shortname,_course_code,_course_name,count(ev.evaluation_id)::integer
-
-from ((
-
-    (select student_id from student
-
-    where (mod(student._year,100)*100000+dept_code*1000+roll_num)=std_id
-
-     ) s join (
-
-         select enrol_id,student_id,section_id from enrolment
-
-    ) e on s.student_id=e.student_id join section sec on e.section_id=sec.section_no join current_courses cc on sec.course_id=cc._id)
-
-left outer join evaluation ev on (ev.section_no=e.section_id and ev._end>current_timestamp)) left outer join submission s2 on (s2.enrol_id=e.enrol_id)
-
-group by _id,_term,__year,_dept_shortname,_course_code,_course_name;
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name,count(ev.evaluation_id)::integer
+
+from ((
+
+    (select student_id from student
+
+    where (mod(student._year,100)*100000+dept_code*1000+roll_num)=std_id
+
+     ) s join (
+
+         select enrol_id,student_id,section_id from enrolment
+
+    ) e on s.student_id=e.student_id join section sec on e.section_id=sec.section_no join current_courses cc on sec.course_id=cc._id)
+
+left outer join evaluation ev on (ev.section_no=e.section_id and ev._end>current_timestamp)) left outer join submission s2 on (s2.enrol_id=e.enrol_id)
+
+group by _id,_term,__year,_dept_shortname,_course_code,_course_name;
+
+end
+
 $$;
 
 
@@ -2191,20 +2191,20 @@ ALTER FUNCTION public.get_current_course(std_id integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_current_course_admin() RETURNS TABLE(id integer, term character varying, _year integer, dept_shortname character varying, course_code integer, course_name character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-    select _id,_term,__year,_dept_shortname,_course_code,_course_name
-
-    from current_courses cc
-
-    ;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name
+
+    from current_courses cc
+
+    ;
+
+    end
+
 $$;
 
 
@@ -2216,28 +2216,17 @@ ALTER FUNCTION public.get_current_course_admin() OWNER TO postgres;
 
 CREATE FUNCTION public.get_current_course_post(pid integer) RETURNS TABLE(postid integer, posterid integer, title character varying, description character varying, teacherorstudentid character varying, postername character varying, posttime timestamp with time zone, isadmin boolean)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-        (select cp.post_id,cp.poster_id,cp.post_name,cp.post_content,ou.username,t.teacher_name,cp.post_time,student_post
-
-from course_post cp join instructor i on cp.poster_id=i.instructor_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no
-
-where cp.post_id=pID and student_post=false)
-
-union
-
-(select cp.post_id,cp.poster_id,cp.post_name,cp.post_content,cast((mod(_year,100)*100000+dept_code*1000+roll_num) as varchar),s.student_name,cp.post_time,student_post
-
-from course_post cp join enrolment e on cp.poster_id=e.enrol_id join student s on e.enrol_id = s.student_id
-
-where cp.post_id=pID and student_post=true);
-
-    end
-
+    AS $$
+    begin
+    return query
+        (select cp.post_id,cp.poster_id,cp.post_name,cp.post_content,ou.username,t.teacher_name,cp.post_time,student_post
+from course_post cp join instructor i on cp.poster_id=i.instructor_id join teacher t on i.teacher_id = t.teacher_id join official_users ou on t.user_no = ou.user_no
+where cp.post_id=pID and student_post=false)
+union
+(select cp.post_id,cp.poster_id,cp.post_name,cp.post_content,cast((mod(_year,100)*100000+dept_code*1000+roll_num) as varchar),s.student_name,cp.post_time,student_post
+from course_post cp join enrolment e on cp.poster_id=e.enrol_id join student s on e.student_id = s.student_id
+where cp.post_id=pID and student_post=true);
+    end
 $$;
 
 
@@ -2249,26 +2238,26 @@ ALTER FUNCTION public.get_current_course_post(pid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_current_course_teacher(teacher_username character varying) RETURNS TABLE(id integer, term character varying, _year integer, dept_shortname character varying, course_code integer, course_name character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(teacher_username);
-
-    return query
-
-    select _id,_term,__year,_dept_shortname,_course_code,_course_name
-
-    from current_courses cc join instructor i on cc._id=i.course_id join teacher t on i.teacher_id = t.teacher_id
-
-    where t.teacher_id=tid;
-
-    end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(teacher_username);
+
+    return query
+
+    select _id,_term,__year,_dept_shortname,_course_code,_course_name
+
+    from current_courses cc join instructor i on cc._id=i.course_id join teacher t on i.teacher_id = t.teacher_id
+
+    where t.teacher_id=tid;
+
+    end
+
 $$;
 
 
@@ -2280,24 +2269,24 @@ ALTER FUNCTION public.get_current_course_teacher(teacher_username character vary
 
 CREATE FUNCTION public.get_current_forum_post(pid integer) RETURNS TABLE(postid integer, posterid integer, title character varying, description character varying, uname character varying, postername character varying, posttime timestamp with time zone, isadmin boolean)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-        (select fp.post_id,fp.poster,fp.post_name,fp.post_content,ou.username,t.teacher_name,fp.post_time,cast(false as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
-
-where post_id=pID)
-
-union
-
-(select fp.post_id,fp.poster,fp.post_name,fp.post_content,ou.username,a.name,fp.post_time,cast(true as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
-
-where post_id=pID);
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+        (select fp.post_id,fp.poster,fp.post_name,fp.post_content,ou.username,t.teacher_name,fp.post_time,cast(false as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+
+where post_id=pID)
+
+union
+
+(select fp.post_id,fp.poster,fp.post_name,fp.post_content,ou.username,a.name,fp.post_time,cast(true as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+
+where post_id=pID);
+
+    end
+
 $$;
 
 
@@ -2309,72 +2298,72 @@ ALTER FUNCTION public.get_current_forum_post(pid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_day_events(std_id integer, query_date date) RETURNS TABLE(eventid integer, sectionid integer, id integer, dept_shortname character varying, course_code integer, lookup_time time without time zone, event_type character varying)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    select ut.eid, ut.section_no,cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
-
-                                                  ((select cr.class_id as eid,section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type
-
-                                                    from course_routine cr
-
-                                                    where day = extract(isodow from query_date) - 1
-
-                                                      and not exists(
-
-                                                            select class_id
-
-                                                            from canceled_class cc
-
-                                                            where cc.class_id = cr.class_id and _date = query_date
-
-                                                        ))
-
-                                                   union
-
-                                                   (select extra_class_id as eid,section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type
-
-                                                    from extra_class
-
-                                                    where start::date = query_date)
-
-                                                   union
-
-                                                   (select e.evaluation_id as eid,section_no, start::time as _lookup_time, et.type_name as _event_type
-
-                                                    from evaluation e
-
-                                                             join evaluation_type et
-
-                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
-
-                                                                      and start::date = query_date)
-
-                                                   union
-
-                                                   (select e.evaluation_id as eid,section_no, _end::time as _lookup_time, et.type_name as _event_type
-
-                                                    from evaluation e
-
-                                                             join evaluation_type et
-
-                                                                  on (et.type_id = e.type_id and et.notification_time_type = true)
-
-                                                                      and _end::date = query_date))) ut join
-
-    (
-
-        select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
-
-    ) ss on (ut.section_no=ss.section_id) join section s on (ss.section_id=s.section_no) join current_courses cc on (s.course_id=cc._id)
-
-    order by ut._lookup_time;
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    select ut.eid, ut.section_no,cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
+
+                                                  ((select cr.class_id as eid,section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type
+
+                                                    from course_routine cr
+
+                                                    where day = extract(isodow from query_date) - 1
+
+                                                      and not exists(
+
+                                                            select class_id
+
+                                                            from canceled_class cc
+
+                                                            where cc.class_id = cr.class_id and _date = query_date
+
+                                                        ))
+
+                                                   union
+
+                                                   (select extra_class_id as eid,section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type
+
+                                                    from extra_class
+
+                                                    where start::date = query_date)
+
+                                                   union
+
+                                                   (select e.evaluation_id as eid,section_no, start::time as _lookup_time, et.type_name as _event_type
+
+                                                    from evaluation e
+
+                                                             join evaluation_type et
+
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
+
+                                                                      and start::date = query_date)
+
+                                                   union
+
+                                                   (select e.evaluation_id as eid,section_no, _end::time as _lookup_time, et.type_name as _event_type
+
+                                                    from evaluation e
+
+                                                             join evaluation_type et
+
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = true)
+
+                                                                      and _end::date = query_date))) ut join
+
+    (
+
+        select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
+
+    ) ss on (ut.section_no=ss.section_id) join section s on (ss.section_id=s.section_no) join current_courses cc on (s.course_id=cc._id)
+
+    order by ut._lookup_time;
+
+end
+
 $$;
 
 
@@ -2386,44 +2375,44 @@ ALTER FUNCTION public.get_day_events(std_id integer, query_date date) OWNER TO p
 
 CREATE FUNCTION public.get_day_events_section(secno integer, query_date date) RETURNS TABLE(eventid integer, secid integer, courseid integer, dept_shortname character varying, course_code integer, start_time time without time zone, end_time time without time zone, event_type character varying)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    (select class_id, cr.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time,cast('Class' as varchar) as _event_type
-
-from course_routine cr join section sec on cr.section_no=sec.section_no join current_courses cc on cc._id=sec.course_id
-
-where sec.section_no=secNo
-
- and day = extract(isodow from query_date) - 1
-
-  and not exists (select class_id from canceled_class cc
-
- where cc.class_id = cr.class_id and _date = query_date))
-
-union
-
-(select extra_class_id,ec.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time,cast('Extra Class' as varchar) as _event_type
-
-from extra_class ec join section sec on ec.section_no = sec.section_no join current_courses cc on cc._id=sec.course_id
-
-where sec.section_no=secNo and _date= query_date)
-
-union
-
-(select evaluation_id,e.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time, et.type_name as _event_type
-
-from evaluation e join evaluation_type et on (et.type_id = e.type_id and et.notification_time_type = false)
-
-join section sec on e.section_no = sec.section_no join current_courses cc on cc._id=sec.course_id
-
-where sec.section_no=secNo and start::date = query_date);
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    (select class_id, cr.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time,cast('Class' as varchar) as _event_type
+
+from course_routine cr join section sec on cr.section_no=sec.section_no join current_courses cc on cc._id=sec.course_id
+
+where sec.section_no=secNo
+
+ and day = extract(isodow from query_date) - 1
+
+  and not exists (select class_id from canceled_class cc
+
+ where cc.class_id = cr.class_id and _date = query_date))
+
+union
+
+(select extra_class_id,ec.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time,cast('Extra Class' as varchar) as _event_type
+
+from extra_class ec join section sec on ec.section_no = sec.section_no join current_courses cc on cc._id=sec.course_id
+
+where sec.section_no=secNo and _date= query_date)
+
+union
+
+(select evaluation_id,e.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time, et.type_name as _event_type
+
+from evaluation e join evaluation_type et on (et.type_id = e.type_id and et.notification_time_type = false)
+
+join section sec on e.section_no = sec.section_no join current_courses cc on cc._id=sec.course_id
+
+where sec.section_no=secNo and start::date = query_date);
+
+end
+
 $$;
 
 
@@ -2435,84 +2424,84 @@ ALTER FUNCTION public.get_day_events_section(secno integer, query_date date) OWN
 
 CREATE FUNCTION public.get_day_events_teacher(teacher_username character varying, query_date date) RETURNS TABLE(eventid integer, sectionid integer, id integer, dept_shortname character varying, course_code integer, lookup_time time without time zone, event_type character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(teacher_username);
-
-    return query
-
-    select ut.eid,ut.section_no,cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
-
-                                                  ((select cr.class_id as eid,section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type, tr.instructor_id as instructor_id
-
-                                                    from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
-
-                                                    where day = extract(isodow from query_date) - 1
-
-                                                      and not exists(
-
-                                                            select class_id
-
-                                                            from canceled_class cc
-
-                                                            where cc.class_id = cr.class_id and _date = query_date
-
-                                                        ))
-
-                                                   union
-
-                                                   (select extra_class_id as eid,section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,instructor_id as instructor_id
-
-                                                    from extra_class
-
-                                                    where start::date = query_date)
-
-                                                   union
-
-                                                   (select ect.extra_class_id as eid,section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,ect.instructor_id as instructor_id
-
-                                                    from extra_class join extra_class_teacher ect on extra_class.extra_class_id = ect.extra_class_id
-
-                                                    where start::date = query_date)
-
-                                                   union
-
-                                                   (select e.evaluation_id as eid,section_no, start::time as _lookup_time, et.type_name as _event_type, e.instructor_id as instructor_id
-
-                                                    from evaluation e
-
-                                                             join evaluation_type et
-
-                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
-
-                                                                      and start::date = query_date)
-
-                                                   union
-
-                                                   (select eet.evaluation_id as eid,section_no, start::time as _lookup_time, et.type_name as _event_type,eet.instructor_id
-
-                                                    from evaluation e join extra_evaluation_instructor eet on e.evaluation_id = eet.evaluation_id
-
-                                                             join evaluation_type et
-
-                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
-
-                                                                      and _end::date = query_date))) ut join
-
-    instructor i on i.instructor_id=ut.instructor_id join current_courses cc on (i.course_id=cc._id)
-
-    where i.teacher_id=tid
-
-    order by _lookup_time;
-
-end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(teacher_username);
+
+    return query
+
+    select ut.eid,ut.section_no,cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
+
+                                                  ((select cr.class_id as eid,section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type, tr.instructor_id as instructor_id
+
+                                                    from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
+
+                                                    where day = extract(isodow from query_date) - 1
+
+                                                      and not exists(
+
+                                                            select class_id
+
+                                                            from canceled_class cc
+
+                                                            where cc.class_id = cr.class_id and _date = query_date
+
+                                                        ))
+
+                                                   union
+
+                                                   (select extra_class_id as eid,section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,instructor_id as instructor_id
+
+                                                    from extra_class
+
+                                                    where start::date = query_date)
+
+                                                   union
+
+                                                   (select ect.extra_class_id as eid,section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,ect.instructor_id as instructor_id
+
+                                                    from extra_class join extra_class_teacher ect on extra_class.extra_class_id = ect.extra_class_id
+
+                                                    where start::date = query_date)
+
+                                                   union
+
+                                                   (select e.evaluation_id as eid,section_no, start::time as _lookup_time, et.type_name as _event_type, e.instructor_id as instructor_id
+
+                                                    from evaluation e
+
+                                                             join evaluation_type et
+
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
+
+                                                                      and start::date = query_date)
+
+                                                   union
+
+                                                   (select eet.evaluation_id as eid,section_no, start::time as _lookup_time, et.type_name as _event_type,eet.instructor_id
+
+                                                    from evaluation e join extra_evaluation_instructor eet on e.evaluation_id = eet.evaluation_id
+
+                                                             join evaluation_type et
+
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
+
+                                                                      and _end::date = query_date))) ut join
+
+    instructor i on i.instructor_id=ut.instructor_id join current_courses cc on (i.course_id=cc._id)
+
+    where i.teacher_id=tid
+
+    order by _lookup_time;
+
+end
+
 $$;
 
 
@@ -2524,44 +2513,44 @@ ALTER FUNCTION public.get_day_events_teacher(teacher_username character varying,
 
 CREATE FUNCTION public.get_day_events_to_schedule(secno integer, query_date date) RETURNS TABLE(eventid integer, secid integer, courseid integer, dept_shortname character varying, course_code integer, start_time time without time zone, end_time time without time zone, event_type character varying)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    (select class_id, cr.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time,cast('Class' as varchar) as _event_type
-
-from course_routine cr join section sec on cr.section_no=sec.section_no join current_courses cc on cc._id=sec.course_id join intersected_sections isec on isec.second_section=sec.section_no
-
-where isec.first_section=secNo
-
- and day = extract(isodow from query_date) - 1
-
-  and not exists (select class_id from canceled_class cc
-
- where cc.class_id = cr.class_id and _date = query_date))
-
-union
-
-(select extra_class_id,ec.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time,cast('Extra Class' as varchar) as _event_type
-
-from extra_class ec join section sec on ec.section_no = sec.section_no join current_courses cc on cc._id=sec.course_id join intersected_sections isec on isec.second_section=sec.section_no
-
-where isec.first_section=secNo and _date= query_date)
-
-union
-
-(select evaluation_id,e.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time, et.type_name as _event_type
-
-from evaluation e join evaluation_type et on (et.type_id = e.type_id and et.notification_time_type = false)
-
-join section sec on e.section_no = sec.section_no join current_courses cc on cc._id=sec.course_id join intersected_sections isec on isec.second_section=sec.section_no
-
-where isec.first_section=secNo and start::date = query_date);
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    (select class_id, cr.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time,cast('Class' as varchar) as _event_type
+
+from course_routine cr join section sec on cr.section_no=sec.section_no join current_courses cc on cc._id=sec.course_id join intersected_sections isec on isec.second_section=sec.section_no
+
+where isec.first_section=secNo
+
+ and day = extract(isodow from query_date) - 1
+
+  and not exists (select class_id from canceled_class cc
+
+ where cc.class_id = cr.class_id and _date = query_date))
+
+union
+
+(select extra_class_id,ec.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time,cast('Extra Class' as varchar) as _event_type
+
+from extra_class ec join section sec on ec.section_no = sec.section_no join current_courses cc on cc._id=sec.course_id join intersected_sections isec on isec.second_section=sec.section_no
+
+where isec.first_section=secNo and _date= query_date)
+
+union
+
+(select evaluation_id,e.section_no, cc._id,cc._dept_shortname,cc._course_code, start::time,_end::time, et.type_name as _event_type
+
+from evaluation e join evaluation_type et on (et.type_id = e.type_id and et.notification_time_type = false)
+
+join section sec on e.section_no = sec.section_no join current_courses cc on cc._id=sec.course_id join intersected_sections isec on isec.second_section=sec.section_no
+
+where isec.first_section=secNo and start::date = query_date);
+
+end
+
 $$;
 
 
@@ -2573,16 +2562,16 @@ ALTER FUNCTION public.get_day_events_to_schedule(secno integer, query_date date)
 
 CREATE FUNCTION public.get_dept_list() RETURNS TABLE(dept_code integer, dept_name character varying, dept_shortname character varying)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    select * from department;
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    select * from department;
+
+end
+
 $$;
 
 
@@ -2594,24 +2583,24 @@ ALTER FUNCTION public.get_dept_list() OWNER TO postgres;
 
 CREATE FUNCTION public.get_evaluation_notifications(std_id integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-    return query
-
-    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,et.type_name,t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join evaluation ec on ne.event_no=ec.evaluation_id join evaluation_type et on ec.type_id = et.type_id
-
-    join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ec.instructor_id = i.instructor_id join teacher t on i.teacher_id = t.teacher_id join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
-
-where ne.event_type=2 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id
-
-order by ne.notifucation_time desc;
-
-end
-
+    AS $$
+
+    declare
+
+    begin
+
+    return query
+
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,et.type_name,t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join evaluation ec on ne.event_no=ec.evaluation_id join evaluation_type et on ec.type_id = et.type_id
+
+    join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ec.instructor_id = i.instructor_id join teacher t on i.teacher_id = t.teacher_id join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
+
+where ne.event_type=2 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id
+
+order by ne.notifucation_time desc;
+
+end
+
 $$;
 
 
@@ -2623,24 +2612,24 @@ ALTER FUNCTION public.get_evaluation_notifications(std_id integer) OWNER TO post
 
 CREATE FUNCTION public.get_evaluation_notifications_teacher(teacher_username character varying) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-    return query
-
-    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,et.type_name,t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join evaluation ec on ne.event_no=ec.evaluation_id join evaluation_type et on ec.type_id = et.type_id
-
-   join extra_evaluation_instructor eei on ec.evaluation_id = eei.evaluation_id join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on eei.instructor_id = i.instructor_id join instructor j on j.instructor_id=ec.instructor_id join teacher t on j.teacher_id = t.teacher_id join teacher t2 on t2.teacher_id=i.teacher_id join official_users ou on t2.user_no = ou.user_no
-
-where ne.event_type=2 and ou.username=teacher_username
-
-order by ne.notifucation_time desc;
-
-end
-
+    AS $$
+
+    declare
+
+    begin
+
+    return query
+
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,et.type_name,t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join evaluation ec on ne.event_no=ec.evaluation_id join evaluation_type et on ec.type_id = et.type_id
+
+   join extra_evaluation_instructor eei on ec.evaluation_id = eei.evaluation_id join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on eei.instructor_id = i.instructor_id join instructor j on j.instructor_id=ec.instructor_id join teacher t on j.teacher_id = t.teacher_id join teacher t2 on t2.teacher_id=i.teacher_id join official_users ou on t2.user_no = ou.user_no
+
+where ne.event_type=2 and ou.username=teacher_username
+
+order by ne.notifucation_time desc;
+
+end
+
 $$;
 
 
@@ -2652,18 +2641,18 @@ ALTER FUNCTION public.get_evaluation_notifications_teacher(teacher_username char
 
 CREATE FUNCTION public.get_event_description(event integer) RETURNS TABLE(eventid integer, eventtype character varying, description character varying, subtime timestamp with time zone, filelink character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-    select e.evaluation_id,et.type_name,e.description,e._end,e.link from evaluation e join evaluation_type et on et.type_id = e.type_id
-
-    where e.evaluation_id=event;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+    select e.evaluation_id,et.type_name,e.description,e._end,e.link from evaluation e join evaluation_type et on et.type_id = e.type_id
+
+    where e.evaluation_id=event;
+
+    end
+
 $$;
 
 
@@ -2675,36 +2664,36 @@ ALTER FUNCTION public.get_event_description(event integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_extra_class(std_id integer, crs_id integer) RETURNS TABLE(sectionname character varying, teachername character varying, start_time timestamp with time zone, end_time timestamp with time zone)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        std_no integer;
-
-    begin
-
-        std_no:=get_student_no(std_id);
-
-    return query
-
-    select s.section_name,t.teacher_name,ec.start,ec._end
-
-from extra_class ec
-
-join section s on ec.section_no = s.section_no
-
-join enrolment e on s.section_no = e.section_id
-
-join instructor i on ec.instructor_id = i.instructor_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-join student s2 on s.cr_id = s2.student_id
-
-where s.course_id=crs_id and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=1705119;
-
-    end
-
+    AS $$
+
+    declare
+
+        std_no integer;
+
+    begin
+
+        std_no:=get_student_no(std_id);
+
+    return query
+
+    select s.section_name,t.teacher_name,ec.start,ec._end
+
+from extra_class ec
+
+join section s on ec.section_no = s.section_no
+
+join enrolment e on s.section_no = e.section_id
+
+join instructor i on ec.instructor_id = i.instructor_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+join student s2 on s.cr_id = s2.student_id
+
+where s.course_id=crs_id and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=1705119;
+
+    end
+
 $$;
 
 
@@ -2716,38 +2705,38 @@ ALTER FUNCTION public.get_extra_class(std_id integer, crs_id integer) OWNER TO p
 
 CREATE FUNCTION public.get_extra_class_confirm_notifications(teacher_username character varying) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, crno integer, dept_shortname character varying, course_code integer, eventtypename character varying, crname character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(teacher_username);
-
-    return query
-
-    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Request Confirmation' as varchar),s2.student_name,ne.notifucation_time, ne._date
-
-from notification_event ne join request_event re on re.req_id=ne.event_no
-
-join request_type rt on rt.type_id=re.type_id
-
-join instructor i on re.instructor_id = i.instructor_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-join section s on re.section_no = s.section_no
-
-join current_courses cc on cc._id=s.course_id
-
-join student s2 on s.cr_id = s2.student_id
-
-where ne.event_type=0 and rt.type_id=3 and t.teacher_id=tid;
-
-    end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(teacher_username);
+
+    return query
+
+    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Request Confirmation' as varchar),s2.student_name,ne.notifucation_time, ne._date
+
+from notification_event ne join request_event re on re.req_id=ne.event_no
+
+join request_type rt on rt.type_id=re.type_id
+
+join instructor i on re.instructor_id = i.instructor_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+join section s on re.section_no = s.section_no
+
+join current_courses cc on cc._id=s.course_id
+
+join student s2 on s.cr_id = s2.student_id
+
+where ne.event_type=0 and rt.type_id=3 and t.teacher_id=tid;
+
+    end
+
 $$;
 
 
@@ -2759,24 +2748,24 @@ ALTER FUNCTION public.get_extra_class_confirm_notifications(teacher_username cha
 
 CREATE FUNCTION public.get_extra_class_notifications(std_id integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-    return query
-
-    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class' as varchar),t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join extra_class ec on ne.event_no=ec.extra_class_id
-
-    join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ec.instructor_id = i.instructor_id join teacher t on i.teacher_id = t.teacher_id join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
-
-where ne.event_type=1 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id
-
-order by ne.notifucation_time desc;
-
-end
-
+    AS $$
+
+    declare
+
+    begin
+
+    return query
+
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class' as varchar),t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join extra_class ec on ne.event_no=ec.extra_class_id
+
+    join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on ec.instructor_id = i.instructor_id join teacher t on i.teacher_id = t.teacher_id join enrolment e on s.section_no = e.section_id join student s2 on e.student_id = s2.student_id
+
+where ne.event_type=1 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id
+
+order by ne.notifucation_time desc;
+
+end
+
 $$;
 
 
@@ -2788,24 +2777,24 @@ ALTER FUNCTION public.get_extra_class_notifications(std_id integer) OWNER TO pos
 
 CREATE FUNCTION public.get_extra_class_notifications_teacher(teacher_username character varying) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-    return query
-
-    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class' as varchar),t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join evaluation ec on ne.event_no=ec.evaluation_id
-
-   join extra_class_teacher eei on ec.evaluation_id = eei.extra_class_id join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on eei.instructor_id = i.instructor_id join instructor j on j.instructor_id=ec.instructor_id join teacher t on j.teacher_id = t.teacher_id join teacher t2 on t2.teacher_id=i.teacher_id join official_users ou on t2.user_no = ou.user_no
-
-where ne.event_type=1 and ou.username=teacher_username
-
-order by ne.notifucation_time desc;
-
-end
-
+    AS $$
+
+    declare
+
+    begin
+
+    return query
+
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class' as varchar),t.teacher_name,ne.notifucation_time, ne._date from notification_event ne join evaluation ec on ne.event_no=ec.evaluation_id
+
+   join extra_class_teacher eei on ec.evaluation_id = eei.extra_class_id join section s on ec.section_no = s.section_no join current_courses cc on cc._id=s.course_id join instructor i on eei.instructor_id = i.instructor_id join instructor j on j.instructor_id=ec.instructor_id join teacher t on j.teacher_id = t.teacher_id join teacher t2 on t2.teacher_id=i.teacher_id join official_users ou on t2.user_no = ou.user_no
+
+where ne.event_type=1 and ou.username=teacher_username
+
+order by ne.notifucation_time desc;
+
+end
+
 $$;
 
 
@@ -2817,34 +2806,34 @@ ALTER FUNCTION public.get_extra_class_notifications_teacher(teacher_username cha
 
 CREATE FUNCTION public.get_extra_class_request_information(std_id integer, event integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, start_time timestamp with time zone, end_time timestamp with time zone)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-    return query
-
-    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class Request' as varchar),t.teacher_name,re.start,re._end
-
-from notification_event ne join request_event re on re.req_id=ne.event_no
-
-join request_type rt on rt.type_id=re.type_id
-
-join instructor i on re.instructor_id = i.instructor_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-join section s on re.section_no = s.section_no
-
-join current_courses cc on cc._id=s.course_id
-
-join student s2 on s.cr_id = s2.student_id
-
-where ne.event_type=0 and rt.type_id=1 and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and re.req_id=event;
-
-    end
-
+    AS $$
+
+    declare
+
+    begin
+
+    return query
+
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class Request' as varchar),t.teacher_name,re.start,re._end
+
+from notification_event ne join request_event re on re.req_id=ne.event_no
+
+join request_type rt on rt.type_id=re.type_id
+
+join instructor i on re.instructor_id = i.instructor_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+join section s on re.section_no = s.section_no
+
+join current_courses cc on cc._id=s.course_id
+
+join student s2 on s.cr_id = s2.student_id
+
+where ne.event_type=0 and rt.type_id=1 and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and re.req_id=event;
+
+    end
+
 $$;
 
 
@@ -2856,34 +2845,34 @@ ALTER FUNCTION public.get_extra_class_request_information(std_id integer, event 
 
 CREATE FUNCTION public.get_extra_class_request_notifications(std_id integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-    return query
-
-    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class Request' as varchar),t.teacher_name,ne.notifucation_time, ne._date
-
-from notification_event ne join request_event re on re.req_id=ne.event_no
-
-join request_type rt on rt.type_id=re.type_id
-
-join instructor i on re.instructor_id = i.instructor_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-join section s on re.section_no = s.section_no
-
-join current_courses cc on cc._id=s.course_id
-
-join student s2 on s.cr_id = s2.student_id
-
-where ne.event_type=0 and rt.type_id=1 and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id;
-
-    end
-
+    AS $$
+
+    declare
+
+    begin
+
+    return query
+
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class Request' as varchar),t.teacher_name,ne.notifucation_time, ne._date
+
+from notification_event ne join request_event re on re.req_id=ne.event_no
+
+join request_type rt on rt.type_id=re.type_id
+
+join instructor i on re.instructor_id = i.instructor_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+join section s on re.section_no = s.section_no
+
+join current_courses cc on cc._id=s.course_id
+
+join student s2 on s.cr_id = s2.student_id
+
+where ne.event_type=0 and rt.type_id=1 and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id;
+
+    end
+
 $$;
 
 
@@ -2895,38 +2884,38 @@ ALTER FUNCTION public.get_extra_class_request_notifications(std_id integer) OWNE
 
 CREATE FUNCTION public.get_extra_class_reschedule_information(teacher_username character varying, event integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, secno integer, secname character varying, crno integer, dept_shortname character varying, course_code integer, eventtypename character varying, crname character varying, start_time timestamp with time zone, end_time timestamp with time zone)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(teacher_username);
-
-    return query
-
-    select ne.event_type,ne.event_no,cc._id,s.section_no,s.section_name,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,re.start,re._end
-
-from notification_event ne join request_event re on re.req_id=ne.event_no
-
-join request_type rt on rt.type_id=re.type_id
-
-join instructor i on re.instructor_id = i.instructor_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-join section s on re.section_no = s.section_no
-
-join current_courses cc on cc._id=s.course_id
-
-join student s2 on s.cr_id = s2.student_id
-
-where ne.event_type=0 and rt.type_id=2 and t.teacher_id=tid and re.req_id=event;
-
-    end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(teacher_username);
+
+    return query
+
+    select ne.event_type,ne.event_no,cc._id,s.section_no,s.section_name,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,re.start,re._end
+
+from notification_event ne join request_event re on re.req_id=ne.event_no
+
+join request_type rt on rt.type_id=re.type_id
+
+join instructor i on re.instructor_id = i.instructor_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+join section s on re.section_no = s.section_no
+
+join current_courses cc on cc._id=s.course_id
+
+join student s2 on s.cr_id = s2.student_id
+
+where ne.event_type=0 and rt.type_id=2 and t.teacher_id=tid and re.req_id=event;
+
+    end
+
 $$;
 
 
@@ -2938,38 +2927,38 @@ ALTER FUNCTION public.get_extra_class_reschedule_information(teacher_username ch
 
 CREATE FUNCTION public.get_extra_class_reschedule_notifications(teacher_username character varying) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, crno integer, dept_shortname character varying, course_code integer, eventtypename character varying, crname character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(teacher_username);
-
-    return query
-
-    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,ne.notifucation_time, ne._date
-
-from notification_event ne join request_event re on re.req_id=ne.event_no
-
-join request_type rt on rt.type_id=re.type_id
-
-join instructor i on re.instructor_id = i.instructor_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-join section s on re.section_no = s.section_no
-
-join current_courses cc on cc._id=s.course_id
-
-join student s2 on s.cr_id = s2.student_id
-
-where ne.event_type=0 and rt.type_id=2 and t.teacher_id=tid;
-
-    end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(teacher_username);
+
+    return query
+
+    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,ne.notifucation_time, ne._date
+
+from notification_event ne join request_event re on re.req_id=ne.event_no
+
+join request_type rt on rt.type_id=re.type_id
+
+join instructor i on re.instructor_id = i.instructor_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+join section s on re.section_no = s.section_no
+
+join current_courses cc on cc._id=s.course_id
+
+join student s2 on s.cr_id = s2.student_id
+
+where ne.event_type=0 and rt.type_id=2 and t.teacher_id=tid;
+
+    end
+
 $$;
 
 
@@ -2981,34 +2970,34 @@ ALTER FUNCTION public.get_extra_class_reschedule_notifications(teacher_username 
 
 CREATE FUNCTION public.get_extra_class_teacher(uname character varying, crs_id integer) RETURNS TABLE(sectionname character varying, teachername character varying, start_time timestamp with time zone, end_time timestamp with time zone)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(uname);
-
-    return query
-
-
-
-select s.section_name,t.teacher_name,ec.start,ec._end
-
-from extra_class ec
-
-join section s on ec.section_no = s.section_no
-
-join instructor i on ec.instructor_id = i.instructor_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-where s.course_id=crs_id and t.teacher_id=tid;
-
-    end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(uname);
+
+    return query
+
+
+
+select s.section_name,t.teacher_name,ec.start,ec._end
+
+from extra_class ec
+
+join section s on ec.section_no = s.section_no
+
+join instructor i on ec.instructor_id = i.instructor_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+where s.course_id=crs_id and t.teacher_id=tid;
+
+    end
+
 $$;
 
 
@@ -3020,16 +3009,16 @@ ALTER FUNCTION public.get_extra_class_teacher(uname character varying, crs_id in
 
 CREATE FUNCTION public.get_forum_children_post(parent integer) RETURNS TABLE(postid integer)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-        select post_id from forum_post where parent_post=parent;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+        select post_id from forum_post where parent_post=parent;
+
+    end
+
 $$;
 
 
@@ -3041,16 +3030,16 @@ ALTER FUNCTION public.get_forum_children_post(parent integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_forum_post_file(pid integer) RETURNS TABLE(fileid integer, filename character varying, filelink character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-        select file_id,file_name,file_link from forum_post_files where post_id=pID;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+        select file_id,file_name,file_link from forum_post_files where post_id=pID;
+
+    end
+
 $$;
 
 
@@ -3062,24 +3051,24 @@ ALTER FUNCTION public.get_forum_post_file(pid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_forum_posts() RETURNS TABLE(id integer, teacher boolean, name character varying, postid integer, postname character varying, postcontent character varying, posttime timestamp with time zone)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    select t.teacher_id,cast(true as boolean) as isTeacher,t.teacher_name,fp.post_id,fp.post_name,fp.post_content,fp.post_time from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
-
-where fp.parent_post is null
-
-union
-
-select a.admin_id,cast(false as boolean) as isTeacher,a.name,fp.post_id,fp.post_name,fp.post_content,fp.post_time from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
-
-where  fp.parent_post is null;
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    select t.teacher_id,cast(true as boolean) as isTeacher,t.teacher_name,fp.post_id,fp.post_name,fp.post_content,fp.post_time from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+
+where fp.parent_post is null
+
+union
+
+select a.admin_id,cast(false as boolean) as isTeacher,a.name,fp.post_id,fp.post_name,fp.post_content,fp.post_time from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+
+where  fp.parent_post is null;
+
+end
+
 $$;
 
 
@@ -3091,24 +3080,24 @@ ALTER FUNCTION public.get_forum_posts() OWNER TO postgres;
 
 CREATE FUNCTION public.get_forum_posts_teacher(uname character varying) RETURNS TABLE(id integer, teacher boolean, name character varying, postid integer, postname character varying, postcontent character varying, posttime timestamp with time zone)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    select t.teacher_id,cast(true as boolean) as isTeacher,t.teacher_name,fp.post_id,fp.post_name,fp.post_content,fp.post_time from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
-
-where ou.username!=uname and fp.parent_post is null
-
-union
-
-select a.admin_id,cast(false as boolean) as isTeacher,a.name,fp.post_id,fp.post_name,fp.post_content,fp.post_time from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
-
-where  fp.parent_post is null;
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    select t.teacher_id,cast(true as boolean) as isTeacher,t.teacher_name,fp.post_id,fp.post_name,fp.post_content,fp.post_time from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+
+where ou.username!=uname and fp.parent_post is null
+
+union
+
+select a.admin_id,cast(false as boolean) as isTeacher,a.name,fp.post_id,fp.post_name,fp.post_content,fp.post_time from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+
+where  fp.parent_post is null;
+
+end
+
 $$;
 
 
@@ -3120,30 +3109,30 @@ ALTER FUNCTION public.get_forum_posts_teacher(uname character varying) OWNER TO 
 
 CREATE FUNCTION public.get_grading_notifications(std_id integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-        select ne.event_type,ne.event_no,c._id,t.teacher_id,c._dept_shortname,c._course_code,cast('Grade Published' as varchar),t.teacher_name,ne.notifucation_time, ne._date
-
-from notification_event ne join grading g on ne.event_no=g.grading_id join submission s on g.sub_id = s.sub_id
-
-join instructor i on g.instructor_id = i.instructor_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-join current_courses c on c._id=i.course_id
-
-join enrolment e on s.enrol_id = e.enrol_id
-
-join student s2 on e.student_id = s2.student_id
-
-where ne.event_type=7 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+        select ne.event_type,ne.event_no,c._id,t.teacher_id,c._dept_shortname,c._course_code,cast('Grade Published' as varchar),t.teacher_name,ne.notifucation_time, ne._date
+
+from notification_event ne join grading g on ne.event_no=g.grading_id join submission s on g.sub_id = s.sub_id
+
+join instructor i on g.instructor_id = i.instructor_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+join current_courses c on c._id=i.course_id
+
+join enrolment e on s.enrol_id = e.enrol_id
+
+join student s2 on e.student_id = s2.student_id
+
+where ne.event_type=7 and  (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id;
+
+    end
+
 $$;
 
 
@@ -3155,32 +3144,32 @@ ALTER FUNCTION public.get_grading_notifications(std_id integer) OWNER TO postgre
 
 CREATE FUNCTION public.get_grading_student(std_id integer, courseid integer) RETURNS TABLE(gradeid integer, subid integer, eventid integer, eventname character varying, event_ended timestamp with time zone, obtainedmarks double precision, totalmarks double precision, teachername character varying, gradingdate date)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-select g.grading_id,s.sub_id,e.evaluation_id,type_name,e._end,g.obtained_marks,g.total_marks,t.teacher_name,g._date
-
-from grading g join submission s on g.sub_id = s.sub_id join evaluation e on s.event_id = e.evaluation_id join evaluation_type et on e.type_id = et.type_id
-
-join enrolment en on s.enrol_id = en.enrol_id
-
-join student s2 on en.student_id = s2.student_id
-
-join section s3 on en.section_id = s3.section_no
-
-join instructor i on g.instructor_id = i.instructor_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-where s3.course_id=courseID and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id
-
-order by e._end;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+select g.grading_id,s.sub_id,e.evaluation_id,type_name,e._end,g.obtained_marks,g.total_marks,t.teacher_name,g._date
+
+from grading g join submission s on g.sub_id = s.sub_id join evaluation e on s.event_id = e.evaluation_id join evaluation_type et on e.type_id = et.type_id
+
+join enrolment en on s.enrol_id = en.enrol_id
+
+join student s2 on en.student_id = s2.student_id
+
+join section s3 on en.section_id = s3.section_no
+
+join instructor i on g.instructor_id = i.instructor_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+where s3.course_id=courseID and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id
+
+order by e._end;
+
+    end
+
 $$;
 
 
@@ -3192,30 +3181,30 @@ ALTER FUNCTION public.get_grading_student(std_id integer, courseid integer) OWNE
 
 CREATE FUNCTION public.get_my_marks(userid integer, eid integer) RETURNS TABLE(eventid integer, event_type character varying, event_desc character varying, term character varying, year integer, deptcode character varying, coursenum integer, event_date date, totalmarks double precision, obtainedmarks double precision)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    (select e.evaluation_id, et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks,e.total_marks*(sum(g.obtained_marks)/sum(g.total_marks)) from evaluation e join evaluation_type et on et.type_id = e.type_id join submission s on e.evaluation_id = s.event_id join grading g on s.sub_id = g.sub_id join enrolment e2 on s.enrol_id = e2.enrol_id join student s2 on e2.student_id = s2.student_id join section s3 on e.section_no = s3.section_no join current_courses c on c._id=s3.course_id
-
-where (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=userID and e.evaluation_id=eID and et.notification_time_type=false
-
-group by e.evaluation_id, et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks)
-
-    union
-
-    (select e.evaluation_id, et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e._end::date,e.total_marks,e.total_marks*(sum(g.obtained_marks)/sum(g.total_marks)) from evaluation e join evaluation_type et on et.type_id = e.type_id join submission s on e.evaluation_id = s.event_id join grading g on s.sub_id = g.sub_id join enrolment e2 on s.enrol_id = e2.enrol_id join student s2 on e2.student_id = s2.student_id join section s3 on e.section_no = s3.section_no join current_courses c on c._id=s3.course_id
-
-where (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=userID and e.evaluation_id=eID and et.notification_time_type=true
-
-group by e.evaluation_id, et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks)
-
-    ;
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    (select e.evaluation_id, et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks,e.total_marks*(sum(g.obtained_marks)/sum(g.total_marks)) from evaluation e join evaluation_type et on et.type_id = e.type_id join submission s on e.evaluation_id = s.event_id join grading g on s.sub_id = g.sub_id join enrolment e2 on s.enrol_id = e2.enrol_id join student s2 on e2.student_id = s2.student_id join section s3 on e.section_no = s3.section_no join current_courses c on c._id=s3.course_id
+
+where (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=userID and e.evaluation_id=eID and et.notification_time_type=false
+
+group by e.evaluation_id, et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks)
+
+    union
+
+    (select e.evaluation_id, et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e._end::date,e.total_marks,e.total_marks*(sum(g.obtained_marks)/sum(g.total_marks)) from evaluation e join evaluation_type et on et.type_id = e.type_id join submission s on e.evaluation_id = s.event_id join grading g on s.sub_id = g.sub_id join enrolment e2 on s.enrol_id = e2.enrol_id join student s2 on e2.student_id = s2.student_id join section s3 on e.section_no = s3.section_no join current_courses c on c._id=s3.course_id
+
+where (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=userID and e.evaluation_id=eID and et.notification_time_type=true
+
+group by e.evaluation_id, et.type_name, e.description,c._term,c.__year,c._dept_shortname,c._course_code,e.start::date,e.total_marks)
+
+    ;
+
+end
+
 $$;
 
 
@@ -3227,22 +3216,22 @@ ALTER FUNCTION public.get_my_marks(userid integer, eid integer) OWNER TO postgre
 
 CREATE FUNCTION public.get_parent_forum(postid integer) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-    begin
-
-        select parent_post into ans from course_post
-
-        where post_id=postID;
-
-    return ans;
-
-    end;
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+    begin
+
+        select parent_post into ans from course_post
+
+        where post_id=postID;
+
+    return ans;
+
+    end;
+
 $$;
 
 
@@ -3254,22 +3243,22 @@ ALTER FUNCTION public.get_parent_forum(postid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_parent_site(postid integer) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-    begin
-
-        select parent_post into ans from forum_post
-
-        where post_id=postID;
-
-    return ans;
-
-    end;
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+    begin
+
+        select parent_post into ans from forum_post
+
+        where post_id=postID;
+
+    return ans;
+
+    end;
+
 $$;
 
 
@@ -3281,18 +3270,18 @@ ALTER FUNCTION public.get_parent_site(postid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_root_course_posts(courseid integer) RETURNS TABLE(postid integer, posterid integer, teacherid integer, title character varying, postername character varying, posttime timestamp with time zone)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-        select post_id,poster_id,t.teacher_id,post_name,t.teacher_name, post_time from course_post cp join instructor i on i.instructor_id=cp.poster_id join teacher t on i.teacher_id = t.teacher_id join course c on i.course_id = c.course_id
-
-        where c.course_id=courseID and cp.parent_post is null;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+        select post_id,poster_id,t.teacher_id,post_name,t.teacher_name, post_time from course_post cp join instructor i on i.instructor_id=cp.poster_id join teacher t on i.teacher_id = t.teacher_id join course c on i.course_id = c.course_id
+
+        where c.course_id=courseID and cp.parent_post is null;
+
+    end
+
 $$;
 
 
@@ -3304,24 +3293,24 @@ ALTER FUNCTION public.get_root_course_posts(courseid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_root_forum_posts() RETURNS TABLE(postid integer, posterid integer, title character varying, teacheroradminid integer, postername character varying, posttime timestamp with time zone, isadmin boolean)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-        (select fp.post_id,fp.poster,fp.post_name,t.teacher_id,t.teacher_name,fp.post_time,cast(false as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
-
-where fp.parent_post is null)
-
-union
-
-(select fp.post_id,fp.poster,fp.post_name,a.admin_id,a.name,fp.post_time,cast(true as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
-
-where fp.parent_post is null);
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+        (select fp.post_id,fp.poster,fp.post_name,t.teacher_id,t.teacher_name,fp.post_time,cast(false as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+
+where fp.parent_post is null)
+
+union
+
+(select fp.post_id,fp.poster,fp.post_name,a.admin_id,a.name,fp.post_time,cast(true as boolean) from forum_post fp join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+
+where fp.parent_post is null);
+
+    end
+
 $$;
 
 
@@ -3333,18 +3322,18 @@ ALTER FUNCTION public.get_root_forum_posts() OWNER TO postgres;
 
 CREATE FUNCTION public.get_sections(courseid integer) RETURNS TABLE(secno integer, secname character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-        select section_no,section_name from section
-
-        where course_id=courseID;
-
-end
-
+    AS $$
+
+    begin
+
+    return query
+
+        select section_no,section_name from section
+
+        where course_id=courseID;
+
+end
+
 $$;
 
 
@@ -3356,24 +3345,24 @@ ALTER FUNCTION public.get_sections(courseid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_site_news_notifications() RETURNS TABLE(eventtype integer, eventno integer, username character varying, eventtypename character varying, postername character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-    (select ne.event_type,ne.event_no,ou.username,cast ('Site News' as varchar),t.teacher_name,ne.notifucation_time,ne._date from notification_event ne join forum_post fp on ne.event_no=fp.post_id join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
-
-where ne.event_type=8)
-
-union
-
-(select ne.event_type,ne.event_no,ou.username,cast ('Site News' as varchar),a.name,ne.notifucation_time,ne._date from notification_event ne join forum_post fp on ne.event_no=fp.post_id join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
-
-where ne.event_type=8);
-
-end
-
+    AS $$
+
+    begin
+
+    return query
+
+    (select ne.event_type,ne.event_no,ou.username,cast ('Site News' as varchar),t.teacher_name,ne.notifucation_time,ne._date from notification_event ne join forum_post fp on ne.event_no=fp.post_id join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+
+where ne.event_type=8)
+
+union
+
+(select ne.event_type,ne.event_no,ou.username,cast ('Site News' as varchar),a.name,ne.notifucation_time,ne._date from notification_event ne join forum_post fp on ne.event_no=fp.post_id join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+
+where ne.event_type=8);
+
+end
+
 $$;
 
 
@@ -3385,24 +3374,24 @@ ALTER FUNCTION public.get_site_news_notifications() OWNER TO postgres;
 
 CREATE FUNCTION public.get_site_news_notifications_official(uname character varying) RETURNS TABLE(eventtype integer, eventno integer, username character varying, eventtypename character varying, postername character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-    (select ne.event_type,ne.event_no,ou.username,cast ('Site News' as varchar),t.teacher_name,ne.notifucation_time,ne._date from notification_event ne join forum_post fp on ne.event_no=fp.post_id join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
-
-where ne.event_type=8 and ou.username!=uname)
-
-union
-
-(select ne.event_type,ne.event_no,ou.username,cast ('Site News' as varchar),a.name,ne.notifucation_time,ne._date from notification_event ne join forum_post fp on ne.event_no=fp.post_id join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
-
-where ne.event_type=8 and ou.username!=uname);
-
-end
-
+    AS $$
+
+    begin
+
+    return query
+
+    (select ne.event_type,ne.event_no,ou.username,cast ('Site News' as varchar),t.teacher_name,ne.notifucation_time,ne._date from notification_event ne join forum_post fp on ne.event_no=fp.post_id join official_users ou on fp.poster = ou.user_no join teacher t on ou.user_no = t.user_no
+
+where ne.event_type=8 and ou.username!=uname)
+
+union
+
+(select ne.event_type,ne.event_no,ou.username,cast ('Site News' as varchar),a.name,ne.notifucation_time,ne._date from notification_event ne join forum_post fp on ne.event_no=fp.post_id join official_users ou on fp.poster = ou.user_no join admins a on ou.user_no = a.user_no
+
+where ne.event_type=8 and ou.username!=uname);
+
+end
+
 $$;
 
 
@@ -3414,40 +3403,40 @@ ALTER FUNCTION public.get_site_news_notifications_official(uname character varyi
 
 CREATE FUNCTION public.get_sresource_notifications_student(std_id integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, stdno integer, dept_shortname character varying, course_code integer, eventtypename character varying, uploadername character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        std_no integer;
-
-    begin
-
-        std_no:=get_student_no(std_id);
-
-    return query
-
-    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Resource Upload by Student' as varchar),s2.student_name,ne.notifucation_time, ne._date
-
-from notification_event ne join student_resource sr on ne.event_no=sr.res_id
-
-join enrolment e on sr.owner_id = e.enrol_id
-
-join section s on e.section_id = s.section_no
-
-join current_courses cc on cc._id=s.course_id
-
-join student s2 on e.student_id = s2.student_id
-
-join section s3 on s3.course_id=cc._id
-
-join enrolment e2 on e2.section_id=s3.section_no
-
-join student s4 on s4.student_id=e2.student_id
-
-where ne.event_type=6 and s2.student_id!=std_no and s4.student_id=std_no;
-
-    end
-
+    AS $$
+
+    declare
+
+        std_no integer;
+
+    begin
+
+        std_no:=get_student_no(std_id);
+
+    return query
+
+    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Resource Upload by Student' as varchar),s2.student_name,ne.notifucation_time, ne._date
+
+from notification_event ne join student_resource sr on ne.event_no=sr.res_id
+
+join enrolment e on sr.owner_id = e.enrol_id
+
+join section s on e.section_id = s.section_no
+
+join current_courses cc on cc._id=s.course_id
+
+join student s2 on e.student_id = s2.student_id
+
+join section s3 on s3.course_id=cc._id
+
+join enrolment e2 on e2.section_id=s3.section_no
+
+join student s4 on s4.student_id=e2.student_id
+
+where ne.event_type=6 and s2.student_id!=std_no and s4.student_id=std_no;
+
+    end
+
 $$;
 
 
@@ -3459,38 +3448,38 @@ ALTER FUNCTION public.get_sresource_notifications_student(std_id integer) OWNER 
 
 CREATE FUNCTION public.get_sresource_notifications_teacher(teacher_username character varying) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, stdno integer, dept_shortname character varying, course_code integer, eventtypename character varying, uploadername character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(teacher_username);
-
-    return query
-
-    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Resource Upload by Student' as varchar),s2.student_name,ne.notifucation_time, ne._date
-
-from notification_event ne join student_resource sr on ne.event_no=sr.res_id
-
-join enrolment e on sr.owner_id = e.enrol_id
-
-join section s on e.section_id = s.section_no
-
-join current_courses cc on cc._id=s.course_id
-
-join instructor i on s.course_id = i.course_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-join student s2 on e.student_id = s2.student_id
-
-where ne.event_type=6 and t.teacher_id=tid;
-
-    end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(teacher_username);
+
+    return query
+
+    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Resource Upload by Student' as varchar),s2.student_name,ne.notifucation_time, ne._date
+
+from notification_event ne join student_resource sr on ne.event_no=sr.res_id
+
+join enrolment e on sr.owner_id = e.enrol_id
+
+join section s on e.section_id = s.section_no
+
+join current_courses cc on cc._id=s.course_id
+
+join instructor i on s.course_id = i.course_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+join student s2 on e.student_id = s2.student_id
+
+where ne.event_type=6 and t.teacher_id=tid;
+
+    end
+
 $$;
 
 
@@ -3502,20 +3491,20 @@ ALTER FUNCTION public.get_sresource_notifications_teacher(teacher_username chara
 
 CREATE FUNCTION public.get_student_no(std_id integer) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-    begin
-
-        select student_id into ans from student where (mod(_year,100)*100000+dept_code*1000+roll_num)=std_id;
-
-        return ans;
-
-    end
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+    begin
+
+        select student_id into ans from student where (mod(_year,100)*100000+dept_code*1000+roll_num)=std_id;
+
+        return ans;
+
+    end
+
 $$;
 
 
@@ -3527,34 +3516,34 @@ ALTER FUNCTION public.get_student_no(std_id integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_submission_info(eventid integer, stdid integer) RETURNS TABLE(subid integer, subtime timestamp with time zone, sublink character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        stdNo integer;
-
-        secNo integer;
-
-        enrolID integer;
-
-    begin
-
-        select section_no into secNo from evaluation where evaluation_id=eventID;
-
-        stdNo:=get_student_no(stdID);
-
-        select enrol_id into enrolID from enrolment
-
-        where student_id=stdNo and section_id=secNo;
-
-    return query
-
-        select sub_id,sub_time,link from submission
-
-        where enrol_id=enrolID and event_id=eventID;
-
-    end
-
+    AS $$
+
+    declare
+
+        stdNo integer;
+
+        secNo integer;
+
+        enrolID integer;
+
+    begin
+
+        select section_no into secNo from evaluation where evaluation_id=eventID;
+
+        stdNo:=get_student_no(stdID);
+
+        select enrol_id into enrolID from enrolment
+
+        where student_id=stdNo and section_id=secNo;
+
+    return query
+
+        select sub_id,sub_time,link from submission
+
+        where enrol_id=enrolID and event_id=eventID;
+
+    end
+
 $$;
 
 
@@ -3566,18 +3555,18 @@ ALTER FUNCTION public.get_submission_info(eventid integer, stdid integer) OWNER 
 
 CREATE FUNCTION public.get_submissions(event integer) RETURNS TABLE(subid integer, studentid integer, studentname character varying, sublink character varying, subtime timestamp with time zone, totalmarks double precision, obtainedmarks double precision)
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-    return query
-
-        select sub.sub_id,(mod(_year,100)*100000+dept_code*1000+roll_num) as id,student_name,sub.link,sub_time,e2.total_marks,g.obtained_marks from submission sub join enrolment e on e.enrol_id = sub.enrol_id join student s on e.student_id = s.student_id join evaluation e2 on sub.event_id = e2.evaluation_id left outer join grading g on sub.sub_id = g.sub_id
-
-where event_id=event;
-
-    end
-
+    AS $$
+
+    begin
+
+    return query
+
+        select sub.sub_id,(mod(_year,100)*100000+dept_code*1000+roll_num) as id,student_name,sub.link,sub_time,e2.total_marks,g.obtained_marks from submission sub join enrolment e on e.enrol_id = sub.enrol_id join student s on e.student_id = s.student_id join evaluation e2 on sub.event_id = e2.evaluation_id left outer join grading g on sub.sub_id = g.sub_id
+
+where event_id=event;
+
+    end
+
 $$;
 
 
@@ -3589,20 +3578,20 @@ ALTER FUNCTION public.get_submissions(event integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_submitted_file_link(subid integer) RETURNS character varying
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans varchar;
-
-    begin
-
-        select link into ans from submission where sub_id=subID;
-
-        return ans;
-
-    end
-
+    AS $$
+
+    declare
+
+        ans varchar;
+
+    begin
+
+        select link into ans from submission where sub_id=subID;
+
+        return ans;
+
+    end
+
 $$;
 
 
@@ -3614,22 +3603,22 @@ ALTER FUNCTION public.get_submitted_file_link(subid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_teacher_id(teacher_uname character varying) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-    begin
-
-        select teacher_id into ans from teacher join official_users ou on teacher.user_no = ou.user_no
-
-        where username=teacher_uname;
-
-        return ans;
-
-    end
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+    begin
+
+        select teacher_id into ans from teacher join official_users ou on teacher.user_no = ou.user_no
+
+        where username=teacher_uname;
+
+        return ans;
+
+    end
+
 $$;
 
 
@@ -3641,38 +3630,38 @@ ALTER FUNCTION public.get_teacher_id(teacher_uname character varying) OWNER TO p
 
 CREATE FUNCTION public.get_tresource_notifications_student(std_id integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherno integer, dept_shortname character varying, course_code integer, eventtypename character varying, uploadername character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        std_no integer;
-
-    begin
-
-        std_no:=get_student_no(std_id);
-
-    return query
-
-    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Resource Upload by Teacher' as varchar),t.teacher_name,ne.notifucation_time, ne._date
-
-from notification_event ne join instructor_resource sr on ne.event_no=sr.res_id
-
-join instructor i on i.instructor_id=sr.owner_id
-
-join current_courses cc on cc._id=i.course_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-join section s on i.course_id = s.course_id
-
-join enrolment e on s.section_no = e.section_id
-
-join student s2 on e.student_id = s2.student_id
-
-where ne.event_type=5 and s2.student_id=std_no;
-
-    end
-
+    AS $$
+
+    declare
+
+        std_no integer;
+
+    begin
+
+        std_no:=get_student_no(std_id);
+
+    return query
+
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Resource Upload by Teacher' as varchar),t.teacher_name,ne.notifucation_time, ne._date
+
+from notification_event ne join instructor_resource sr on ne.event_no=sr.res_id
+
+join instructor i on i.instructor_id=sr.owner_id
+
+join current_courses cc on cc._id=i.course_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+join section s on i.course_id = s.course_id
+
+join enrolment e on s.section_no = e.section_id
+
+join student s2 on e.student_id = s2.student_id
+
+where ne.event_type=5 and s2.student_id=std_no;
+
+    end
+
 $$;
 
 
@@ -3684,36 +3673,36 @@ ALTER FUNCTION public.get_tresource_notifications_student(std_id integer) OWNER 
 
 CREATE FUNCTION public.get_tresource_notifications_teacher(uname character varying) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherno integer, dept_shortname character varying, course_code integer, eventtypename character varying, uploadername character varying, notificationtime timestamp with time zone, scheduleddate date)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(uname);
-
-    return query
-
-    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Resource Upload by Teacher' as varchar),t.teacher_name,ne.notifucation_time, ne._date
-
-from notification_event ne join instructor_resource sr on ne.event_no=sr.res_id
-
-join instructor i on i.instructor_id=sr.owner_id
-
-join current_courses cc on cc._id=i.course_id
-
-join teacher t on i.teacher_id = t.teacher_id
-
-join instructor i2 on i2.course_id=cc._id
-
-join teacher t2 on t2.teacher_id=i2.teacher_id
-
-where ne.event_type=5 and t2.teacher_id=tid and t.teacher_id!=tid;
-
-    end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(uname);
+
+    return query
+
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Resource Upload by Teacher' as varchar),t.teacher_name,ne.notifucation_time, ne._date
+
+from notification_event ne join instructor_resource sr on ne.event_no=sr.res_id
+
+join instructor i on i.instructor_id=sr.owner_id
+
+join current_courses cc on cc._id=i.course_id
+
+join teacher t on i.teacher_id = t.teacher_id
+
+join instructor i2 on i2.course_id=cc._id
+
+join teacher t2 on t2.teacher_id=i2.teacher_id
+
+where ne.event_type=5 and t2.teacher_id=tid and t.teacher_id!=tid;
+
+    end
+
 $$;
 
 
@@ -3725,72 +3714,72 @@ ALTER FUNCTION public.get_tresource_notifications_teacher(uname character varyin
 
 CREATE FUNCTION public.get_upcoming_events(std_id integer) RETURNS TABLE(id integer, dept_shortname character varying, course_code integer, lookup_time time without time zone, event_type character varying)
     LANGUAGE plpgsql
-    AS $$
-
-begin
-
-    return query
-
-    select cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
-
-                                                  ((select section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type
-
-                                                    from course_routine cr
-
-                                                    where day = extract(isodow from current_date) - 1 and start::time>current_time
-
-                                                      and not exists(
-
-                                                            select class_id
-
-                                                            from canceled_class cc
-
-                                                            where cc.class_id = cr.class_id and _date = current_date
-
-                                                        ))
-
-                                                   union
-
-                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type
-
-                                                    from extra_class
-
-                                                    where start::date = current_date and start::time>current_time)
-
-                                                   union
-
-                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type
-
-                                                    from evaluation e
-
-                                                             join evaluation_type et
-
-                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
-
-                                                                      and start::date = current_date and start::time>current_time)
-
-                                                   union
-
-                                                   (select section_no, _end::time as _lookup_time, et.type_name as _event_type
-
-                                                    from evaluation e
-
-                                                             join evaluation_type et
-
-                                                                  on (et.type_id = e.type_id and et.notification_time_type = true)
-
-                                                                      and _end::date = current_date and _end::time>current_time))) ut join
-
-    (
-
-        select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
-
-    ) ss on (ut.section_no=ss.section_id) join section s on (ss.section_id=s.section_no) join current_courses cc on (s.course_id=cc._id)
-
-    order by _lookup_time;
-
-end
-
+    AS $$
+
+begin
+
+    return query
+
+    select cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
+
+                                                  ((select section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type
+
+                                                    from course_routine cr
+
+                                                    where day = extract(isodow from current_date) - 1 and start::time>current_time
+
+                                                      and not exists(
+
+                                                            select class_id
+
+                                                            from canceled_class cc
+
+                                                            where cc.class_id = cr.class_id and _date = current_date
+
+                                                        ))
+
+                                                   union
+
+                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type
+
+                                                    from extra_class
+
+                                                    where start::date = current_date and start::time>current_time)
+
+                                                   union
+
+                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type
+
+                                                    from evaluation e
+
+                                                             join evaluation_type et
+
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
+
+                                                                      and start::date = current_date and start::time>current_time)
+
+                                                   union
+
+                                                   (select section_no, _end::time as _lookup_time, et.type_name as _event_type
+
+                                                    from evaluation e
+
+                                                             join evaluation_type et
+
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = true)
+
+                                                                      and _end::date = current_date and _end::time>current_time))) ut join
+
+    (
+
+        select section_id from enrolment join student on (enrolment.student_id = student.student_id) where mod(_year,100)*100000+dept_code*1000+roll_num=std_id
+
+    ) ss on (ut.section_no=ss.section_id) join section s on (ss.section_id=s.section_no) join current_courses cc on (s.course_id=cc._id)
+
+    order by _lookup_time;
+
+end
+
 $$;
 
 
@@ -3802,84 +3791,84 @@ ALTER FUNCTION public.get_upcoming_events(std_id integer) OWNER TO postgres;
 
 CREATE FUNCTION public.get_upcoming_events_teacher(teacher_username character varying) RETURNS TABLE(id integer, dept_shortname character varying, course_code integer, lookup_time time without time zone, event_type character varying)
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(teacher_username);
-
-    return query
-
-    select cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
-
-                                                  ((select section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type, tr.instructor_id as instructor_id
-
-                                                    from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
-
-                                                    where day = extract(isodow from current_date) - 1 and start::time>current_time
-
-                                                      and not exists(
-
-                                                            select class_id
-
-                                                            from canceled_class cc
-
-                                                            where cc.class_id = cr.class_id and _date = current_date
-
-                                                        ))
-
-                                                   union
-
-                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,instructor_id as instructor_id
-
-                                                    from extra_class
-
-                                                    where start::date = current_date and start::time>current_time)
-
-                                                   union
-
-                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,ect.instructor_id as instructor_id
-
-                                                    from extra_class join extra_class_teacher ect on extra_class.extra_class_id = ect.extra_class_id
-
-                                                    where start::date = current_date and start::time>current_time)
-
-                                                   union
-
-                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type, e.instructor_id as instructor_id
-
-                                                    from evaluation e
-
-                                                             join evaluation_type et
-
-                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
-
-                                                                      and start::date = current_date and start::time>current_time)
-
-                                                   union
-
-                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type,eet.instructor_id
-
-                                                    from evaluation e join extra_evaluation_instructor eet on e.evaluation_id = eet.evaluation_id
-
-                                                             join evaluation_type et
-
-                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
-
-                                                                      and _end::date = current_date and _end::time>current_time))) ut join
-
-    instructor i on i.instructor_id=ut.instructor_id join current_courses cc on (i.course_id=cc._id)
-
-    where i.teacher_id=tid
-
-    order by _lookup_time;
-
-end
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(teacher_username);
+
+    return query
+
+    select cc._id,cc._dept_shortname,cc._course_code, _lookup_time,_event_type from (
+
+                                                  ((select section_no, start::time as _lookup_time, cast('Class' as varchar) as _event_type, tr.instructor_id as instructor_id
+
+                                                    from course_routine cr join teacher_routine tr on cr.class_id = tr.class_id
+
+                                                    where day = extract(isodow from current_date) - 1 and start::time>current_time
+
+                                                      and not exists(
+
+                                                            select class_id
+
+                                                            from canceled_class cc
+
+                                                            where cc.class_id = cr.class_id and _date = current_date
+
+                                                        ))
+
+                                                   union
+
+                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,instructor_id as instructor_id
+
+                                                    from extra_class
+
+                                                    where start::date = current_date and start::time>current_time)
+
+                                                   union
+
+                                                   (select section_no, start::time as _lookup_time, cast('Extra Class' as varchar) as _event_type,ect.instructor_id as instructor_id
+
+                                                    from extra_class join extra_class_teacher ect on extra_class.extra_class_id = ect.extra_class_id
+
+                                                    where start::date = current_date and start::time>current_time)
+
+                                                   union
+
+                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type, e.instructor_id as instructor_id
+
+                                                    from evaluation e
+
+                                                             join evaluation_type et
+
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
+
+                                                                      and start::date = current_date and start::time>current_time)
+
+                                                   union
+
+                                                   (select section_no, start::time as _lookup_time, et.type_name as _event_type,eet.instructor_id
+
+                                                    from evaluation e join extra_evaluation_instructor eet on e.evaluation_id = eet.evaluation_id
+
+                                                             join evaluation_type et
+
+                                                                  on (et.type_id = e.type_id and et.notification_time_type = false)
+
+                                                                      and _end::date = current_date and _end::time>current_time))) ut join
+
+    instructor i on i.instructor_id=ut.instructor_id join current_courses cc on (i.course_id=cc._id)
+
+    where i.teacher_id=tid
+
+    order by _lookup_time;
+
+end
+
 $$;
 
 
@@ -3891,46 +3880,46 @@ ALTER FUNCTION public.get_upcoming_events_teacher(teacher_username character var
 
 CREATE FUNCTION public.grade_submission(subid integer, teacher_username character varying, courseid integer, totalmarks double precision, obtainedmarks double precision, remark character varying) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-        insID integer;
-
-        gid integer;
-
-    begin
-
-        tid:=get_teacher_id(teacher_username);
-
-        select instructor_id into insID from instructor where course_id=courseID and teacher_id=tid;
-
-        select grading_id into gid from grading
-
-        where sub_id=subID and instructor_id=insID;
-
-        if (gid is null) then
-
-            insert into grading(grading_id, sub_id, instructor_id, total_marks, obtained_marks, remarks)
-
-        values (default,subID,insID,totalMarks,obtainedMarks,remark);
-
-        else
-
-            update grading
-
-            set total_marks=totalMarks,obtained_marks=obtainedMarks,
-
-            remarks=remark,_date=current_date
-
-            where grading_id=gid;
-
-        end if;
-
-    end;
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+        insID integer;
+
+        gid integer;
+
+    begin
+
+        tid:=get_teacher_id(teacher_username);
+
+        select instructor_id into insID from instructor where course_id=courseID and teacher_id=tid;
+
+        select grading_id into gid from grading
+
+        where sub_id=subID and instructor_id=insID;
+
+        if (gid is null) then
+
+            insert into grading(grading_id, sub_id, instructor_id, total_marks, obtained_marks, remarks)
+
+        values (default,subID,insID,totalMarks,obtainedMarks,remark);
+
+        else
+
+            update grading
+
+            set total_marks=totalMarks,obtained_marks=obtainedMarks,
+
+            remarks=remark,_date=current_date
+
+            where grading_id=gid;
+
+        end if;
+
+    end;
+
 $$;
 
 
@@ -3942,76 +3931,76 @@ ALTER FUNCTION public.grade_submission(subid integer, teacher_username character
 
 CREATE FUNCTION public.grading_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    enrol integer;
-
-    sec_no integer;
-
-    course_sub integer;
-
-    course_ins integer;
-
-begin
-
-    if (new.sub_id is null or new.instructor_id is null) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    -- submission id to enrol id
-
-    select enrol_id into enrol from submission
-
-    where sub_id=new.sub_id;
-
-    if (enrol is null) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    -- enrolment to section
-
-    select section_id into sec_no from enrolment
-
-    where enrol_id=enrol;
-
-    if (sec_no is null) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    --section to course
-
-    select course_id into course_sub from section
-
-    where section_no=sec_no;
-
-    --instructor to course
-
-    select course_id into course_ins from instructor
-
-    where instructor_id=new.instructor_id;
-
-    if (course_ins is null or course_sub is null) then
-
-        raise exception 'Invalid data insertion or update';
-
-    elsif (course_ins!=course_sub) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+    enrol integer;
+
+    sec_no integer;
+
+    course_sub integer;
+
+    course_ins integer;
+
+begin
+
+    if (new.sub_id is null or new.instructor_id is null) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    -- submission id to enrol id
+
+    select enrol_id into enrol from submission
+
+    where sub_id=new.sub_id;
+
+    if (enrol is null) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    -- enrolment to section
+
+    select section_id into sec_no from enrolment
+
+    where enrol_id=enrol;
+
+    if (sec_no is null) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    --section to course
+
+    select course_id into course_sub from section
+
+    where section_no=sec_no;
+
+    --instructor to course
+
+    select course_id into course_ins from instructor
+
+    where instructor_id=new.instructor_id;
+
+    if (course_ins is null or course_sub is null) then
+
+        raise exception 'Invalid data insertion or update';
+
+    elsif (course_ins!=course_sub) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -4023,42 +4012,42 @@ ALTER FUNCTION public.grading_check() OWNER TO postgres;
 
 CREATE FUNCTION public.instructor_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    teacher_dept integer;
-
-    course_dept integer;
-
-begin
-
-    select dept_code into teacher_dept from teacher
-
-    where teacher_id=new.teacher_id;
-
-    select dept_code into course_dept from course
-
-    where course_id=new.course_id;
-
-    if (teacher_dept!=course_dept or teacher_dept is null or course_dept is null) then
-
-        raise exception 'Invalid data insertion or update';
-
-    elsif (old.course_id is not null and old.course_id!=new.course_id) then
-
-        raise exception 'Invalid data insertion or update';
-
-    elsif (old.teacher_id is not null and old.teacher_id!=new.teacher_id) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+    teacher_dept integer;
+
+    course_dept integer;
+
+begin
+
+    select dept_code into teacher_dept from teacher
+
+    where teacher_id=new.teacher_id;
+
+    select dept_code into course_dept from course
+
+    where course_id=new.course_id;
+
+    if (teacher_dept!=course_dept or teacher_dept is null or course_dept is null) then
+
+        raise exception 'Invalid data insertion or update';
+
+    elsif (old.course_id is not null and old.course_id!=new.course_id) then
+
+        raise exception 'Invalid data insertion or update';
+
+    elsif (old.teacher_id is not null and old.teacher_id!=new.teacher_id) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -4070,52 +4059,52 @@ ALTER FUNCTION public.instructor_check() OWNER TO postgres;
 
 CREATE FUNCTION public.instructor_section_compare(new_ins_id integer, new_sec_no integer, old_ins_id integer, old_sec_no integer) RETURNS boolean
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    instructor_course integer;
-
-    section_course integer;
-
-    begin
-
-        if (new_sec_no is null or new_ins_id is null) then
-
-            return true;
-
-        elsif (old_ins_id is not null and old_ins_id!=new_ins_id) then
-
-            return true;
-
-        elsif (old_sec_no is not null and old_sec_no!=new_sec_no) then
-
-            return true;
-
-        end if;
-
-        select course_id into instructor_course from instructor
-
-        where instructor_id=new_ins_id;
-
-        select course_id into section_course from section
-
-        where section_no=new_sec_no;
-
-        if (instructor_course is null or section_course is null) then
-
-            return true;
-
-        elsif (instructor_course!=section_course) then
-
-            return true;
-
-        end if;
-
-        return false;
-
-    end;
-
+    AS $$
+
+    declare
+
+    instructor_course integer;
+
+    section_course integer;
+
+    begin
+
+        if (new_sec_no is null or new_ins_id is null) then
+
+            return true;
+
+        elsif (old_ins_id is not null and old_ins_id!=new_ins_id) then
+
+            return true;
+
+        elsif (old_sec_no is not null and old_sec_no!=new_sec_no) then
+
+            return true;
+
+        end if;
+
+        select course_id into instructor_course from instructor
+
+        where instructor_id=new_ins_id;
+
+        select course_id into section_course from section
+
+        where section_no=new_sec_no;
+
+        if (instructor_course is null or section_course is null) then
+
+            return true;
+
+        elsif (instructor_course!=section_course) then
+
+            return true;
+
+        end if;
+
+        return false;
+
+    end;
+
     $$;
 
 
@@ -4127,20 +4116,20 @@ ALTER FUNCTION public.instructor_section_compare(new_ins_id integer, new_sec_no 
 
 CREATE FUNCTION public.instructor_to_teacher(ins_id integer) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-    begin
-
-        select teacher_id into ans from instructor where instructor_id=ins_id;
-
-        return ans;
-
-    end
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+    begin
+
+        select teacher_id into ans from instructor where instructor_id=ins_id;
+
+        return ans;
+
+    end
+
 $$;
 
 
@@ -4152,18 +4141,18 @@ ALTER FUNCTION public.instructor_to_teacher(ins_id integer) OWNER TO postgres;
 
 CREATE FUNCTION public.intersected_section_update() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-begin
-
-    refresh materialized view intersected_sections;
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+begin
+
+    refresh materialized view intersected_sections;
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4175,32 +4164,32 @@ ALTER FUNCTION public.intersected_section_update() OWNER TO postgres;
 
 CREATE FUNCTION public.make_submission(eventid integer, stdid integer, sublink character varying) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        stdNo integer;
-
-        secNo integer;
-
-        enrolID integer;
-
-    begin
-
-        stdNo:=get_student_no(stdID);
-
-        select section_no into secNo from evaluation where evaluation_id=eventID;
-
-        select enrol_id into enrolID from enrolment
-
-        where student_id=stdNo and section_id=secNo;
-
-        insert into submission(sub_id, event_id, enrol_id, link)
-
-        values (default,eventID,enrolID,subLink);
-
-    end;
-
+    AS $$
+
+    declare
+
+        stdNo integer;
+
+        secNo integer;
+
+        enrolID integer;
+
+    begin
+
+        stdNo:=get_student_no(stdID);
+
+        select section_no into secNo from evaluation where evaluation_id=eventID;
+
+        select enrol_id into enrolID from enrolment
+
+        where student_id=stdNo and section_id=secNo;
+
+        insert into submission(sub_id, event_id, enrol_id, link)
+
+        values (default,eventID,enrolID,subLink);
+
+    end;
+
 $$;
 
 
@@ -4212,20 +4201,20 @@ ALTER FUNCTION public.make_submission(eventid integer, stdid integer, sublink ch
 
 CREATE FUNCTION public.mark_topic_done(top_num integer) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-        update topic
-
-        set finished=true
-
-        where topic_num=top_num;
-
-    end;
-
+    AS $$
+
+    declare
+
+    begin
+
+        update topic
+
+        set finished=true
+
+        where topic_num=top_num;
+
+    end;
+
 $$;
 
 
@@ -4237,72 +4226,72 @@ ALTER FUNCTION public.mark_topic_done(top_num integer) OWNER TO postgres;
 
 CREATE FUNCTION public.notification_event_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    cnt integer;
-
-begin
-
-cnt:=0;
-
-    if (new.event_type=0) then
-
-        select count(*) into cnt from request_event where req_id=new.event_no;
-
-    elsif (new.event_type=1) then
-
-        select count(*) into cnt from extra_class where extra_class_id=new.event_no;
-
-    elsif (new.event_type=2) then
-
-        select count(*) into cnt from evaluation where evaluation_id=new.event_no;
-
-    elsif (new.event_type=3) then
-
-        select count(*) into cnt from canceled_class where canceled_class_id=new.event_no;
-
-    elsif (new.event_type=4) then
-
-        select count(*) into cnt from course_post where post_id=new.event_no;
-
-    elsif (new.event_type=5) then
-
-        select count(*) into cnt from instructor_resource where res_id=new.event_no;
-
-    elsif (new.event_type=6) then
-
-        select count(*) into cnt from student_resource where res_id=new.event_no;
-
-    elsif (new.event_type=7) then
-
-        select count(*) into cnt from grading where grading_id=new.event_no;
-
-    elsif (new.event_type=8) then
-
-        select count(*) into cnt from forum_post where post_id=new.event_no;
-
-    elsif (new.event_type=9) then
-
-        select count(*) into cnt from topic where topic_num=new.event_no;
-
-    else
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    if (cnt=0) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+    cnt integer;
+
+begin
+
+cnt:=0;
+
+    if (new.event_type=0) then
+
+        select count(*) into cnt from request_event where req_id=new.event_no;
+
+    elsif (new.event_type=1) then
+
+        select count(*) into cnt from extra_class where extra_class_id=new.event_no;
+
+    elsif (new.event_type=2) then
+
+        select count(*) into cnt from evaluation where evaluation_id=new.event_no;
+
+    elsif (new.event_type=3) then
+
+        select count(*) into cnt from canceled_class where canceled_class_id=new.event_no;
+
+    elsif (new.event_type=4) then
+
+        select count(*) into cnt from course_post where post_id=new.event_no;
+
+    elsif (new.event_type=5) then
+
+        select count(*) into cnt from instructor_resource where res_id=new.event_no;
+
+    elsif (new.event_type=6) then
+
+        select count(*) into cnt from student_resource where res_id=new.event_no;
+
+    elsif (new.event_type=7) then
+
+        select count(*) into cnt from grading where grading_id=new.event_no;
+
+    elsif (new.event_type=8) then
+
+        select count(*) into cnt from forum_post where post_id=new.event_no;
+
+    elsif (new.event_type=9) then
+
+        select count(*) into cnt from topic where topic_num=new.event_no;
+
+    else
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    if (cnt=0) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -4314,24 +4303,24 @@ ALTER FUNCTION public.notification_event_check() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_cancel_class() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='New Declaration';
-
-    insert into notification_event(not_id, type_id, event_no, event_type, _date)
-
-    values(default,type_no,new.canceled_class_id,3,new._date);
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='New Declaration';
+
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+
+    values(default,type_no,new.canceled_class_id,3,new._date);
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4343,26 +4332,26 @@ ALTER FUNCTION public.notify_cancel_class() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_cancel_class_update() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='Updated Declaration';
-
-    update notification_event
-
-    set type_id=type_no,notifucation_time=current_timestamp,_date=new._date
-
-    where event_no=new.canceled_class_id and event_type=3;
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+
+    update notification_event
+
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new._date
+
+    where event_no=new.canceled_class_id and event_type=3;
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4374,24 +4363,24 @@ ALTER FUNCTION public.notify_cancel_class_update() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_course_post_added() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='New Declaration';
-
-    insert into notification_event(not_id, type_id, event_no, event_type, _date)
-
-    values(default,type_no,new.post_id,4,new.post_time::date);
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='New Declaration';
+
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+
+    values(default,type_no,new.post_id,4,new.post_time::date);
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4403,26 +4392,26 @@ ALTER FUNCTION public.notify_course_post_added() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_course_post_updated() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='Updated Declaration';
-
-    update notification_event
-
-    set type_id=type_no,notifucation_time=current_timestamp,_date=new.post_time::date
-
-    where event_no=new.post_id and event_type=4;
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+
+    update notification_event
+
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new.post_time::date
+
+    where event_no=new.post_id and event_type=4;
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4434,42 +4423,42 @@ ALTER FUNCTION public.notify_course_post_updated() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_evaluation() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-    time_type boolean;
-
-    lookup date;
-
-begin
-
-    select notification_time_type into time_type from evaluation_type
-
-    where type_id=new.type_id;
-
-    if (time_type) then
-
-        lookup:=new._end::date;
-
-    else
-
-        lookup:=new.start::date;
-
-    end if;
-
-    select type_id into type_no from notification_type where type_name='New Declaration';
-
-    insert into notification_event(not_id, type_id, event_no, event_type, _date)
-
-    values(default,type_no,new.evaluation_id,2,lookup);
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+    time_type boolean;
+
+    lookup date;
+
+begin
+
+    select notification_time_type into time_type from evaluation_type
+
+    where type_id=new.type_id;
+
+    if (time_type) then
+
+        lookup:=new._end::date;
+
+    else
+
+        lookup:=new.start::date;
+
+    end if;
+
+    select type_id into type_no from notification_type where type_name='New Declaration';
+
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+
+    values(default,type_no,new.evaluation_id,2,lookup);
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4481,26 +4470,26 @@ ALTER FUNCTION public.notify_evaluation() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_evaluation_update() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='Updated Declaration';
-
-    update notification_event
-
-    set type_id=type_no,notifucation_time=current_timestamp,_date=new.start::date
-
-    where event_no=new.evaluation_id and event_type=2;
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+
+    update notification_event
+
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new.start::date
+
+    where event_no=new.evaluation_id and event_type=2;
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4512,24 +4501,24 @@ ALTER FUNCTION public.notify_evaluation_update() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_extra_class() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='New Declaration';
-
-    insert into notification_event(not_id, type_id, event_no, event_type, _date)
-
-    values(default,type_no,new.extra_class_id,1,new.start::date);
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='New Declaration';
+
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+
+    values(default,type_no,new.extra_class_id,1,new.start::date);
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4541,26 +4530,26 @@ ALTER FUNCTION public.notify_extra_class() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_extra_class_update() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='Updated Declaration';
-
-    update notification_event
-
-    set type_id=type_no,notifucation_time=current_timestamp,_date=new.start::date
-
-    where event_no=new.extra_class_id and event_type=1;
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+
+    update notification_event
+
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new.start::date
+
+    where event_no=new.extra_class_id and event_type=1;
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4572,24 +4561,24 @@ ALTER FUNCTION public.notify_extra_class_update() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_forum_post_added() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='New Declaration';
-
-    insert into notification_event(not_id, type_id, event_no, event_type, _date)
-
-    values(default,type_no,new.post_id,8,new.post_time::date);
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='New Declaration';
+
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+
+    values(default,type_no,new.post_id,8,new.post_time::date);
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4601,26 +4590,26 @@ ALTER FUNCTION public.notify_forum_post_added() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_forum_post_updated() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='Updated Declaration';
-
-    update notification_event
-
-    set type_id=type_no,notifucation_time=current_timestamp,_date=new.post_time::date
-
-    where event_no=new.post_id and event_type=8;
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+
+    update notification_event
+
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new.post_time::date
+
+    where event_no=new.post_id and event_type=8;
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4632,24 +4621,24 @@ ALTER FUNCTION public.notify_forum_post_updated() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_grading() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='New Declaration';
-
-    insert into notification_event(not_id, type_id, event_no, event_type, _date)
-
-    values(default,type_no,new.grading_id,7,new._date);
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='New Declaration';
+
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+
+    values(default,type_no,new.grading_id,7,new._date);
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4661,26 +4650,26 @@ ALTER FUNCTION public.notify_grading() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_grading_update() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='Updated Declaration';
-
-    update notification_event
-
-    set type_id=type_no,notifucation_time=current_timestamp,_date=new._date
-
-    where event_no=new.grading_id and event_type=7;
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+
+    update notification_event
+
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new._date
+
+    where event_no=new.grading_id and event_type=7;
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4692,24 +4681,24 @@ ALTER FUNCTION public.notify_grading_update() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_instructor_resource_added() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='New Declaration';
-
-    insert into notification_event(not_id, type_id, event_no, event_type, _date)
-
-    values(default,type_no,new.res_id,5,current_timestamp::date);
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='New Declaration';
+
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+
+    values(default,type_no,new.res_id,5,current_timestamp::date);
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4721,26 +4710,26 @@ ALTER FUNCTION public.notify_instructor_resource_added() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_instructor_resource_updated() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='Updated Declaration';
-
-    update notification_event
-
-    set type_id=type_no,notifucation_time=current_timestamp,_date=current_timestamp::date
-
-    where event_no=new.res_id and event_type=5;
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+
+    update notification_event
+
+    set type_id=type_no,notifucation_time=current_timestamp,_date=current_timestamp::date
+
+    where event_no=new.res_id and event_type=5;
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4752,24 +4741,24 @@ ALTER FUNCTION public.notify_instructor_resource_updated() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_request_event() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='New Declaration';
-
-    insert into notification_event(not_id, type_id, event_no, event_type, _date)
-
-    values(default,type_no,new.req_id,0,new.start::date);
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='New Declaration';
+
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+
+    values(default,type_no,new.req_id,0,new.start::date);
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4781,26 +4770,26 @@ ALTER FUNCTION public.notify_request_event() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_request_event_update() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='Updated Declaration';
-
-    update notification_event
-
-    set type_id=type_no,notifucation_time=current_timestamp,_date=new.start::date
-
-    where event_no=new.req_id and event_type=0;
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+
+    update notification_event
+
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new.start::date
+
+    where event_no=new.req_id and event_type=0;
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4812,24 +4801,24 @@ ALTER FUNCTION public.notify_request_event_update() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_student_resource_added() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='New Declaration';
-
-    insert into notification_event(not_id, type_id, event_no, event_type, _date)
-
-    values(default,type_no,new.res_id,6,current_timestamp::date);
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='New Declaration';
+
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+
+    values(default,type_no,new.res_id,6,current_timestamp::date);
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4841,26 +4830,26 @@ ALTER FUNCTION public.notify_student_resource_added() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_student_resource_updated() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='Updated Declaration';
-
-    update notification_event
-
-    set type_id=type_no,notifucation_time=current_timestamp,_date=current_timestamp::date
-
-    where event_no=new.res_id and event_type=6;
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+
+    update notification_event
+
+    set type_id=type_no,notifucation_time=current_timestamp,_date=current_timestamp::date
+
+    where event_no=new.res_id and event_type=6;
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4872,24 +4861,24 @@ ALTER FUNCTION public.notify_student_resource_updated() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_topic_added() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='New Declaration';
-
-    insert into notification_event(not_id, type_id, event_no, event_type, _date)
-
-    values(default,type_no,new.topic_num,9,new.started::date);
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='New Declaration';
+
+    insert into notification_event(not_id, type_id, event_no, event_type, _date)
+
+    values(default,type_no,new.topic_num,9,new.started::date);
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4901,26 +4890,26 @@ ALTER FUNCTION public.notify_topic_added() OWNER TO postgres;
 
 CREATE FUNCTION public.notify_topic_updated() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    type_no integer;
-
-begin
-
-    select type_id into type_no from notification_type where type_name='Updated Declaration';
-
-    update notification_event
-
-    set type_id=type_no,notifucation_time=current_timestamp,_date=new.started::date
-
-    where event_no=new.topic_num and event_type=9;
-
-    return null;
-
-end;
-
+    AS $$
+
+declare
+
+    type_no integer;
+
+begin
+
+    select type_id into type_no from notification_type where type_name='Updated Declaration';
+
+    update notification_event
+
+    set type_id=type_no,notifucation_time=current_timestamp,_date=new.started::date
+
+    where event_no=new.topic_num and event_type=9;
+
+    return null;
+
+end;
+
 $$;
 
 
@@ -4932,38 +4921,38 @@ ALTER FUNCTION public.notify_topic_updated() OWNER TO postgres;
 
 CREATE FUNCTION public.overlapped_time(first_begin time without time zone, first_end time without time zone, second_begin time without time zone, second_end time without time zone) RETURNS boolean
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans boolean;
-
-    begin
-
-        ans=false;
-
-        if (first_begin<= second_begin and second_begin<first_end) then
-
-            ans=true;
-
-        elsif (first_begin< second_end and second_end<=first_end) then
-
-            ans=true;
-
-        elsif (second_begin<= first_begin and first_begin<second_end) then
-
-            ans=true;
-
-        elsif (second_begin< first_end and first_end<=second_end) then
-
-            ans=true;
-
-        end if;
-
-        return ans;
-
-    end;
-
+    AS $$
+
+    declare
+
+        ans boolean;
+
+    begin
+
+        ans=false;
+
+        if (first_begin<= second_begin and second_begin<first_end) then
+
+            ans=true;
+
+        elsif (first_begin< second_end and second_end<=first_end) then
+
+            ans=true;
+
+        elsif (second_begin<= first_begin and first_begin<second_end) then
+
+            ans=true;
+
+        elsif (second_begin< first_end and first_end<=second_end) then
+
+            ans=true;
+
+        end if;
+
+        return ans;
+
+    end;
+
 $$;
 
 
@@ -4975,38 +4964,38 @@ ALTER FUNCTION public.overlapped_time(first_begin time without time zone, first_
 
 CREATE FUNCTION public.overlapped_timestamp(first_begin timestamp with time zone, first_end timestamp with time zone, second_begin timestamp with time zone, second_end timestamp with time zone) RETURNS boolean
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans boolean;
-
-    begin
-
-        ans=false;
-
-        if (first_begin<= second_begin and second_begin<first_end) then
-
-            ans=true;
-
-        elsif (first_begin< second_end and second_end<=first_end) then
-
-            ans=true;
-
-        elsif (second_begin<= first_begin and first_begin<second_end) then
-
-            ans=true;
-
-        elsif (second_begin< first_end and first_end<=second_end) then
-
-            ans=true;
-
-        end if;
-
-        return ans;
-
-    end;
-
+    AS $$
+
+    declare
+
+        ans boolean;
+
+    begin
+
+        ans=false;
+
+        if (first_begin<= second_begin and second_begin<first_end) then
+
+            ans=true;
+
+        elsif (first_begin< second_end and second_end<=first_end) then
+
+            ans=true;
+
+        elsif (second_begin<= first_begin and first_begin<second_end) then
+
+            ans=true;
+
+        elsif (second_begin< first_end and first_end<=second_end) then
+
+            ans=true;
+
+        end if;
+
+        return ans;
+
+    end;
+
 $$;
 
 
@@ -5018,52 +5007,52 @@ ALTER FUNCTION public.overlapped_timestamp(first_begin timestamp with time zone,
 
 CREATE FUNCTION public.poster_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    cnt integer;
-
-begin
-
-    if (new.poster_id is null or new.student_post is null) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    cnt:=0;
-
-    if (new.student_post) then
-
-        if (new.parent_post is null) then
-
-            raise exception 'Invalid data insertion or update';
-
-        end if;
-
-        select count(*) into cnt from enrolment
-
-        where enrol_id=new.poster_id;
-
-    else
-
-        select count(*) into cnt from instructor
-
-        where instructor_id=new.poster_id;
-
-    end if;
-
-    if (cnt = 0) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+    cnt integer;
+
+begin
+
+    if (new.poster_id is null or new.student_post is null) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    cnt:=0;
+
+    if (new.student_post) then
+
+        if (new.parent_post is null) then
+
+            raise exception 'Invalid data insertion or update';
+
+        end if;
+
+        select count(*) into cnt from enrolment
+
+        where enrol_id=new.poster_id;
+
+    else
+
+        select count(*) into cnt from instructor
+
+        where instructor_id=new.poster_id;
+
+    end if;
+
+    if (cnt = 0) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -5075,30 +5064,30 @@ ALTER FUNCTION public.poster_check() OWNER TO postgres;
 
 CREATE FUNCTION public.remove_course_student(std_id integer, courseno integer) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    std_no integer;
-
-    sectionNo integer;
-
-    begin
-
-        std_no:=get_student_no(std_id);
-
-        select s.section_no into sectionNo from enrolment e join section s on s.section_no = e.section_id
-
-        where e.student_id=std_no and s.course_id=courseNo;
-
-        update section set cr_id = null where cr_id=std_no and section_no=sectionNo;
-
-        delete from enrolment
-
-        where student_id=std_no and section_id=sectionNo;
-
-    end;
-
+    AS $$
+
+    declare
+
+    std_no integer;
+
+    sectionNo integer;
+
+    begin
+
+        std_no:=get_student_no(std_id);
+
+        select s.section_no into sectionNo from enrolment e join section s on s.section_no = e.section_id
+
+        where e.student_id=std_no and s.course_id=courseNo;
+
+        update section set cr_id = null where cr_id=std_no and section_no=sectionNo;
+
+        delete from enrolment
+
+        where student_id=std_no and section_id=sectionNo;
+
+    end;
+
 $$;
 
 
@@ -5110,22 +5099,22 @@ ALTER FUNCTION public.remove_course_student(std_id integer, courseno integer) OW
 
 CREATE FUNCTION public.remove_course_teacher(uname character varying, courseid integer) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    tid integer;
-
-    begin
-
-        tid:=get_teacher_id(uname);
-
-        delete from instructor
-
-        where teacher_id=tid and course_id=courseID;
-
-    end;
-
+    AS $$
+
+    declare
+
+    tid integer;
+
+    begin
+
+        tid:=get_teacher_id(uname);
+
+        delete from instructor
+
+        where teacher_id=tid and course_id=courseID;
+
+    end;
+
 $$;
 
 
@@ -5137,18 +5126,18 @@ ALTER FUNCTION public.remove_course_teacher(uname character varying, courseid in
 
 CREATE FUNCTION public.remove_resource_student(fileid integer) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-        delete from student_resource
-
-        where res_id=fileID;
-
-    end;
-
+    AS $$
+
+    declare
+
+    begin
+
+        delete from student_resource
+
+        where res_id=fileID;
+
+    end;
+
 $$;
 
 
@@ -5160,18 +5149,18 @@ ALTER FUNCTION public.remove_resource_student(fileid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.remove_resource_teacher(fileid integer) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-        delete from instructor_resource
-
-        where res_id=fileID;
-
-    end;
-
+    AS $$
+
+    declare
+
+    begin
+
+        delete from instructor_resource
+
+        where res_id=fileID;
+
+    end;
+
 $$;
 
 
@@ -5183,34 +5172,34 @@ ALTER FUNCTION public.remove_resource_teacher(fileid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.request_event_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-begin
-
-    if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
-
-        raise exception 'Conflicted with a class';
-
-    end if;
-
-    if (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
-
-        raise exception 'Conflicted with an event';
-
-    end if;
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+begin
+
+    if (instructor_section_compare(new.instructor_id,new.section_no,old.instructor_id,old.section_no)) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    if (event_class_conflict(new.start::time,new._end::time,new.start::date,new.section_no,new.instructor_id)) then
+
+        raise exception 'Conflicted with a class';
+
+    end if;
+
+    if (event_event_conflict(new.start,new._end,new.section_no,new.instructor_id)) then
+
+        raise exception 'Conflicted with an event';
+
+    end if;
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -5222,20 +5211,20 @@ ALTER FUNCTION public.request_event_check() OWNER TO postgres;
 
 CREATE FUNCTION public.reschedule_extra_class(eventid integer, start_time timestamp with time zone, end_time timestamp with time zone) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-        update request_event
-
-        set type_id=1,start=start_time,_end=end_time
-
-        where req_id=eventID;
-
-    end;
-
+    AS $$
+
+    declare
+
+    begin
+
+        update request_event
+
+        set type_id=1,start=start_time,_end=end_time
+
+        where req_id=eventID;
+
+    end;
+
 $$;
 
 
@@ -5247,20 +5236,20 @@ ALTER FUNCTION public.reschedule_extra_class(eventid integer, start_time timesta
 
 CREATE FUNCTION public.reschedule_request(eventid integer) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-        update request_event
-
-        set type_id=2
-
-        where req_id=eventID;
-
-    end;
-
+    AS $$
+
+    declare
+
+    begin
+
+        update request_event
+
+        set type_id=2
+
+        where req_id=eventID;
+
+    end;
+
 $$;
 
 
@@ -5272,22 +5261,22 @@ ALTER FUNCTION public.reschedule_request(eventid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.section_to_course(sec_no integer) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans integer;
-
-    begin
-
-        select course_id into ans from section
-
-            where section_no=sec_no;
-
-        return ans;
-
-    end
-
+    AS $$
+
+    declare
+
+        ans integer;
+
+    begin
+
+        select course_id into ans from section
+
+            where section_no=sec_no;
+
+        return ans;
+
+    end
+
 $$;
 
 
@@ -5299,64 +5288,64 @@ ALTER FUNCTION public.section_to_course(sec_no integer) OWNER TO postgres;
 
 CREATE FUNCTION public.submission_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    sec_no_event integer;
-
-    sec_no_enrol integer;
-
-    course_id_event integer;
-
-    course_id_enrol integer;
-
-begin
-
-    if (new.event_id is null or new.enrol_id is null) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    select section_no into sec_no_event from evaluation
-
-    where evaluation_id=new.event_id;
-
-    select section_id into sec_no_enrol from enrolment
-
-    where enrol_id=new.enrol_id;
-
-    if (sec_no_enrol is null or sec_no_event is null) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-    select course_id into course_id_event from section
-
-    where section_no=sec_no_event;
-
-    select course_id into course_id_enrol from section
-
-    where section_no=sec_no_enrol;
-
-    if (course_id_enrol is null or course_id_event is null) then
-
-        raise exception 'Invalid data insertion or update';
-
-    elsif(course_id_event!=course_id_enrol) then
-
-        raise exception 'Invalid data insertion or update';
-
-    end if;
-
-
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+    sec_no_event integer;
+
+    sec_no_enrol integer;
+
+    course_id_event integer;
+
+    course_id_enrol integer;
+
+begin
+
+    if (new.event_id is null or new.enrol_id is null) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    select section_no into sec_no_event from evaluation
+
+    where evaluation_id=new.event_id;
+
+    select section_id into sec_no_enrol from enrolment
+
+    where enrol_id=new.enrol_id;
+
+    if (sec_no_enrol is null or sec_no_event is null) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+    select course_id into course_id_event from section
+
+    where section_no=sec_no_event;
+
+    select course_id into course_id_enrol from section
+
+    where section_no=sec_no_enrol;
+
+    if (course_id_enrol is null or course_id_event is null) then
+
+        raise exception 'Invalid data insertion or update';
+
+    elsif(course_id_event!=course_id_enrol) then
+
+        raise exception 'Invalid data insertion or update';
+
+    end if;
+
+
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -5368,52 +5357,52 @@ ALTER FUNCTION public.submission_check() OWNER TO postgres;
 
 CREATE FUNCTION public.teacher_routine_check() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-
-declare
-
-    sec_no integer;
-
-    start_time time;
-
-    end_time time;
-
-    weekday integer;
-
-begin
-
-    if (new.class_id is null or new.instructor_id is null) then
-
-        raise exception 'Invalid data insertion or update from line 9';
-
-    end if;
-
-    select section_no,start,_end,day into sec_no,start_time,end_time,weekday from course_routine
-
-    where class_id=new.class_id;
-
-    if (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null)) then
-
-        raise exception 'Invalid data insertion or update from line 12';
-
-    end if;
-
-    if (class_class_conflict_teacher(start_time,end_time,weekday,new.instructor_id)) then
-
-        raise exception 'Conflicted with a class';
-
-    end if;
-
-    if (class_event_conflict_teacher(start_time,end_time,weekday,new.instructor_id)) then
-
-        raise exception 'Conflicted with an event';
-
-    end if;
-
-    return new;
-
-end;
-
+    AS $$
+
+declare
+
+    sec_no integer;
+
+    start_time time;
+
+    end_time time;
+
+    weekday integer;
+
+begin
+
+    if (new.class_id is null or new.instructor_id is null) then
+
+        raise exception 'Invalid data insertion or update from line 9';
+
+    end if;
+
+    select section_no,start,_end,day into sec_no,start_time,end_time,weekday from course_routine
+
+    where class_id=new.class_id;
+
+    if (instructor_section_compare(new.instructor_id,sec_no,old.instructor_id,null)) then
+
+        raise exception 'Invalid data insertion or update from line 12';
+
+    end if;
+
+    if (class_class_conflict_teacher(start_time,end_time,weekday,new.instructor_id)) then
+
+        raise exception 'Conflicted with a class';
+
+    end if;
+
+    if (class_event_conflict_teacher(start_time,end_time,weekday,new.instructor_id)) then
+
+        raise exception 'Conflicted with an event';
+
+    end if;
+
+    return new;
+
+end;
+
 $$;
 
 
@@ -5425,26 +5414,26 @@ ALTER FUNCTION public.teacher_routine_check() OWNER TO postgres;
 
 CREATE FUNCTION public.term_name(term_num integer) RETURNS character varying
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        ans varchar(64);
-
-    begin
-
-        ans := 'January';
-
-        if (term_num = 2) then
-
-            ans := 'July';
-
-        end if;
-
-        return ans;
-
-    end
-
+    AS $$
+
+    declare
+
+        ans varchar(64);
+
+    begin
+
+        ans := 'January';
+
+        if (term_num = 2) then
+
+            ans := 'July';
+
+        end if;
+
+        return ans;
+
+    end
+
 $$;
 
 
@@ -5456,24 +5445,24 @@ ALTER FUNCTION public.term_name(term_num integer) OWNER TO postgres;
 
 CREATE FUNCTION public.update_cr(std_id integer, sectionno integer) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    std_no integer;
-
-    begin
-
-        std_no:=get_student_no(std_id);
-
-        update section
-
-        set cr_id=std_no
-
-        where section_no=sectionNo;
-
-    end;
-
+    AS $$
+
+    declare
+
+    std_no integer;
+
+    begin
+
+        std_no:=get_student_no(std_id);
+
+        update section
+
+        set cr_id=std_no
+
+        where section_no=sectionNo;
+
+    end;
+
 $$;
 
 
@@ -5485,20 +5474,20 @@ ALTER FUNCTION public.update_cr(std_id integer, sectionno integer) OWNER TO post
 
 CREATE FUNCTION public.update_evaluation_link(eventid integer, filelink character varying) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    begin
-
-        update evaluation
-
-        set link=fileLink
-
-        where evaluation_id=eventID;
-
-    end;
-
+    AS $$
+
+    declare
+
+    begin
+
+        update evaluation
+
+        set link=fileLink
+
+        where evaluation_id=eventID;
+
+    end;
+
 $$;
 
 
@@ -5510,24 +5499,24 @@ ALTER FUNCTION public.update_evaluation_link(eventid integer, filelink character
 
 CREATE FUNCTION public.update_notification_seen_time(std_id integer) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-    std_no integer;
-
-    begin
-
-        std_no:=get_student_no(std_id);
-
-        update student
-
-        set notification_last_seen=current_timestamp
-
-        where student_id=std_no;
-
-    end;
-
+    AS $$
+
+    declare
+
+    std_no integer;
+
+    begin
+
+        std_no:=get_student_no(std_id);
+
+        update student
+
+        set notification_last_seen=current_timestamp
+
+        where student_id=std_no;
+
+    end;
+
 $$;
 
 
@@ -5539,24 +5528,24 @@ ALTER FUNCTION public.update_notification_seen_time(std_id integer) OWNER TO pos
 
 CREATE FUNCTION public.update_notification_seen_time_teacher(uname character varying) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    declare
-
-        tid integer;
-
-    begin
-
-        tid:=get_teacher_id(uname);
-
-        update teacher
-
-        set notification_last_seen=current_timestamp
-
-        where teacher_id=tid;
-
-    end;
-
+    AS $$
+
+    declare
+
+        tid integer;
+
+    begin
+
+        tid:=get_teacher_id(uname);
+
+        update teacher
+
+        set notification_last_seen=current_timestamp
+
+        where teacher_id=tid;
+
+    end;
+
 $$;
 
 
@@ -5568,18 +5557,18 @@ ALTER FUNCTION public.update_notification_seen_time_teacher(uname character vary
 
 CREATE FUNCTION public.upload_evaluation(eventid integer, filelink character varying) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-
-    begin
-
-        update evaluation
-
-        set link=fileLink
-
-        where evaluation_id=eventID;
-
-    end;
-
+    AS $$
+
+    begin
+
+        update evaluation
+
+        set link=fileLink
+
+        where evaluation_id=eventID;
+
+    end;
+
 $$;
 
 

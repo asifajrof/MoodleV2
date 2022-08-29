@@ -1888,7 +1888,7 @@ from course_post cp join instructor i on cp.poster_id=i.instructor_id join teach
 where cp.post_id=pID and student_post=false)
 union
 (select cp.post_id,cp.poster_id,cp.post_name,cp.post_content,cast((mod(_year,100)*100000+dept_code*1000+roll_num) as varchar),s.student_name,cp.post_time,student_post
-from course_post cp join enrolment e on cp.poster_id=e.enrol_id join student s on e.enrol_id = s.student_id
+from course_post cp join enrolment e on cp.poster_id=e.enrol_id join student s on e.student_id = s.student_id
 where cp.post_id=pID and student_post=true);
     end
 $$ language plpgsql;
