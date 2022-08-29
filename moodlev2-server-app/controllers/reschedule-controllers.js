@@ -60,6 +60,62 @@ const getRescheduleEvents = async (req, res, next) => {
   }
 };
 
+const getRescheduleEventsStudent = async (req, res, next) => {
+	try {
+		const { courseId, studentNo } = req.body;
+		// const uId = req.params.uId;
+		console.log("GET api/reschedule/view");
+		let reschList = [];
+		let result = await pool.query(
+			"SELECT json_agg(t) FROM get_extra_class($1, $2) as t",
+			[studentNo, courseId]
+		);
+		// console.log(result.rows[0].json_agg);
+		const extra = result.rows[0].json_agg;
+		if (extra != null) {
+			for (c of extra) {
+				const obj = {
+					eventType: "Extra Class",
+					eventStartTime: c.start_time,
+					eventEndTime: c.end_time,
+					eventSectionName: c.sectionname,
+					eventTeacherName: c.teachername,
+				};
+				reschList.push(obj);
+			}
+		}
+
+		result = await pool.query(
+			"SELECT json_agg(t) FROM get_cancel_class($1, $2) as t",
+			[studentNo, courseId]
+		);
+		// console.log(result.rows[0].json_agg);
+
+		const cancel = result.rows[0].json_agg;
+		// console.log(result.rows[0].json_agg);
+
+		if (cancel != null) {
+			// console.log(cancel);
+			for (c of cancel) {
+				// console.log("==========================");
+				const obj = {
+					eventType: "Cancelled Class",
+					eventStartTime: c.start_time,
+					eventEndTime: c.end_time,
+					eventSectionName: c.sectionname,
+					eventTeacherName: c.teachername,
+				};
+				reschList.push(obj);
+			}
+		}
+		// console.log(reschList);
+
+		res.json({ message: "getRescheduleEvents", data: reschList });
+	} catch (err) {
+		return next(new HttpError(err.message, 500));
+	}
+};
+
 const addCancelClass = async (req, res, next) => {
   try {
     const { userName, reschTime } = req.body;
@@ -228,6 +284,8 @@ const rescheduleRequestAccepted = async (req, res, next) => {
     return next(new HttpError(err.message, 500));
   }
 };
+
+exports.getRescheduleEventsStudent = getRescheduleEventsStudent;
 exports.getExtraClassRescheduleInfo = getExtraClassRescheduleInfo;
 exports.rescheduleRequest = rescheduleRequest;
 exports.confirmExtraClass = confirmExtraClass;
