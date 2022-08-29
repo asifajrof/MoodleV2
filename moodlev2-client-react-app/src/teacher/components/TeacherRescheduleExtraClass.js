@@ -55,7 +55,7 @@ const TeacherRescheduleExtraClass = ({
     event.preventDefault();
     const submitObj = {
       eventId: eventId,
-      startTime: startTime,
+      eventTime: rescheduleTime,
     };
     // console.log(submitObj);
     // console.log("submit");
