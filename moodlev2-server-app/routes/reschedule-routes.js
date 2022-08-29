@@ -21,4 +21,14 @@ rescheduleRoutes.post(
 	rescheduleControllers.getExtraClassRescheduleInfo
 );
 
+rescheduleRoutes.post(
+	"/rescheduleRequestDenied",
+	rescheduleControllers.rescheduleRequestDenied
+);
+
+rescheduleRoutes.post(
+	"/rescheduleRequestAccepted",
+	rescheduleControllers.rescheduleRequestAccepted
+);
+
 module.exports = rescheduleRoutes;
