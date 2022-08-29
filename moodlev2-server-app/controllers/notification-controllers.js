@@ -214,7 +214,7 @@ const getNotificationsByUserName = async (req, res, next) => {
             moment(n.scheduleddate).format("LL");
 
           let nTime = moment(n.notificationtime).format("LLL");
-          let link = `/course/${n.courseid}/reschedule`;
+          let link = `/course/${n.courseid}/reschedule/extra/request/${n.eventno}`;
 
           const notObj = {
             notificationMsg: msg,
