@@ -292,15 +292,15 @@ select add_student('Tanzim Hossain Romel','$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5
 select add_student('Sheikh Azizul Hakim','$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy',2,5,2017,null);
 select add_student('Mahdi Hasnat Siyam','$2a$10$lBeXHGXhEDafsT.gqowElOiLVQIAA5YTiGO2PTY4VpqlJpGe96yzy',3,5,2017,null);
 
-insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE423-2022',1);
-insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE453-2022',2);
-insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-HUM475-2022',3);
-insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE405-2022',4);
-insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE409-2022',5);
+insert into section(section_no, section_name, course_id) values(default,'CSE-2017-CSE423-2022',1);
+insert into section(section_no, section_name, course_id) values(default,'CSE-2017-CSE453-2022',2);
+insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B-HUM475-2022',3);
+insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B-CSE405-2022',4);
+insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B-CSE409-2022',5);
 insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE410-2022',6);
 insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE406-2022',7);
-insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE421-2022',8);
-insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE463-2022',9);
+insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B-CSE421-2022',8);
+insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B-CSE463-2022',9);
 insert into section(section_no, section_name, course_id) values(default,'CSE-2017-B2-CSE408-2022',10);
 insert into section (section_no, section_name, course_id, cr_id) values (default,'CSE-2017-A-CSE405-2022',4,null);
 insert into section (section_no, section_name, course_id, cr_id) values (default,'CSE-2017-A-CSE409-2022',5,null);
@@ -308,6 +308,12 @@ insert into section (section_no, section_name, course_id, cr_id) values (default
 insert into section(section_no, section_name, course_id) values (default,'CSE-2017-A1-CSE-406',7);
 insert into section(section_no, section_name, course_id) values (default,'CSE-2017-A2-CSE-406',7);
 insert into section(section_no, section_name, course_id) values (default,'CSE-2017-B1-CSE-406',7);
+insert into section(section_no, section_name, course_id) values (default,'CSE-2017-A1-CSE-408',10);
+insert into section(section_no, section_name, course_id) values (default,'CSE-2017-A2-CSE-408',10);
+insert into section(section_no, section_name, course_id) values (default,'CSE-2017-B1-CSE-408',10);
+insert into section(section_no, section_name, course_id) values (default,'CSE-2017-A1-CSE-410',6);
+insert into section(section_no, section_name, course_id) values (default,'CSE-2017-A2-CSE-410',6);
+insert into section(section_no, section_name, course_id) values (default,'CSE-2017-B1-CSE-410',6);
 
 insert into enrolment(student_id, section_id) values (1,1);
 insert into enrolment(student_id, section_id) values (1,2);
@@ -364,6 +370,69 @@ insert into enrolment(student_id, section_id) values (4,10);
 insert into enrolment(student_id, section_id) values (5,10);
 insert into enrolment(student_id, section_id) values (6,10);
 
+insert into enrolment(student_id, section_id) values (7,2);
+insert into enrolment(student_id, section_id) values (7,3);
+insert into enrolment(student_id, section_id) values (7,4);
+insert into enrolment(student_id, section_id) values (7,5);
+insert into enrolment(student_id, section_id) values (7,9);
+insert into enrolment(student_id, section_id) values (7,18);
+insert into enrolment(student_id, section_id) values (7,21);
+insert into enrolment(student_id, section_id) values (7,24);
+
+insert into enrolment(student_id, section_id) values (10,2);
+insert into enrolment(student_id, section_id) values (10,3);
+insert into enrolment(student_id, section_id) values (10,4);
+insert into enrolment(student_id, section_id) values (10,5);
+insert into enrolment(student_id, section_id) values (10,9);
+insert into enrolment(student_id, section_id) values (10,18);
+insert into enrolment(student_id, section_id) values (10,21);
+insert into enrolment(student_id, section_id) values (10,24);
+
+insert into enrolment(student_id, section_id) values (11,2);
+insert into enrolment(student_id, section_id) values (11,3);
+insert into enrolment(student_id, section_id) values (11,4);
+insert into enrolment(student_id, section_id) values (11,5);
+insert into enrolment(student_id, section_id) values (11,1);
+insert into enrolment(student_id, section_id) values (11,18);
+insert into enrolment(student_id, section_id) values (11,21);
+insert into enrolment(student_id, section_id) values (11,24);
+
+insert into enrolment(student_id, section_id) values (8,2);
+insert into enrolment(student_id, section_id) values (8,9);
+insert into enrolment(student_id, section_id) values (8,11);
+insert into enrolment(student_id, section_id) values (8,13);
+insert into enrolment(student_id, section_id) values (8,14);
+insert into enrolment(student_id, section_id) values (8,17);
+insert into enrolment(student_id, section_id) values (8,20);
+insert into enrolment(student_id, section_id) values (8,23);
+
+insert into enrolment(student_id, section_id) values (9,2);
+insert into enrolment(student_id, section_id) values (9,1);
+insert into enrolment(student_id, section_id) values (9,11);
+insert into enrolment(student_id, section_id) values (9,13);
+insert into enrolment(student_id, section_id) values (9,14);
+insert into enrolment(student_id, section_id) values (9,17);
+insert into enrolment(student_id, section_id) values (9,20);
+insert into enrolment(student_id, section_id) values (9,23);
+
+insert into enrolment(student_id, section_id) values (13,2);
+insert into enrolment(student_id, section_id) values (13,9);
+insert into enrolment(student_id, section_id) values (13,11);
+insert into enrolment(student_id, section_id) values (13,13);
+insert into enrolment(student_id, section_id) values (13,14);
+insert into enrolment(student_id, section_id) values (13,16);
+insert into enrolment(student_id, section_id) values (13,19);
+insert into enrolment(student_id, section_id) values (13,22);
+
+insert into enrolment(student_id, section_id) values (12,8);
+insert into enrolment(student_id, section_id) values (12,9);
+insert into enrolment(student_id, section_id) values (12,11);
+insert into enrolment(student_id, section_id) values (12,13);
+insert into enrolment(student_id, section_id) values (12,14);
+insert into enrolment(student_id, section_id) values (12,16);
+insert into enrolment(student_id, section_id) values (12,19);
+insert into enrolment(student_id, section_id) values (12,22);
+
 insert into instructor(instructor_id, teacher_id, course_id) values (default,1,1);
 insert into instructor(instructor_id, teacher_id, course_id) values (default,2,2);
 insert into instructor(instructor_id, teacher_id, course_id) values (default,10,3);
@@ -413,6 +482,27 @@ insert into course_routine(section_no, alternation, start, _end, day) values(8,7
 insert into course_routine(section_no, alternation, start, _end, day) values(6,14,'14:00:00','17:00:00',5);
 insert into course_routine(section_no, alternation, start, _end, day) values(7,14,'14:00:00','17:00:00',6);
 insert into course_routine(section_no, alternation, start, _end, day) values(10,7,'14:00:00','17:00:00',0);
+
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,11,7,'08:00:00','09:00:00',6);
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,11,7,'08:00:00','09:00:00',1);
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,11,7,'09:00:00','10:00:00',2);
+
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,13,7,'10:00:00','11:00:00',5);
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,13,7,'09:00:00','10:00:00',1);
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,13,7,'08:00:00','09:00:00',2);
+
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,14,7,'11:00:00','12:00:00',5);
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,14,7,'09:00:00','10:00:00',6);
+insert into course_routine(class_id, section_no, alternation, start, _end, day)
+values (default,14,7,'10:00:00','11:00:00',2);
 
 insert into teacher_routine(teacher_class_id, instructor_id, class_id) values(default,1,1);
 insert into teacher_routine(instructor_id, class_id) values(1,2);

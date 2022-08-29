@@ -1882,7 +1882,7 @@ ALTER FUNCTION public.get_extra_class_request_notifications(std_id integer) OWNE
 -- Name: get_extra_class_reschedule_information(character varying, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_extra_class_reschedule_information(teacher_username character varying, event integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, crno integer, dept_shortname character varying, course_code integer, eventtypename character varying, crname character varying, start_time timestamp with time zone, end_time timestamp with time zone)
+CREATE FUNCTION public.get_extra_class_reschedule_information(teacher_username character varying, event integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, secno integer, secname character varying, crno integer, dept_shortname character varying, course_code integer, eventtypename character varying, crname character varying, start_time timestamp with time zone, end_time timestamp with time zone)
     LANGUAGE plpgsql
     AS $$
     declare
@@ -1890,7 +1890,7 @@ CREATE FUNCTION public.get_extra_class_reschedule_information(teacher_username c
     begin
         tid:=get_teacher_id(teacher_username);
     return query
-    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,re.start,re._end
+    select ne.event_type,ne.event_no,s.section_no,s.section_name,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,re.start,re._end
 from notification_event ne join request_event re on re.req_id=ne.event_no
 join request_type rt on rt.type_id=re.type_id
 join instructor i on re.instructor_id = i.instructor_id
@@ -5260,6 +5260,18 @@ INSERT INTO public.course_routine (class_id, section_no, alternation, start, _en
 INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (21, 6, 14, '14:00:00', '17:00:00', 5);
 INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (22, 7, 14, '14:00:00', '17:00:00', 6);
 INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (23, 10, 7, '14:00:00', '17:00:00', 0);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (24, 11, 7, '08:00:00', '09:00:00', 6);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (25, 11, 7, '08:00:00', '09:00:00', 1);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (26, 11, 7, '09:00:00', '10:00:00', 2);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (27, 13, 7, '10:00:00', '11:00:00', 5);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (28, 13, 7, '09:00:00', '10:00:00', 1);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (29, 13, 7, '08:00:00', '09:00:00', 2);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (30, 14, 7, '11:00:00', '12:00:00', 5);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (31, 14, 7, '09:00:00', '10:00:00', 6);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (32, 14, 7, '10:00:00', '11:00:00', 2);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (33, 16, 7, '14:00:00', '17:00:00', 0);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (34, 17, 7, '14:00:00', '17:00:00', 0);
+INSERT INTO public.course_routine (class_id, section_no, alternation, start, _end, day) VALUES (35, 18, 7, '14:00:00', '17:00:00', 6);
 
 
 --
@@ -5331,6 +5343,62 @@ INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (4
 INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (46, 4, 10, '2022-08-25');
 INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (47, 5, 10, '2022-08-25');
 INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (48, 6, 10, '2022-08-25');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (49, 7, 2, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (50, 7, 3, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (51, 7, 4, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (52, 7, 5, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (53, 7, 9, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (54, 7, 18, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (55, 7, 21, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (56, 7, 24, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (57, 10, 2, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (58, 10, 3, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (59, 10, 4, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (60, 10, 5, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (61, 10, 9, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (62, 10, 18, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (63, 10, 21, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (64, 10, 24, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (65, 11, 2, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (66, 11, 3, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (67, 11, 4, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (68, 11, 5, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (69, 11, 1, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (70, 11, 18, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (71, 11, 21, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (72, 11, 24, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (73, 8, 2, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (74, 8, 9, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (75, 8, 11, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (76, 8, 13, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (77, 8, 14, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (78, 8, 17, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (79, 8, 20, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (80, 8, 23, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (81, 9, 2, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (82, 9, 1, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (83, 9, 11, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (84, 9, 13, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (85, 9, 14, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (86, 9, 17, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (87, 9, 20, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (88, 9, 23, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (89, 13, 2, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (90, 13, 9, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (91, 13, 11, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (92, 13, 13, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (93, 13, 14, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (94, 13, 16, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (95, 13, 19, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (96, 13, 22, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (97, 12, 8, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (98, 12, 9, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (99, 12, 11, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (100, 12, 13, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (101, 12, 14, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (102, 12, 16, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (103, 12, 19, '2022-08-29');
+INSERT INTO public.enrolment (enrol_id, student_id, section_id, _date) VALUES (104, 12, 22, '2022-08-29');
 
 
 --
@@ -5534,6 +5602,12 @@ INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (16, 'CSE-2017-A1-CSE-406', 7, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (17, 'CSE-2017-A2-CSE-406', 7, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (18, 'CSE-2017-B1-CSE-406', 7, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (19, 'CSE-2017-A1-CSE-408', 10, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (20, 'CSE-2017-A2-CSE-408', 10, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (21, 'CSE-2017-B1-CSE-408', 10, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (22, 'CSE-2017-A1-CSE-410', 6, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (23, 'CSE-2017-A2-CSE-410', 6, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (24, 'CSE-2017-B1-CSE-410', 6, NULL);
 
 
 --
@@ -5710,14 +5784,14 @@ SELECT pg_catalog.setval('public.course_post_post_id_seq', 4, true);
 -- Name: course_routine_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_routine_class_id_seq', 23, true);
+SELECT pg_catalog.setval('public.course_routine_class_id_seq', 35, true);
 
 
 --
 -- Name: enrolment_enrol_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 48, true);
+SELECT pg_catalog.setval('public.enrolment_enrol_id_seq', 104, true);
 
 
 --
@@ -5836,7 +5910,7 @@ SELECT pg_catalog.setval('public.resource_res_id_seq', 1, false);
 -- Name: section_section_no_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.section_section_no_seq', 18, true);
+SELECT pg_catalog.setval('public.section_section_no_seq', 24, true);
 
 
 --

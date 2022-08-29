@@ -2698,13 +2698,13 @@ where ne.event_type=0 and rt.type_id=1 and (mod(s2._year,100)*100000+s2.dept_cod
 $$ language plpgsql;
 
 create or replace function get_extra_class_reschedule_information (teacher_username varchar,event integer)
-    returns table (eventType integer,eventNo integer,courseID integer,CRNo integer,dept_shortname varchar,course_code integer,eventTypeName varchar,CRName varchar, start_time timestamp with time zone,end_time timestamp with time zone) as $$
+    returns table (eventType integer,eventNo integer,courseID integer,secNo integer,secName varchar,CRNo integer,dept_shortname varchar,course_code integer,eventTypeName varchar,CRName varchar, start_time timestamp with time zone,end_time timestamp with time zone) as $$
     declare
         tid integer;
     begin
         tid:=get_teacher_id(teacher_username);
     return query
-    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,re.start,re._end
+    select ne.event_type,ne.event_no,s.section_no,s.section_name,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,re.start,re._end
 from notification_event ne join request_event re on re.req_id=ne.event_no
 join request_type rt on rt.type_id=re.type_id
 join instructor i on re.instructor_id = i.instructor_id
