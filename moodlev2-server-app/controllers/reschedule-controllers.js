@@ -134,6 +134,33 @@ const getExtraClassInfo = async (req, res, next) => {
 	}
 };
 
+const getExtraClassRescheduleInfo = async (req, res, next) => {
+	try {
+		const { userName, eventId } = req.body;
+		console.log("GET api/reschedule/info/extra");
+		let result = await pool.query(
+			"SELECT json_agg(t) FROM get_extra_class_reschedule_information($1, $2) as t",
+			[userName, eventId]
+		);
+		// console.log(result.rows[0].json_agg);
+		const extra = result.rows[0].json_agg[0];
+		// console.log("extra", extra);
+		if (extra != null) {
+			const obj = {
+				userName: extra.teachernamr,
+				eventStartTime: moment(extra.start_time).format("LLL"),
+				courseName: extra.dept_shortname + " " + extra.course_code,
+			};
+
+			res.json({ message: "getExtraClassInfo", data: obj });
+		} else {
+			res.json({ message: "getExtraClassInfo", data: {} });
+		}
+	} catch (err) {
+		return next(new HttpError(err.message, 500));
+	}
+};
+
 const rescheduleRequest = async (req, res, next) => {
 	try {
 		const eventId = req.params.eventId;
@@ -153,6 +180,8 @@ const confirmExtraClass = async (req, res, next) => {
 		return next(new HttpError(err.message, 500));
 	}
 };
+
+exports.getExtraClassRescheduleInfo = getExtraClassRescheduleInfo;
 exports.rescheduleRequest = rescheduleRequest;
 exports.confirmExtraClass = confirmExtraClass;
 exports.getExtraClassInfo = getExtraClassInfo;

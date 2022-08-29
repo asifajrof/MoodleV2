@@ -16,5 +16,10 @@ rescheduleRoutes.get(
 	"/rescheduleRequest/:eventId",
 	rescheduleControllers.rescheduleRequest
 );
+getExtraClassRescheduleInfo;
+rescheduleRoutes.post(
+	"/info/extra/reschedule",
+	rescheduleControllers.getExtraClassRescheduleInfo
+);
 
 module.exports = rescheduleRoutes;
