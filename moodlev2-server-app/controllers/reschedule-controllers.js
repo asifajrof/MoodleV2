@@ -151,6 +151,7 @@ const getExtraClassRescheduleInfo = async (req, res, next) => {
 				eventStartTime: moment(extra.start_time).format("LLL"),
 				courseName: extra.dept_shortname + " " + extra.course_code,
 				secName: extra.secname,
+				secNo: extra.secno,
 			};
 
 			res.json({ message: "getExtraClassInfo", data: obj });
