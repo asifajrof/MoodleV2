@@ -1829,6 +1829,31 @@ $$;
 ALTER FUNCTION public.get_extra_class_notifications_teacher(teacher_username character varying) OWNER TO postgres;
 
 --
+-- Name: get_extra_class_request_information(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_extra_class_request_information(std_id integer, event integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, teacherid integer, dept_shortname character varying, course_code integer, eventtypename character varying, teachernamr character varying, start_time timestamp with time zone, end_time timestamp with time zone)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+    begin
+    return query
+    select ne.event_type,ne.event_no,cc._id,t.teacher_id,cc._dept_shortname,cc._course_code,cast('Extra Class Request' as varchar),t.teacher_name,re.start,re._end
+from notification_event ne join request_event re on re.req_id=ne.event_no
+join request_type rt on rt.type_id=re.type_id
+join instructor i on re.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+join section s on re.section_no = s.section_no
+join current_courses cc on cc._id=s.course_id
+join student s2 on s.cr_id = s2.student_id
+where ne.event_type=0 and rt.type_id=1 and (mod(s2._year,100)*100000+s2.dept_code*1000+s2.roll_num)=std_id and re.req_id=event;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_extra_class_request_information(std_id integer, event integer) OWNER TO postgres;
+
+--
 -- Name: get_extra_class_request_notifications(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1852,6 +1877,33 @@ $$;
 
 
 ALTER FUNCTION public.get_extra_class_request_notifications(std_id integer) OWNER TO postgres;
+
+--
+-- Name: get_extra_class_reschedule_information(character varying, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_extra_class_reschedule_information(teacher_username character varying, event integer) RETURNS TABLE(eventtype integer, eventno integer, courseid integer, crno integer, dept_shortname character varying, course_code integer, eventtypename character varying, crname character varying, start_time timestamp with time zone, end_time timestamp with time zone)
+    LANGUAGE plpgsql
+    AS $$
+    declare
+        tid integer;
+    begin
+        tid:=get_teacher_id(teacher_username);
+    return query
+    select ne.event_type,ne.event_no,cc._id,s2.student_id,cc._dept_shortname,cc._course_code,cast('Extra Class Reschedule Request' as varchar),s2.student_name,re.start,re._end
+from notification_event ne join request_event re on re.req_id=ne.event_no
+join request_type rt on rt.type_id=re.type_id
+join instructor i on re.instructor_id = i.instructor_id
+join teacher t on i.teacher_id = t.teacher_id
+join section s on re.section_no = s.section_no
+join current_courses cc on cc._id=s.course_id
+join student s2 on s.cr_id = s2.student_id
+where ne.event_type=0 and rt.type_id=2 and t.teacher_id=tid and re.req_id=event;
+    end
+$$;
+
+
+ALTER FUNCTION public.get_extra_class_reschedule_information(teacher_username character varying, event integer) OWNER TO postgres;
 
 --
 -- Name: get_extra_class_reschedule_notifications(character varying); Type: FUNCTION; Schema: public; Owner: postgres
@@ -5479,7 +5531,9 @@ INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (4, 'CSE-2017-B-CSE405-2022', 4, 1);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (13, 'CSE-2017-A-CSE409-2022', 5, NULL);
 INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (14, 'CSE-2017-A-HUM475-2022', 3, NULL);
-INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (15, 'CSE-2017-A2-CSE405-2022', 4, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (16, 'CSE-2017-A1-CSE-406', 7, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (17, 'CSE-2017-A2-CSE-406', 7, NULL);
+INSERT INTO public.section (section_no, section_name, course_id, cr_id) VALUES (18, 'CSE-2017-B1-CSE-406', 7, NULL);
 
 
 --
@@ -5782,7 +5836,7 @@ SELECT pg_catalog.setval('public.resource_res_id_seq', 1, false);
 -- Name: section_section_no_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.section_section_no_seq', 15, true);
+SELECT pg_catalog.setval('public.section_section_no_seq', 18, true);
 
 
 --
