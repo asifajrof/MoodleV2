@@ -73,6 +73,7 @@ import TeacherCourseGrade from "./teacher/pages/course_grade";
 import StudentCourseGrades from "./student/pages/course_grades";
 import TeacherCourseReschedules from "./teacher/pages/course_rechedules";
 import TeacherAddNewReschedule from "./teacher/pages/add_new_course_reschedule";
+import CRCourseRescheduleRequest from "./student/pages/course_reschedule_request";
 const App = () => {
   // const [backendData,setBackendData] = useState([{}])
   // useEffect(() => {
@@ -231,6 +232,12 @@ const App = () => {
             <Route
               path={"/course/:courseId/grades"}
               element={<StudentCourseGrades studentNo={token.id} />}
+            />
+            <Route
+              path={
+                "/course/:courseId/reschedule/extra/request/:extraClassEventId"
+              }
+              element={<CRCourseRescheduleRequest studentNo={token.id} />}
             />
             <Route
               path={"/course/:courseId" + course_forum_link}
