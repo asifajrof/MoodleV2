@@ -39,17 +39,13 @@ const RescheduleRequestBody = ({ studentNo, courseId, extraClassEventId }) => {
     };
     fetchData();
   }, []);
-  const sendOkay = async (okayObj) => {
+  const sendOkay = async () => {
     try {
-      const res = await fetch(`/api/course/addNewEvent`, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(okayObj),
-      });
+      const res = await fetch(
+        `/api/reschedule/confirmExtraClass/${extraClassEventId}`
+      );
       const jsonData = await res.json();
-      console.log(res);
+      //   console.log(res);
       if (res.status === 200) {
         console.log(jsonData.message);
         navigate("/");
@@ -61,17 +57,13 @@ const RescheduleRequestBody = ({ studentNo, courseId, extraClassEventId }) => {
       console.log(err);
     }
   };
-  const sendReschedule = async (reschedObj) => {
+  const sendReschedule = async () => {
     try {
-      const res = await fetch(`/api/course/addNewEvent`, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(reschedObj),
-      });
+      const res = await fetch(
+        `/api/reschedule/rescheduleRequest/${extraClassEventId}`
+      );
       const jsonData = await res.json();
-      console.log(res);
+      //   console.log(res);
       if (res.status === 200) {
         console.log(jsonData.message);
         navigate("/");
